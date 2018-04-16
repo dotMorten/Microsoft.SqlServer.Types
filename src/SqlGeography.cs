@@ -1,0 +1,350 @@
+﻿using Microsoft.SqlServer.Server;
+using System;
+using System.Data.SqlTypes;
+using System.IO;
+
+namespace Microsoft.SqlServer.Types
+{
+    /// <summary>
+    /// The SqlGeography type represents data in a geodetic (round earth) coordinate system.
+    /// </summary>
+    [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = false, MaxByteSize = -1, IsFixedLength = false)]
+    public class SqlGeography : INullable, IBinarySerialize
+    {
+        private ShapeData _geometry;
+        private int srid = 0;
+
+        internal SqlGeography(bool isNull) { IsNull = isNull; }
+        
+        internal SqlGeography(ShapeData g, int srid)
+        {
+            this.srid = srid;
+            this._geometry = g;
+        }
+
+        /// <summary>
+        /// Returns the longitude property of the geography instance.
+        /// </summary>
+        /// <value>A SqlDouble value that specifies the longitude.</value>
+        /// <remarks>
+        /// In the OpenGIS model, Long is defined only on geography instances composed of a single point.
+        /// This property will return NULL if geography instances contain more than a single point. This 
+        /// property is precise and read-only.
+        /// </remarks>
+        public SqlDouble Long
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.Y) : SqlDouble.Null;
+        }
+
+        /// <summary>
+        /// Returns the latitude property of the geography instance.
+        /// </summary>
+        /// <value>A SqlDouble value that specifies the latitude.</value>
+        /// <remarks>
+        /// In the OpenGIS model, Lat is defined only on geography instances composed of a single point.
+        /// This property will return NULL if geography instances contain more than a single point. This property
+        /// is precise and read-only.
+        /// </remarks>
+        public SqlDouble Lat
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.X) : SqlDouble.Null;
+        }
+
+        /// <summary>
+        /// Gets the Z (elevation) value of the instance. The semantics of the elevation value are user-defined.
+        /// </summary>
+        /// <value>true if at least one point in a spatial object contains value Z; otherwise false.</value>
+        /// <remarks>
+        /// <para>The value of this property is null if the geography instance is not a point, as well as for any Point instance for which it is not set.</para>
+        /// <para>This property is read-only.</para>
+        /// <para>Z-coordinates are not used in any calculations made by the library and are not carried through any library calculations.</para>
+        /// </remarks>
+        public SqlDouble Z {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasZ ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
+        }
+
+        /// <summary>
+        /// Returns the M (measure) value of the geography instance.
+        /// </summary>
+        /// <remarks>
+        /// <para>The semantics of the measure value are user-defined but generally describe the distance along a linestring. For example, the measure value could be used to keep track of mileposts along a road.</para>
+        /// <para>The value of this property is null if the geography instance is not a Point, as well as for any Point instance for which it is not set.</para>
+        /// <para>This property is read-only.</para>
+        /// <para>M values are not used in any calculations made by the library and will not be carried through any library calculations.</para>
+        /// </remarks>
+        public SqlDouble M {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasM ? new SqlDouble(_geometry.M) : SqlDouble.Null;
+        }
+
+        /// <summary>
+        /// Gets or sets id is an integer representing the Spatial Reference Identifier (SRID) of the instance.
+        /// </summary>
+        /// <value>A SqlInt32 that represents the SRID of the SqlGeography instance.</value>
+        public SqlInt32 STSrid
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => new SqlInt32(srid);
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            set
+            {
+                if (value.IsNull)
+                    throw new System.ArgumentNullException();
+                srid = value.Value;
+            }
+        }
+
+        /// <summary>
+        /// Returns true if at least one point in a spatial object contains value Z; otherwise returns false. This property is read-only.
+        /// </summary>
+        /// <value>true if at least one point in a spatial object contains value Z; otherwise false.</value>
+        public bool HasZ
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.HasZ;
+        }
+
+        /// <summary>
+        /// Returns true if at least one point in a spatial object contains value M; otherwise returns false. This property is read-only.
+        /// </summary>
+        /// <value>true if at least one point in a spatial object contains value M; otherwise false.</value>
+        public bool HasM
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get => _geometry.HasM;
+        }
+
+        /// <summary>
+        /// Determines whether the SqlGeography instance is null.
+        /// </summary>
+        /// <value>A bool value that specifies whether the SqlGeography instance is null. If true, the instance is null. Otherwise, false.</value>
+        public bool IsNull
+        {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get;
+        }
+
+        /// <summary>
+        /// Returns a read-only property providing a null instance of the SqlGeography type.
+        /// </summary>
+        /// <value>A null instance of the SqlGeography class.</value>
+        public static SqlGeography Null {
+            [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+            get;
+        } = new SqlGeography(true);
+
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
+        public SqlInt32 NumRings()
+        {
+            if (IsNull || (_geometry.Type != OGCGeometryType.Polygon && _geometry.Type != OGCGeometryType.CurvePolygon))
+            {
+                return SqlInt32.Null;
+            }
+            return this._geometry.NumRings;
+        }
+
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) type name represented by a geography instance.
+        /// </summary>
+        /// <returns>A SqlString value containing the OGC type name.</returns>
+        /// <remarks>
+        /// The OGC type names that can be returned by the STGeometryType method are Point, LineString, Polygon, GeometryCollection, MultiPoint, MultiLineString, and MultiPolygon.
+        /// </remarks>
+        public SqlString STGeometryType()
+        {
+            if (IsNull) return SqlString.Null;
+            return new SqlString(_geometry.Type.ToString());
+        }
+
+        /// <summary>
+        /// Returns the number of geometries that make up a SqlGeography instance.
+        /// </summary>
+        /// <returns>A SqlInt32 value that specifies the number of geometries that make up the <see cref="SqlGeography"/> instance. </returns>
+        /// <remarks>
+        /// This method returns 1 if the geography instance is not a MultiPoint, MultiLineString, MultiPolygon, or GeometryCollection instance, or 0 if the SqlGeography instance is empty.
+        /// </remarks>
+        public SqlInt32 STNumGeometries() => IsNull ? SqlInt32.Null : _geometry.NumGeometries;
+
+        /// <summary>
+        /// Returns the total number of points in each of the figures in a SqlGeography instance
+        /// </summary>
+        /// <returns>A SqlInt32 value specifying the total number of points in each figure of the <see cref="SqlGeography"/> instance.</returns>
+        /// <remarks>
+        /// This method counts the points in the description of a SqlGeography instance. Duplicate points are counted.
+        /// If this instance is a GeometryCollection, this method returns of the total number of points in each of the
+        /// elements in the collection.
+        /// </remarks>
+        public SqlInt32 STNumPoints() => IsNull ? SqlInt32.Null : _geometry.NumPoints;
+
+        /// <summary>
+        /// Returns the number of curves in a one-dimensional SqlGeography instance.
+        /// </summary>
+        /// <returns>The number of curves.</returns>
+        public SqlInt32 STNumCurves()
+        {
+            if (IsNull) return SqlInt32.Null;
+
+            if (_geometry.Type == OGCGeometryType.LineString)
+                return _geometry.IsEmpty ? 0 : _geometry.NumPoints - 1;
+
+            if (_geometry.Type == OGCGeometryType.CircularString)
+            {
+                if (_geometry.IsEmpty) return 0;
+                return (_geometry.NumPoints - 1) / 2;
+            }
+            if (_geometry.Type != OGCGeometryType.CompoundCurve)
+                return SqlInt32.Null;
+            return _geometry.NumSegments;
+        }
+
+        /// <summary>
+        /// Returns a specified geography element in a GeometryCollection or one of its subtypes. 
+        /// </summary>
+        /// <param name="n">An int expression between 1 and the number of SqlGeography instances in the GeometryCollection.</param>
+        /// <returns>A SqlGeography element from the specified instance in the GeometryCollection.</returns>
+        /// <remarks>
+        /// <para>When this method is used on a subtype of a GeometryCollection, such as MultiPoint or MultiLineString, this method returns the SqlGeography instance if called with N=1.</para>
+        /// <para>This method returns null if the parameter is larger than the result of STNumGeometries and will throw an ArgumentOutOfRangeException if the expression parameter is less than 1.</para>
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeography STGeometryN(int n)
+        {
+            if (n < 1)
+                throw new ArgumentOutOfRangeException(nameof(n));
+
+            if (IsNull || n > STNumGeometries())
+                return SqlGeography.Null;
+            return new SqlGeography(_geometry.GetGeometryN(n), srid);
+        }
+
+        /// <summary>
+        /// Returns the specified point in a SqlGeography instance.
+        /// </summary>
+        /// <param name="n">An int expression between 1 and the number of points in the SqlGeography instance.</param>
+        /// <returns>A <see cref="SqlGeography"/> representing the specified point in the calling instance.</returns>
+        /// <remarks>
+        /// <para>If a SqlGeography instance is user-created, the STPointN method returns the point specified by expression by ordering the points in the order in which they were originally input.</para>
+        /// <para>If a SqlGeography instance is constructed by the system, STPointN returns the point specified by expression by ordering all the points in the same order they would be output: first by geography instance, then by ring within the instance(if appropriate), and then by point within the ring.This order is deterministic.</para>
+        /// <para>If this method is called with a value less than 1, it throws an ArgumentOutOfRangeException.</para>
+        /// <para>If this method is called with a value greater than the number of points in the instance, it returns null.</para>
+        /// </remarks>
+        public SqlGeography STPointN(int n)
+        {
+            if (n < 1)
+                throw new ArgumentOutOfRangeException(nameof(n));
+            if (IsNull)
+                return SqlGeography.Null;
+
+            if (n > this._geometry.NumPoints)
+                return SqlGeography.Null;
+
+            var p = _geometry.GetPointN(n);
+            return new SqlGeography(new ShapeData(p.X, p.Y, HasZ ? (double?)p.Z : null, HasM ? (double?)p.M : null), srid);
+        }
+
+        /// <summary>
+        /// Returns the start point of a SqlGeography instance. 
+        /// </summary>
+        /// <returns>A SqlGeography value that represents the start point of the calling SqlGeography.</returns>
+        /// <remarks>STStartPoint is the equivalent of STPointN(1).</remarks>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeography STStartPoint() => this.STPointN(1);
+
+        // public SqlGeography STUnion(SqlGeography sqlGeography)
+        // {
+        //     throw new NotSupportedException();
+        // }
+
+        /// <summary>
+        /// Returns the end point of a SqlGeography instance.
+        /// </summary>
+        /// <returns>A SqlGeography value containing the end point.</returns>
+        /// <remarks>
+        /// <para>STEndPoint is the equivalent of SqlGeography.STPointN(x.STNumPoints()).</para>
+        /// <para>This method returns null if called on an empty geography instance.</para>
+        /// </remarks>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeography STEndPoint() => STPointN(Math.Max(1, _geometry.NumPoints));
+
+        /// <summary>
+        /// Returns the specified ring of the SqlGeography instance: 1 ≤ n ≤ NumRings().
+        /// </summary>
+        /// <param name="n">An int expression between 1 and the number of rings in a polygon instance.</param>
+        /// <returns>A SqlGeography object that represents the ring specified by n.</returns>
+        /// <remarks>
+        /// If the value of the ring index n is less than 1, this method throws an ArgumentOutOfRangeException. The ring index value must be greater than or equal to 1 and should be less than or equal to the number returned by NumRings.
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeography RingN(int n)
+        {
+            if (n < 1)
+                throw new ArgumentOutOfRangeException(nameof(n));
+            if (IsNull || (_geometry.Type != OGCGeometryType.Polygon && _geometry.Type != OGCGeometryType.CurvePolygon) || n > this._geometry.NumRings)
+            {
+                return SqlGeography.Null;
+            }
+            ShapeData ringN = _geometry.GetRingN(n);
+            ringN.SetIsValid(false);
+            return new SqlGeography(ringN, this.srid);
+        }
+
+        /// <summary>
+        /// Reads a binary representation of a geography type into a SqlGeometry object.
+        /// </summary>
+        /// <param name="r">BinaryReader object that reads a binary representation of a geography type.</param>
+        /// <remarks>
+        /// <para>This member is sealed.</para>
+        /// <para>This method will throw a FormatException if SRID value read by r is invalid.</para>
+        /// </remarks>
+        public void Read(BinaryReader r)
+        {
+            srid = r.ReadInt32();
+            this._geometry = new ShapeData();
+            this._geometry.Read(r, 1);
+        }
+
+        /// <summary>
+        /// Writes a SqlGeography object to a binary stream.
+        /// </summary>
+        /// <param name="w">BinaryWriter object that writes a SqlGeography object to a binary stream.</param>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public void Write(BinaryWriter w)
+        {
+            w.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
+            _geometry.Write(w);
+        }
+
+        /// <summary>
+        /// Returns a constructed SqlGeometry from an internal SQL Server format for spatial data. Can be used for sending spatial data over the network or reading them from files.
+        /// </summary>
+        /// <param name="bytes">The data representing the spatial data being sent across the network.</param>
+        /// <returns>The data being sent over the network.</returns>
+        public static SqlGeometry Deserialize(SqlBytes bytes)
+        {
+            using (var r = new BinaryReader(bytes.Stream))
+            {
+                var srid = r.ReadInt32();
+                var geometry = new ShapeData();
+                geometry.Read(r, 1);
+                return new SqlGeometry(geometry, srid);
+            }
+        }
+
+        /// <summary>
+        /// Used for sending spatial data across the network.
+        /// </summary>
+        /// <returns>A SqlBytes stream representing the spatial data being sent across the network.</returns>
+        /// <remarks>
+        /// Used in conjunction with <see cref="Deserialize"/>() for sending spatial data across the network.
+        /// </remarks>
+        public SqlBytes Serialize()
+        {
+            SqlBytes b = new SqlBytes();
+            Write(new BinaryWriter(b.Stream));
+            return b;
+        }
+    }
+}
