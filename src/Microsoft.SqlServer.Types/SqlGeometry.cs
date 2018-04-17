@@ -44,7 +44,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble STX
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.X) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 ? new SqlDouble(_geometry.X) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble STY
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.Y) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 ? new SqlDouble(_geometry.Y) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble Z
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasZ ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasZ && !double.IsNaN(_geometry.Z) ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble M
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasM ? new SqlDouble(_geometry.M) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasM && !double.IsNaN(_geometry.M) ? new SqlDouble(_geometry.M) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -105,6 +105,8 @@ namespace Microsoft.SqlServer.Types
             {
                 if (value.IsNull)
                     throw new System.ArgumentNullException();
+                if (value < 0 || value > 999999)
+                    throw new ArgumentOutOfRangeException("SRID must be between 0 and 999999");
                 srid = value.Value;
             }
         }
@@ -259,8 +261,11 @@ namespace Microsoft.SqlServer.Types
             {
                 throw new ArgumentOutOfRangeException(nameof(n));
             }
-
-            throw new NotImplementedException();
+            if (IsNull || (_geometry.Type != OGCGeometryType.Polygon && _geometry.Type != OGCGeometryType.CurvePolygon) || _geometry.IsEmpty)
+            {
+                return SqlGeometry.Null;
+            }
+            return new SqlGeometry(_geometry.GetRing(n), srid);
         }
 
         /// <summary>
@@ -275,7 +280,19 @@ namespace Microsoft.SqlServer.Types
             {
                 return SqlGeometry.Null;
             }
-            return new SqlGeometry(_geometry.ExteriorRing, srid);
+            return new SqlGeometry(_geometry.GetRing(0), srid);
+        }
+
+        /// <summary>
+        /// Indicates whether the calling <see cref="SqlGeometry"/> instance is empty.
+        /// </summary>
+        /// <returns>Returns true if the calling instance is empty. Returns false if it is not empty.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlBoolean STIsEmpty()
+        {
+            if (this.IsNull)
+                return SqlBoolean.Null;
+            return _geometry.IsEmpty;
         }
 
         public static SqlGeometry Deserialize(SqlBytes bytes)

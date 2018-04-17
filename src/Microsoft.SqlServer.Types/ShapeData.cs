@@ -56,9 +56,33 @@ namespace Microsoft.SqlServer.Types
 
     internal enum FigureAttributes : byte
     {
-        None = 0,
+        /// <summary>
+        /// V1 -Figure is an interior ring in a polygon. Interior rings represent holes in exterior rings. 
+        /// </summary>
+        InteriorRing = 0,
+        /// <summary>
+        /// V2 - Figure is a point
+        /// </summary>
+        Point = 0,
+        /// <summary>
+        /// V1 -Figure is a stroke. A stroke is a point or a line. 
+        /// </summary>
+        Stroke = 1,
+        /// <summary>
+        /// V2 - Figure is a line. 
+        /// </summary>
         Line = 1,
+        /// <summary>
+        /// V1 - Figure is an exterior ring in a polygon. An exterior ring represents the outer boundary of a polygon. 
+        /// </summary>
+        ExteriorRing = 1,
+        /// <summary>
+        /// V2 - Figure is an arc
+        /// </summary>
         Arc = 2,
+        /// <summary>
+        /// V2 -  Figure is a composite curve, that is, it contains both line and arc segments. 
+        /// </summary>
         Curve = 3
     }
 
@@ -133,6 +157,18 @@ namespace Microsoft.SqlServer.Types
             };
         }
 
+        private bool IsV2Data
+        {
+            get
+            {
+                return (_segments != null || _isLargerThanAHemisphere || 
+                    Type == OGCGeometryType.CircularString ||
+                    Type == OGCGeometryType.CompoundCurve ||
+                    Type == OGCGeometryType.CurvePolygon ||
+                    Type == OGCGeometryType.FullGlobe);
+            }
+        }
+
         public double X => this._vertices[0].X;
         public double Y => this._vertices[0].Y;
         public double Z => this._zValues[0];
@@ -144,8 +180,7 @@ namespace Microsoft.SqlServer.Types
         {
             get
             {
-                int num = (!this.IsEmpty || this.HasChildren(0) ? 0 : 1);
-                if (IsEmpty || !HasChildren(0))
+                if (IsEmpty)
                 {
                     return 0;
                 }
@@ -171,100 +206,84 @@ namespace Microsoft.SqlServer.Types
         public int NumInteriorRing => _figures == null || _figures.Length == 1 ? 0 : _figures.Length - 1;
         public PointZM StartPoint => GetPointN(1);
         public PointZM EndPoint => GetPointN(_mValues.Length);
-        public ShapeData ExteriorRing => AsRing(0);
+        public ShapeData GetRing(int index) => AsRing(index);
         public bool HasZ => _zValues != null;
         public bool HasM => _mValues != null;
         public bool IsEmpty => !(_vertices != null && _vertices.Length > 0 || _shapes[0].type == OGCGeometryType.FullGlobe);
 
-        public ShapeData GetGeometryN(int nGeometry)
+        public ShapeData GetGeometryN(int index)
         {
-            if (nGeometry == 1 && _shapes != null && _shapes.Length == 1)
+            if (index == 1 && _shapes != null && _shapes.Length == 1)
                 return this;
-            return ShapeToGeometry(nGeometry);
+            return ShapeToGeometry(index);
         }
 
-        public ShapeData GetRingN(int nRing)
+        public ShapeData GetRingN(int figureIndex)
         {
-            return AsRing(nRing - 1);
+            return AsRing(figureIndex - 1);
         }
 
-        private ShapeData AsRing(int iFigure)
+        private ShapeData AsRing(int figureIndex)
         {
-            var mFigures = _figures[iFigure].FigureAttribute;
-            if (mFigures == FigureAttributes.Line)
+            var mFigures = _figures[figureIndex].FigureAttribute;
+            if (IsV2Data)
             {
-                return AsLineString(iFigure);
-            }
-            else if (mFigures == FigureAttributes.Curve)
-                throw new NotImplementedException("TODO: Return CompoundCurve");
-            else
-                throw new NotImplementedException("TODO: Return CircularString");
-        }
-        public int IndexOfNthChildShape(int iShape)
-        {
-            if (_shapes[0].type != OGCGeometryType.GeometryCollection)
-            {
-                return iShape;
-            }
-            int j = 0;
-            int shapeCount = _shapes?.Length ?? 0;
-            if (1 < shapeCount)
-            {
-                int i = 1;
-                do
+                if (mFigures == FigureAttributes.Line)
                 {
-                    if (_shapes[i].ParentOffset == 0)
-                    {
-                        j++;
-                        if (j == iShape)
-                        {
-                            return i;
-                        }
-                    }
-                    i++;
+                    return AsLineString(figureIndex);
                 }
-                while (i < shapeCount);
+                else if (mFigures == FigureAttributes.Curve)
+                    throw new NotImplementedException("TODO: Return CompoundCurve");
+                else
+                    throw new NotImplementedException("TODO: Return CircularString");
             }
-            return -1;
+            else
+            {
+                return AsLineString(figureIndex);
+            }
         }
-        private ShapeData ShapeToGeometry(int nShape)
+
+        private ShapeData ShapeToGeometry(int shapeIndex)
         {
-            if (nShape == 0)
+            if (shapeIndex == 0)
                 return this;
             ShapeData geoDatum = new ShapeData();
-            var shape = _shapes[nShape];
-            var figureOffset = _figures != null ? shape.FigureOffset : -1;
-            List<int> shapeIndeces = new List<int>();
-            shapeIndeces.Add(nShape);
-            for (int i = nShape + 1; i < _shapes.Length; i++)
+            var shape = _shapes[shapeIndex];
+            var nextShape = shapeIndex + 1;
+            for (; nextShape < _shapes.Length; nextShape++)
             {
-                if (shapeIndeces.Contains(_shapes[i].ParentOffset))
-                    shapeIndeces.Add(i);
-                else
+                if (_shapes[nextShape].ParentOffset == shape.ParentOffset)
                     break;
             }
-            List<Shape> shapes = new List<Shape>(shapeIndeces.Count);
+
+            List<Shape> shapes = new List<Shape>(nextShape - shapeIndex);
             List<Figure> figures = new List<Figure>();
-            int pointOffset = _figures[shape.FigureOffset].VertexOffset;
-            foreach(var i in shapeIndeces)
+            List<Point> vertices = new List<Point>();
+            List<double> zvalues = _zValues == null ? null : new List<double>();
+            List<double> mvalues = _mValues == null ? null : new List<double>();
+            for (int i = shapeIndex; i < nextShape; i++)
             {
                 var s = _shapes[i];
-                int findex = -1;
-                if(s.FigureOffset > -1)
+                var nextFigure = i + 1 < _shapes.Length ? _shapes[i + 1].FigureOffset : _figures.Length;
+                var figureOffset = figures.Count;
+                for (int j = s.FigureOffset; j < nextFigure; j++)
                 {
-                    var f = _figures[s.FigureOffset];
-                    findex = figures.Count;
-                    figures.Add(new Figure() { FigureAttribute = f.FigureAttribute, VertexOffset = f.VertexOffset - pointOffset });
-                    pointOffset = f.VertexOffset;
+                    var f = _figures[j];
+                    figures.Add(new Figure() { FigureAttribute = f.FigureAttribute, VertexOffset = vertices.Count });
+                    var nextFigureVertexOffset = (j + 1 < _figures.Length ) ? _figures[j + 1].VertexOffset : _vertices.Length;
+                    vertices.AddRange(_vertices.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
+                    if (zvalues != null)
+                        zvalues.AddRange(_zValues.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
+                    if (mvalues != null)
+                        mvalues.AddRange(_mValues.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
                 }
-                shapes.Add(new Shape() { type = s.type, ParentOffset = shape.ParentOffset - s.ParentOffset - 1, FigureOffset = findex });
+                shapes.Add(new Shape() { type = s.type, ParentOffset = shape.ParentOffset - s.ParentOffset - 1, FigureOffset = figureOffset });
             }
-            var nextFigure = _shapes[shapeIndeces.Last()].FigureOffset + 1;
-            var firstVertex = _figures == null ? 0 : _figures[shape.FigureOffset].VertexOffset;
-            var lastVertex = _figures == null || _figures.Length <= nextFigure ? _vertices.Length : _figures[nextFigure].VertexOffset;
             geoDatum._shapes = shapes.ToArray();
             geoDatum._figures = figures!=null || figures.Any() ? figures?.ToArray() : null;
-            geoDatum._vertices = _vertices.Skip(firstVertex).Take(lastVertex - firstVertex).ToArray();
+            geoDatum._vertices = vertices.ToArray();
+            geoDatum._zValues = zvalues?.ToArray();
+            geoDatum._mValues = mvalues?.ToArray();
             geoDatum._isLargerThanAHemisphere = this._isLargerThanAHemisphere;
             //TODO: Segments
             geoDatum._isValid = _isValid;
@@ -288,19 +307,17 @@ namespace Microsoft.SqlServer.Types
 
         private (Point[] points, double[] zvalues, double[] mvalues) GetFigure(int shapeIndex, int figureIndex)
         {
-            Shape shape = this._shapes[shapeIndex];
-            var fidx = shape.FigureOffset + figureIndex ;
-            var start = this._figures[fidx].VertexOffset;
+            Shape shape = _shapes[shapeIndex];
+            var fidx = shape.FigureOffset + figureIndex;
+            var start = _figures[fidx].VertexOffset;
             int end = _vertices.Length;
-            if (_figures.Length > fidx+1)
-                end = this._figures[fidx + 1].VertexOffset - 1;
-            else if (_shapes.Length > shapeIndex+1)
-                end = _shapes[shapeIndex + 1].FigureOffset - 1;
+            if (_figures.Length > fidx + 1)
+                end = _figures[fidx + 1].VertexOffset;
             var points = _vertices.Skip(start).Take(end - start);
             var z = _zValues?.Skip(start)?.Take(end - start);
             var m = _mValues?.Skip(start)?.Take(end - start);
             return (
-                points.ToArray(), 
+                points.ToArray(),
                 z?.Any(v => !double.IsNaN(v)) == true ? z.ToArray() : null,
                 m?.Any(v => !double.IsNaN(v)) == true ? m.ToArray() : null);
         }

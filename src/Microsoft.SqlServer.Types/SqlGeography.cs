@@ -34,7 +34,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble Long
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.Y) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 ? new SqlDouble(_geometry.Y) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Microsoft.SqlServer.Types
         public SqlDouble Lat
         {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point ? new SqlDouble(_geometry.X) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 ? new SqlDouble(_geometry.X) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public SqlDouble Z {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasZ ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasZ ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public SqlDouble M {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.HasM ? new SqlDouble(_geometry.M) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasM ? new SqlDouble(_geometry.M) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -93,6 +93,8 @@ namespace Microsoft.SqlServer.Types
             {
                 if (value.IsNull)
                     throw new System.ArgumentNullException();
+                if ((srid < 4120 || srid > 4999) && srid != 104001)
+                    throw new ArgumentOutOfRangeException(nameof(srid), "SRID must be between 4120 and 4999 (inclusive)");
                 srid = value.Value;
             }
         }
@@ -289,6 +291,18 @@ namespace Microsoft.SqlServer.Types
             ShapeData ringN = _geometry.GetRingN(n);
             ringN.SetIsValid(false);
             return new SqlGeography(ringN, this.srid);
+        }
+
+        /// <summary>
+        /// Determines whether the <see cref="SqlGeography"/> instance is empty.
+        /// </summary>
+        /// <returns>A SqlBoolean value that indicates whether the calling instance is empty. Returns true if it is empty. Otherwise, returns false.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlBoolean STIsEmpty()
+        {
+            if (this.IsNull)
+                return SqlBoolean.Null;
+            return _geometry.IsEmpty;
         }
 
         /// <summary>

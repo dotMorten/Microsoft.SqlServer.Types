@@ -63,7 +63,7 @@ namespace Microsoft.SqlServer.Types
             }
             else if (type == OGCGeometryType.CurvePolygon)
             {
-                _nextFigureAttribute = FigureAttributes.None;
+                _nextFigureAttribute = FigureAttributes.Point;
             }
             _parents.Push(_shapes.Count);
             _shapes.Add(shape);

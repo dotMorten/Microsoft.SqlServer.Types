@@ -54,7 +54,7 @@ namespace Microsoft.SqlServer.Types
 
         public void SetSrid(int srid)
         {
-            if (srid < 4120 || srid > 4999)
+            if ((srid < 4120 || srid > 4999) && srid != 104001)
                 throw new ArgumentOutOfRangeException(nameof(srid), "SRID must be between 4120 and 4999 (inclusive)");
             _srid = srid;
         }
