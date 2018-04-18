@@ -288,9 +288,9 @@ namespace Microsoft.SqlServer.Types
             {
                 return SqlGeography.Null;
             }
-            ShapeData ringN = _geometry.GetRingN(n);
-            ringN.SetIsValid(false);
-            return new SqlGeography(ringN, this.srid);
+            ShapeData ring = _geometry.GetRing(n - 1);
+            ring.SetIsValid(false);
+            return new SqlGeography(ring, this.srid);
         }
 
         /// <summary>
@@ -304,6 +304,13 @@ namespace Microsoft.SqlServer.Types
                 return SqlBoolean.Null;
             return _geometry.IsEmpty;
         }
+
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a <see cref="SqlGeography"/> instance. 
+        /// </summary>
+        /// <returns>A SqlChars object containing the WKT representation of the SqlGeography.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public SqlChars STAsText() => new SqlChars(ToString());
 
         /// <summary>
         /// Reads a binary representation of a geography type into a SqlGeometry object.
@@ -360,5 +367,7 @@ namespace Microsoft.SqlServer.Types
             Write(new BinaryWriter(b.Stream));
             return b;
         }
+
+        public override string ToString() => WktWriter.Write(_geometry);
     }
 }

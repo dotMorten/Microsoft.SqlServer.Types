@@ -295,6 +295,13 @@ namespace Microsoft.SqlServer.Types
             return _geometry.IsEmpty;
         }
 
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a SqlGeometry instance. 
+        /// </summary>
+        /// <returns>A SqlChars object containing the WKT representation of the SqlGeometry.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public SqlChars STAsText() => new SqlChars(ToString());
+
         public static SqlGeometry Deserialize(SqlBytes bytes)
         {
             using (var r = new BinaryReader(bytes.Stream))
@@ -325,5 +332,7 @@ namespace Microsoft.SqlServer.Types
             bw.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
             _geometry.Write(bw);
         }
+
+        public override string ToString() => WktWriter.Write(_geometry);
     }
 }

@@ -218,11 +218,6 @@ namespace Microsoft.SqlServer.Types
             return ShapeToGeometry(index);
         }
 
-        public ShapeData GetRingN(int figureIndex)
-        {
-            return AsRing(figureIndex - 1);
-        }
-
         private ShapeData AsRing(int figureIndex)
         {
             var mFigures = _figures[figureIndex].FigureAttribute;
