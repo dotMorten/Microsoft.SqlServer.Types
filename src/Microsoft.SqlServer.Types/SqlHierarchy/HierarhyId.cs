@@ -17,9 +17,9 @@ namespace Microsoft.SqlServer.Types
         private readonly string _hierarchyId;
         private readonly int[][] _nodes;
 
-        internal int[][] GetNodes() => _nodes;
+        static readonly int[][] __RootNodes = new int[0][];
 
-        public bool IsNull => _nodes == null;
+        internal int[][] GetNodes() => _nodes ?? __RootNodes;
 
         /// <summary>
         /// The Path separator character
@@ -40,9 +40,11 @@ namespace Microsoft.SqlServer.Types
 
         internal HierarchyId(int[][] nodes)
         {
-            this._nodes = nodes;
-            this._hierarchyId = nodes == null ? null :
-                nodes.Length == 0 ? PathSeparator : 
+            if (nodes == null)
+                throw new ArgumentNullException(nameof(nodes));
+
+            this._nodes= nodes;
+            this._hierarchyId = nodes == null  || nodes.Length == 0 ? PathSeparator :
                 (PathSeparator + string.Join(PathSeparator, nodes.Select(IntArrayToStirng)) + PathSeparator);
         }
 
@@ -53,20 +55,17 @@ namespace Microsoft.SqlServer.Types
         /// <param name="hierarchyId">Canonical string representation</param>
         public HierarchyId(string hierarchyId)
         {
-            _hierarchyId = hierarchyId;
-            if (hierarchyId == null)
+            _hierarchyId = hierarchyId ?? throw new ArgumentNullException(nameof(hierarchyId));
+            if (hierarchyId == "/")
             {
-                _nodes = null;
+                _nodes = __RootNodes;
             }
             else
             {
                 var nodesStr = hierarchyId.Split('/');
-                if (!string.IsNullOrEmpty(nodesStr[0])
-                    || !string.IsNullOrEmpty(nodesStr[nodesStr.Length - 1]))
-                {
-                    throw new ArgumentException(
-                        string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
-                }
+                if (!string.IsNullOrEmpty(nodesStr[0]) || !string.IsNullOrEmpty(nodesStr[nodesStr.Length - 1]))
+                    throw new ArgumentException( string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
+
                 int nodesCount = nodesStr.Length - 2;
                 var nodes = new int[nodesCount][];
                 for (int i = 0; i < nodesCount; i++)
@@ -76,12 +75,8 @@ namespace Microsoft.SqlServer.Types
                     var ints = new int[intsStr.Length];
                     for (int j = 0; j < intsStr.Length; j++)
                     {
-                        int num;
-                        if (!int.TryParse(intsStr[j], out num))
-                        {
-                            throw new ArgumentException(
-                                string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
-                        }
+                        if (!int.TryParse(intsStr[j], out int num))
+                            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
                         ints[j] = num;
                     }
                     nodes[i] = ints;
@@ -98,13 +93,13 @@ namespace Microsoft.SqlServer.Types
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "n")]
         public HierarchyId GetAncestor(int n)
         {
-            if (_nodes == null || GetLevel() < n)
-            {
-                return new HierarchyId((string)null);
-            }
-            string hierarchyStr = PathSeparator +
-                                  string.Join(PathSeparator, _nodes.Take(GetLevel() - n).Select(IntArrayToStirng))
-                                  + PathSeparator;
+            if (GetLevel() == n)
+                return new HierarchyId(__RootNodes);
+
+            if (GetLevel() < n)
+                throw new ArgumentException(nameof(n));
+
+            string hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Take(GetLevel() - n).Select(IntArrayToStirng)) + PathSeparator;
             return new HierarchyId(hierarchyStr);
         }
 
@@ -115,65 +110,46 @@ namespace Microsoft.SqlServer.Types
         /// <param name="child2"> null or the hierarchyid of a child of the current node. </param>
         /// <returns>
         /// Returns one child node that is a descendant of the parent.
-        /// If parent is null, returns null.
-        /// If parent is not null, and both child1 and child2 are null, returns a child of parent.
-        /// If parent and child1 are not null, and child2 is null, returns a child of parent greater than child1.
-        /// If parent and child2 are not null and child1 is null, returns a child of parent less than child2.
-        /// If parent, child1, and child2 are not null, returns a child of parent greater than child1 and less than child2.
+        /// If both child1 and child2 are null, returns a child of parent.
+        /// If child1 is not null, and child2 is null, returns a child of parent greater than child1.
+        /// If child2 is not null and child1 is null, returns a child of parent less than child2.
+        /// If child1 and child2 are not null, returns a child of parent greater than child1 and less than child2.
         /// If child1 is not null and not a child of parent, an exception is raised.
         /// If child2 is not null and not a child of parent, an exception is raised.
         /// If child1 >= child2, an exception is raised.
         /// </returns>
-        public HierarchyId GetDescendant(HierarchyId child1, HierarchyId child2)
+        public HierarchyId GetDescendant(HierarchyId? child1, HierarchyId? child2)
         {
-            if (_nodes == null)
-            {
-                return new HierarchyId();
-            }
-            if (child1 != null
-                && (child1.GetLevel() != GetLevel() + 1 || !child1.IsDescendantOf(this)))
-            {
-                throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child1", child1, ToString()),
-                    "child1");
-            }
-            if (child2 != null
-                && (child2.GetLevel() != GetLevel() + 1 || !child2.IsDescendantOf(this)))
-            {
-                throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child2", child1, ToString()),
-                    "child2");
-            }
-            if (child1 == null
-                && child2 == null)
-            {
+            if (child1 != null && (child1.Value.GetLevel() != GetLevel() + 1 || !child1.Value.IsDescendantOf(this)))
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child1", child1, ToString()), "child1");
+
+            if (child2 != null&& (child2.Value.GetLevel() != GetLevel() + 1 || !child2.Value.IsDescendantOf(this)))
+                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child2", child1, ToString()), "child2");
+           
+            if (child1 == null && child2 == null)
                 return new HierarchyId(ToString() + 1 + PathSeparator);
-            }
+
             string hierarchyStr;
             if (child1 == null)
             {
                 var result = new HierarchyId(child2.ToString());
-                var lastNode = result._nodes.Last();
+                var lastNode = result.GetNodes().Last();
                 //decrease the last part of the last node of the 1nd child
                 lastNode[lastNode.Length - 1]--;
-                hierarchyStr = PathSeparator +
-                               string.Join(PathSeparator, result._nodes.Select(IntArrayToStirng))
-                               + PathSeparator;
+                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(IntArrayToStirng)) + PathSeparator;
                 return new HierarchyId(hierarchyStr);
             }
             if (child2 == null)
             {
                 var result = new HierarchyId(child1.ToString());
-                var lastNode = result._nodes.Last();
+                var lastNode = result.GetNodes().Last();
                 //increase the last part of the last node of the 2nd child
                 lastNode[lastNode.Length - 1]++;
-                hierarchyStr = PathSeparator +
-                               string.Join(PathSeparator, result._nodes.Select(IntArrayToStirng))
-                               + PathSeparator;
+                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(IntArrayToStirng)) + PathSeparator;
                 return new HierarchyId(hierarchyStr);
             }
-            var child1LastNode = child1._nodes.Last();
-            var child2LastNode = child2._nodes.Last();
+            var child1LastNode = child1.Value.GetNodes().Last();
+            var child2LastNode = child2.Value.GetNodes().Last();
             var cmp = CompareIntArrays(child1LastNode, child2LastNode);
             if (cmp >= 0)
             {
@@ -198,11 +174,7 @@ namespace Microsoft.SqlServer.Types
             {
                 child1LastNode = child1LastNode.Concat(new[] { 1 }).ToArray();
             }
-            hierarchyStr = PathSeparator +
-                           string.Join(PathSeparator, _nodes.Select(IntArrayToStirng))
-                           + PathSeparator
-                           + IntArrayToStirng(child1LastNode)
-                           + PathSeparator;
+            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(IntArrayToStirng)) + PathSeparator + IntArrayToStirng(child1LastNode) + PathSeparator;
             return new HierarchyId(hierarchyStr);
         }
 
@@ -212,11 +184,7 @@ namespace Microsoft.SqlServer.Types
         /// <returns>An integer that represents the depth of the node this in the tree.</returns>
         public short GetLevel()
         {
-            if (_nodes == null)
-            {
-                return 0;
-            }
-            return (short)_nodes.Length;
+            return (short)GetNodes().Length;
         }
 
         /// <summary>
@@ -236,18 +204,13 @@ namespace Microsoft.SqlServer.Types
         /// <param name="parent">parent</param>
         public bool IsDescendantOf(HierarchyId parent)
         {
-            if (parent == null)
-            {
-                return true;
-            }
-            if (_nodes == null
-                || parent.GetLevel() > GetLevel())
+            if (parent.GetLevel() > GetLevel())
             {
                 return false;
             }
             for (int i = 0; i < parent.GetLevel(); i++)
             {
-                int cmp = CompareIntArrays(_nodes[i], parent._nodes[i]);
+                int cmp = CompareIntArrays(GetNodes()[i], parent.GetNodes()[i]);
                 if (cmp != 0)
                 {
                     return false;
@@ -265,11 +228,6 @@ namespace Microsoft.SqlServer.Types
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Reparented")]
         public HierarchyId GetReparentedValue(HierarchyId oldRoot, HierarchyId newRoot)
         {
-            if (oldRoot == null
-                || newRoot == null)
-            {
-                return new HierarchyId();
-            }
             if (!IsDescendantOf(oldRoot))
             {
                 throw new ArgumentException(
@@ -277,12 +235,12 @@ namespace Microsoft.SqlServer.Types
             }
             StringBuilder sb = new StringBuilder();
             sb.Append(PathSeparator);
-            foreach (var node in newRoot._nodes)
+            foreach (var node in newRoot.GetNodes())
             {
                 sb.Append(IntArrayToStirng(node));
                 sb.Append(PathSeparator);
             }
-            foreach (var node in _nodes.Skip(oldRoot.GetLevel()))
+            foreach (var node in GetNodes().Skip(oldRoot.GetLevel()))
             {
                 sb.Append(IntArrayToStirng(node));
                 sb.Append(PathSeparator);
@@ -342,17 +300,8 @@ namespace Microsoft.SqlServer.Types
         /// </returns>
         public static int Compare(HierarchyId hid1, HierarchyId hid2)
         {
-            var nodes1 = (object)hid1 == null ? null : hid1._nodes;
-            var nodes2 = (object)hid2 == null ? null : hid2._nodes;
-
-            if (nodes1 == null && nodes2 == null)
-                return 0;
-
-            if (nodes1 == null)
-                return -1;
-
-            if (nodes2 == null)
-                return 1;
+            var nodes1 = hid1.GetNodes();
+            var nodes2 = hid2.GetNodes();
 
             int count = Math.Min(nodes1.Length, nodes2.Length);
             for (int i = 0; i < count; i++)
@@ -365,10 +314,10 @@ namespace Microsoft.SqlServer.Types
 
             }
 
-            if (hid1._nodes.Length > count)
+            if (nodes1.Length > count)
                 return 1;
 
-            if (hid2._nodes.Length > count)
+            if (nodes2.Length > count)
                 return -1;
 
             return 0;
@@ -435,7 +384,7 @@ namespace Microsoft.SqlServer.Types
         /// </summary>
         /// <param name="other"> the HierarchyId to compare against this instance </param>
         /// <returns> true if this instance is equal to the given HierarchyId, and false otherwise </returns>
-        public bool Equals(HierarchyId other) => Compare(this, other) != 0;
+        public bool Equals(HierarchyId other) => Compare(this, other) == 0;
 
         /// <summary>
         ///     Returns a value-based hash code, to allow HierarchyId to be used in hash tables.
@@ -443,7 +392,7 @@ namespace Microsoft.SqlServer.Types
         /// <returns> the hash value of this HierarchyId </returns>
         public override int GetHashCode()
         {
-            return (_hierarchyId != null ? _hierarchyId.GetHashCode() : 0);
+            return this.ToString().GetHashCode();
         }
 
         /// <summary>
@@ -462,7 +411,7 @@ namespace Microsoft.SqlServer.Types
         /// <returns>A string representation of the hierarchyid value.</returns>
         public override string ToString()
         {
-            return _hierarchyId;
+            return this._hierarchyId ?? PathSeparator;
         }
 
         /// <summary>

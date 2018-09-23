@@ -12,7 +12,7 @@ namespace Microsoft.SqlServer.Types
 {
 
     [SqlUserDefinedType(Format.UserDefined, IsByteOrdered = true, MaxByteSize = 892, Name = "SqlHierarchyId")]
-    public struct SqlHierarchyId : IBinarySerialize, INullable, IComparable
+    public struct SqlHierarchyId : IBinarySerialize, IComparable, IEquatable<SqlHierarchyId>
     {
         HierarchyId imp;
         
@@ -20,10 +20,6 @@ namespace Microsoft.SqlServer.Types
         {
             this.imp = imp;
         }
-
-        public static SqlHierarchyId Null => new SqlHierarchyId();
-
-        public bool IsNull => imp.IsNull;
 
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
         public static SqlHierarchyId GetRoot() => new SqlHierarchyId(HierarchyId.GetRoot());
@@ -37,11 +33,13 @@ namespace Microsoft.SqlServer.Types
 
         public override bool Equals(object obj) => Equals((SqlHierarchyId)obj);
 
+        public bool Equals(SqlHierarchyId other) => this.imp.Equals(other.imp);
+
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
         public SqlHierarchyId GetAncestor(int n) => new SqlHierarchyId(imp.GetAncestor(n));
 
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = true, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(imp.GetDescendant(child1.imp, child2.imp));
+        public SqlHierarchyId GetDescendant(SqlHierarchyId? child1, SqlHierarchyId? child2) => new SqlHierarchyId(imp.GetDescendant(child1?.imp, child2?.imp));
 
         public override int GetHashCode() => imp.GetHashCode();
 
@@ -133,5 +131,7 @@ namespace Microsoft.SqlServer.Types
 
             this.imp = new HierarchyId(result.Select(a => a.ToArray()).ToArray());
         }
+
+      
     }
 }
