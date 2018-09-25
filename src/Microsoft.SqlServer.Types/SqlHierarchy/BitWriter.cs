@@ -5,17 +5,18 @@ namespace Microsoft.SqlServer.Types
 {
     internal class BitWriter
     {
-        BinaryWriter writer;
-        byte nextByte;
-        int nextLength;
+        private BinaryWriter _writer;
+        private byte _nextByte;
+        private int _nextLength;
+
         public BitWriter(BinaryWriter w)
         {
-            this.writer = w;
+            _writer = w;
         }
 
         public void Write(ulong value, int valueLength)
         {
-            int nextByteRemaining = (8 - nextLength);
+            int nextByteRemaining = (8 - _nextLength);
 
             int pos = 0; 
             for (; pos <= valueLength - 8; pos += 8)
@@ -23,48 +24,48 @@ namespace Microsoft.SqlServer.Types
                 int valueOffset = valueLength - pos - 8;
                 byte b = (byte)((((ulong)0xFF << valueOffset) & value) >> valueOffset);
                 
-                byte mayorPart = (byte)(b >> nextLength);
+                byte mayorPart = (byte)(b >> _nextLength);
                 byte minorPart = (byte)(b << nextByteRemaining);
 
-                writer.Write((byte)(nextByte | mayorPart));
+                _writer.Write((byte)(_nextByte | mayorPart));
 
-                nextByte = minorPart;
+                _nextByte = minorPart;
             }
             
             var remainingLength = valueLength - pos;
 
             var remainingByte = (byte)(value & (ushort)(0xFF >> (8 - remainingLength)));
 
-            var diff = 8 - (nextLength + remainingLength);
+            var diff = 8 - (_nextLength + remainingLength);
             if (diff > 0)
             {
-                nextByte |= (byte)(remainingByte << diff);
-                nextLength += remainingLength;
+                _nextByte |= (byte)(remainingByte << diff);
+                _nextLength += remainingLength;
             }
             else if (diff == 0)
             {
-                writer.Write((byte)(nextByte | remainingByte));
-                nextLength = 0;
-                nextByte = 0;
+                _writer.Write((byte)(_nextByte | remainingByte));
+                _nextLength = 0;
+                _nextByte = 0;
             }
             else if (diff < 0)
             {
                 //Finish Byte
 
                 byte mayorPart = (byte)(remainingByte >> -diff);
-                writer.Write((byte)(nextByte | mayorPart));
+                _writer.Write((byte)(_nextByte | mayorPart));
 
 
                 //Create new Byte
-                nextByte = (byte)(remainingByte << (8 + diff));
-                nextLength = -diff;
+                _nextByte = (byte)(remainingByte << (8 + diff));
+                _nextLength = -diff;
             }
         }
 
         public void Finish()
         {
-            if (nextLength > 0)
-                writer.Write((byte)nextByte);
+            if (_nextLength > 0)
+                _writer.Write((byte)_nextByte);
         }
     }
 }

@@ -6,26 +6,29 @@ namespace Microsoft.SqlServer.Types
 {
     internal class BitReader
     {
-        byte[] bytes;
-        int bitPosition;
+        private byte[] _bytes;
+        private int _bitPosition;
 
-        public int Remaining => bytes.Length * 8 - BitPosition;
+        public int Remaining => _bytes.Length * 8 - BitPosition;
 
-        public int BitPosition => bitPosition;
+        public int BitPosition => _bitPosition;
 
-        public BitReader(BinaryReader r)
+        internal BitReader(BinaryReader r)
         {
-            bytes = r.BaseStream.ReadAllBytes();
+            var stream = r.BaseStream;
+            var length = (int)stream.Length;
+            _bytes = new byte[length];
+            stream.Read(_bytes, 0, length);
         }
 
-        public ulong Read(int numBits)
+        internal ulong Read(int numBits)
         {
             var result = Peek(numBits);
-            bitPosition += numBits;
+            _bitPosition += numBits;
             return result;
         }
 
-        public ulong Peek(int numBits)
+        internal ulong Peek(int numBits)
         {
             if (numBits == 0)
                 return 0;
@@ -39,7 +42,7 @@ namespace Microsoft.SqlServer.Types
 
                 var mask = (ulong)0xFF >> (8 - numBits) << offset;
 
-                return (ulong)(bytes[currentByte] & mask) >> offset;
+                return (ulong)(_bytes[currentByte] & mask) >> offset;
             }
             else
             {
@@ -54,19 +57,19 @@ namespace Microsoft.SqlServer.Types
                 {
                     var startMask = (ulong)0xFF >> startOffset;
 
-                    result = (bytes[currentByte] & startMask);
+                    result = (_bytes[currentByte] & startMask);
                 }
 
                 for (int i = firstCompleteByte; i < lastCompleteByte; i++)
                 {
-                    result = result << 8 | bytes[i];
+                    result = result << 8 | _bytes[i];
                 }
             
                 if (endOffset > 0)
                 {
                     var endMastk = (ulong)(0xFF >> (8 - endOffset)) << (8 - endOffset);
 
-                    result = result << endOffset | (ulong)(endMastk & bytes[newByte]) >> (8 - endOffset);
+                    result = result << endOffset | (ulong)(endMastk & _bytes[newByte]) >> (8 - endOffset);
                 }
 
                 return result;
@@ -75,20 +78,8 @@ namespace Microsoft.SqlServer.Types
 
         public override string ToString()
         {
-            var result = string.Join(" ", this.bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
-            result = result.Insert(bitPosition + (bitPosition / 8), "|");
-            return result;
-        }
-    }
-
-    internal static class StreamExtensions
-    {
-        public static byte[] ReadAllBytes(this Stream stream)
-        {
-            var length = (int)stream.Length;
-            var result = new byte[length];
-            stream.Read(result, 0, length);
-            return result;
+            var result = string.Join(" ", _bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
+            return result.Insert(_bitPosition + (_bitPosition / 8), "|");
         }
     }
 }

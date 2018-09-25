@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Microsoft.SqlServer.Types.SqlHierarchy
 {
-    static class KnownPatterns
+    internal static class KnownPatterns
     {
         //http://www.adammil.net/blog/v100_how_the_SQL_Server_hierarchyid_data_type_works_kind_of_.html
-        static BitPattern[] PositivePatterns = new[]
+        private static BitPattern[] PositivePatterns = new[]
         {
             new BitPattern(0, 3, "01xxT"),
             new BitPattern(4, 7, "100xxT"),
@@ -19,7 +19,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(5200, 4294972495, "111110xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
-        static BitPattern[] NegativePatterns = new[]
+        private static BitPattern[] NegativePatterns = new[]
         {
             new BitPattern(-8, -1, "00111xxxT"),
             new BitPattern(-72, -9, "0010xx0x1xxxT"),
@@ -27,7 +27,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(-4294971464, -4169, "000101xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
-        public static BitPattern GetPatternByValue(int value)
+        internal static BitPattern GetPatternByValue(int value)
         {
             if (value >= 0)
             {
@@ -51,7 +51,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             }
         }
 
-        public static BitPattern GetPatternByPrefix(BitReader bitR)
+        internal static BitPattern GetPatternByPrefix(BitReader bitR)
         {
             var remaining = bitR.Remaining;
 
@@ -88,6 +88,5 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                 throw new InvalidCastException("No pattern found for: " + Convert.ToString((int)bitR.Peek(remaining), 2).PadLeft(remaining, '0'));
             }
         }
-
     }
 }

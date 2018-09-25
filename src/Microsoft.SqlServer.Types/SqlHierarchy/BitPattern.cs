@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 
 namespace Microsoft.SqlServer.Types
 {
-    class BitPattern
+    internal class BitPattern
     {
-        public BitPattern(long minValue, long maxValue, string pattern)
+        internal BitPattern(long minValue, long maxValue, string pattern)
         {
             MinValue = minValue;
             MaxValue = maxValue;
@@ -22,7 +22,7 @@ namespace Microsoft.SqlServer.Types
             Pattern = pattern;
         }
 
-        ulong GetBitMask(string pattern, Func<char, bool> isOne)
+        private ulong GetBitMask(string pattern, Func<char, bool> isOne)
         {
             ulong result = 0;
             foreach (char c in pattern)
@@ -30,16 +30,16 @@ namespace Microsoft.SqlServer.Types
             return result;
         }
 
-        public long MinValue { get; }
-        public long MaxValue { get; }
-        public string Pattern { get; }
+        internal long MinValue { get; }
+        internal long MaxValue { get; }
+        internal string Pattern { get; }
 
-        public ulong PatternOnes { get; }
-        public ulong PatternMask { get; }
-        public int BitLength { get; }
+        internal ulong PatternOnes { get; }
+        internal ulong PatternMask { get; }
+        internal int BitLength { get; }
 
-        public ulong PrefixOnes { get; }
-        public int PrefixBitLength { get; }
+        internal ulong PrefixOnes { get; }
+        internal int PrefixBitLength { get; }
 
         internal bool ContainsValue(int value)
         {
@@ -60,7 +60,7 @@ namespace Microsoft.SqlServer.Types
             return value;
         }
 
-        ulong Expand(ulong mask, int value)
+        private ulong Expand(ulong mask, int value)
         {
             if (mask == 0)
                 return 0;
@@ -71,7 +71,7 @@ namespace Microsoft.SqlServer.Types
             return Expand(mask >> 1, value) << 1;
         }
 
-        public int Decode(ulong encodedValue, out bool isLast)
+        internal int Decode(ulong encodedValue, out bool isLast)
         {
             var decodedValue = Compress(encodedValue, PatternMask);
 
@@ -79,7 +79,7 @@ namespace Microsoft.SqlServer.Types
             return (int)((isLast ? decodedValue : decodedValue - 1) + MinValue);
         }
 
-        long Compress(ulong value, ulong mask)
+        private long Compress(ulong value, ulong mask)
         {
             if (mask == 0)
                 return 0;

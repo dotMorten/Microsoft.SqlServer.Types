@@ -6,13 +6,13 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.SqlServer.Types
+namespace Microsoft.SqlServer.Types.SqlHierarchy
 {
     /// <summary>
     /// Represents hierarchical data.
     /// </summary>
     [Serializable]
-    public struct HierarchyId : IComparable
+    internal struct HierarchyId : IComparable
     {
         private readonly string _hierarchyId;
         private readonly int[][] _nodes;
@@ -86,7 +86,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns a hierarchyid representing the nth ancestor of this.
+        /// Returns a hierarchyid representing the nth ancestor of this.
         /// </summary>
         /// <returns>A hierarchyid representing the nth ancestor of this.</returns>
         /// <param name="n">n</param>
@@ -104,7 +104,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns a child node of the parent.
+        /// Returns a child node of the parent.
         /// </summary>
         /// <param name="child1"> null or the hierarchyid of a child of the current node. </param>
         /// <param name="child2"> null or the hierarchyid of a child of the current node. </param>
@@ -179,7 +179,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns an integer that represents the depth of the node this in the tree.
+        /// Returns an integer that represents the depth of the node this in the tree.
         /// </summary>
         /// <returns>An integer that represents the depth of the node this in the tree.</returns>
         public short GetLevel()
@@ -188,7 +188,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns the root of the hierarchy tree.
+        /// Returns the root of the hierarchy tree.
         /// </summary>
         /// <returns>The root of the hierarchy tree.</returns>
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
@@ -198,7 +198,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns true if this is a descendant of parent.
+        /// Returns true if this is a descendant of parent.
         /// </summary>
         /// <returns>True if this is a descendant of parent.</returns>
         /// <param name="parent">parent</param>
@@ -220,7 +220,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns a node whose path from the root is the path to newRoot, followed by the path from oldRoot to this.
+        /// Returns a node whose path from the root is the path to newRoot, followed by the path from oldRoot to this.
         /// </summary>
         /// <returns>Hierarchyid value.</returns>
         /// <param name="oldRoot">oldRoot</param>
@@ -249,7 +249,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Converts the canonical string representation of a hierarchyid to a hierarchyid value.
+        /// Converts the canonical string representation of a hierarchyid to a hierarchyid value.
         /// </summary>
         /// <returns>Hierarchyid value.</returns>
         /// <param name="input">input</param>
@@ -288,15 +288,15 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
         /// <returns> 
-        ///     A 32-bit signed integer that indicates the lexical relationship between the two comparands.
-        ///     Value Condition Less than zero: hid1 is less than hid2. 
-        ///     Zero: hid1 equals hid2. 
-        ///     Greater than zero: hid1 is greater than hid2. 
+        /// A 32-bit signed integer that indicates the lexical relationship between the two comparands.
+        /// Value Condition Less than zero: hid1 is less than hid2. 
+        /// Zero: hid1 equals hid2. 
+        /// Greater than zero: hid1 is greater than hid2. 
         /// </returns>
         public static int Compare(HierarchyId hid1, HierarchyId hid2)
         {
@@ -324,47 +324,47 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
         /// <returns> 
-        ///     true if the the first parameter is less than the second parameter, false otherwise 
+        /// true if the the first parameter is less than the second parameter, false otherwise 
         /// </returns>
         public static bool operator <(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) <  0;
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
         /// <returns> 
-        ///     true if the the first parameter is greater than the second parameter, false otherwise 
+        /// true if the the first parameter is greater than the second parameter, false otherwise 
         /// </returns>
         public static bool operator >(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) > 0;
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
         /// <returns> 
-        ///     true if the the first parameter is less or equal than the second parameter, false otherwise 
+        /// true if the the first parameter is less or equal than the second parameter, false otherwise 
         /// </returns>
         public static bool operator <=(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) <= 0;
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
         /// <returns> 
-        ///     true if the the first parameter is greater or equal than the second parameter, false otherwise 
+        ///      true if the the first parameter is greater or equal than the second parameter, false otherwise 
         /// </returns>
         public static bool operator >=(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) <= 0;
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
@@ -372,7 +372,7 @@ namespace Microsoft.SqlServer.Types
         public static bool operator ==(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) == 0;
 
         /// <summary>
-        ///     Compares two HierarchyIds by their values.
+        /// Compares two HierarchyIds by their values.
         /// </summary>
         /// <param name="hid1"> a HierarchyId to compare </param>
         /// <param name="hid2"> a HierarchyId to compare </param>
@@ -380,23 +380,23 @@ namespace Microsoft.SqlServer.Types
         public static bool operator !=(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) != 0;
 
         /// <summary>
-        ///     Compares this instance to a given HierarchyId by their values.
+        /// Compares this instance to a given HierarchyId by their values.
         /// </summary>
         /// <param name="other"> the HierarchyId to compare against this instance </param>
         /// <returns> true if this instance is equal to the given HierarchyId, and false otherwise </returns>
         public bool Equals(HierarchyId other) => Compare(this, other) == 0;
 
         /// <summary>
-        ///     Returns a value-based hash code, to allow HierarchyId to be used in hash tables.
+        /// Returns a value-based hash code, to allow HierarchyId to be used in hash tables.
         /// </summary>
         /// <returns> the hash value of this HierarchyId </returns>
         public override int GetHashCode()
         {
-            return this.ToString().GetHashCode();
+            return ToString().GetHashCode();
         }
 
         /// <summary>
-        ///     Compares this instance to a given HierarchyId by their values.
+        /// Compares this instance to a given HierarchyId by their values.
         /// </summary>
         /// <param name="obj"> the HierarchyId to compare against this instance </param>
         /// <returns> true if this instance is equal to the given HierarchyId, and false otherwise </returns>
@@ -406,12 +406,12 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        ///     Returns a string representation of the hierarchyid value.
+        /// Returns a string representation of the hierarchyid value.
         /// </summary>
         /// <returns>A string representation of the hierarchyid value.</returns>
         public override string ToString()
         {
-            return this._hierarchyId ?? PathSeparator;
+            return _hierarchyId ?? PathSeparator;
         }
 
         /// <summary>

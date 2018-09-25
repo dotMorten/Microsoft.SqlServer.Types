@@ -137,7 +137,6 @@ namespace Microsoft.SqlServer.Types.Tests
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = $"SELECT * FROM {table}";
-                    var p = cmd.CreateParameter();
                     using (var reader = cmd.ExecuteReader())
                     {
                         int geomColumn = 0;
@@ -259,33 +258,6 @@ namespace Microsoft.SqlServer.Types.Tests
                     Assert.Equal(1, cmd.ExecuteScalar());
                 }
             }
-        }
-    }
-
-    internal static class StreamExtensions
-    {
-        public static byte[] ReadAllBytes(this Stream stream)
-        {
-            var length = (int)stream.Length;
-            var result = new byte[length];
-            stream.Read(result, 0, length);
-            return result;
-        }
-
-        public static byte[] WriteAllBytes(this IBinarySerialize obj)
-        {
-            using (var ms = new MemoryStream())
-            using (var bw = new BinaryWriter(ms))
-            {
-                obj.Write(bw);
-                return ms.ToArray();
-            }
-        }
-
-        public static string ToBinaryString(this byte[] bytes)
-        {
-            var result = string.Join(" ", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
-            return result;
         }
     }
 }
