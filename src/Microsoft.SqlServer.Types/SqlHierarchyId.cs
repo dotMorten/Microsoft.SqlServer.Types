@@ -326,5 +326,22 @@ namespace Microsoft.SqlServer.Types
         /// <returns></returns>
         /// <remarks>Returns null if either <paramref name="hid1"/> or <paramref name="hid2"/> are null.</remarks>
         public static SqlBoolean operator >=(SqlHierarchyId hid1, SqlHierarchyId hid2) => hid1.IsNull || hid2.IsNull ? SqlBoolean.Null : hid1._imp >= hid2._imp;
+
+        public static SqlHierarchyId Deserialize(SqlBytes bytes)
+        {
+            using (var r = new BinaryReader(bytes.Stream))
+            {
+                var hid = new SqlHierarchyId(new HierarchyId());
+                hid.Read(r);
+                return hid;
+            }
+        }
+
+        public SqlBytes Serialize()
+        {
+            SqlBytes b = new SqlBytes();
+            Write(new BinaryWriter(b.Stream));
+            return b;
+        }
     }
 }
