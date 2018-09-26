@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Authors>Morten Nielsen</Authors>
+    <Description>Allows you to use SQL Server spatial SqlHierarchy types on a machine without SQL Server installed and decode these UDT types in any .NET Standard client</Description>
+    <PackageTags>SqlGeometry, SqlGeography, SqlHierarchy, SqlServer, UDT</PackageTags>
+    <RepositoryUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/dotMorten/Microsoft.SqlServer.Types/master/LICENSE</PackageLicenseUrl>
+    <Copyright>(C) 2018 - Morten Nielsen</Copyright>
+    <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
