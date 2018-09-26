@@ -363,9 +363,11 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public SqlBytes Serialize()
         {
-            SqlBytes b = new SqlBytes();
-            Write(new BinaryWriter(b.Stream));
-            return b;
+            using (var ms = new MemoryStream())
+            {
+                Write(new BinaryWriter(ms));
+                return new SqlBytes(ms.ToArray());
+            }
         }
 
         public override string ToString() => WktWriter.Write(_geometry);

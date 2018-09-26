@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient">
-      <Version>4.5.0-preview2-26406-04</Version>
+      <Version>4.5.1</Version>
     </PackageReference>
   </ItemGroup>
 </Project>
