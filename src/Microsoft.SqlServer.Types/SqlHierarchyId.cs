@@ -339,9 +339,11 @@ namespace Microsoft.SqlServer.Types
 
         public SqlBytes Serialize()
         {
-            SqlBytes b = new SqlBytes();
-            Write(new BinaryWriter(b.Stream));
-            return b;
+            using (var ms = new MemoryStream())
+            {
+                Write(new BinaryWriter(ms));
+                return new SqlBytes(ms.ToArray());
+            }
         }
     }
 }
