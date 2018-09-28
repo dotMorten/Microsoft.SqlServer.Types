@@ -20,7 +20,8 @@ IF OBJECT_ID('dbo.streams', 'U') IS NOT NULL DROP TABLE streams;
 IF OBJECT_ID('dbo.buildings', 'U') IS NOT NULL DROP TABLE buildings;
 IF OBJECT_ID('dbo.ponds', 'U') IS NOT NULL DROP TABLE ponds; 
 IF OBJECT_ID('dbo.named_places', 'U') IS NOT NULL DROP TABLE named_places;
-IF OBJECT_ID('dbo.map_neatlines', 'U') IS NOT NULL DROP TABLE map_neatlines;";
+IF OBJECT_ID('dbo.map_neatlines', 'U') IS NOT NULL DROP TABLE map_neatlines;
+IF OBJECT_ID('dbo.employees', 'U') IS NOT NULL DROP TABLE employees;";
 
         public static string CreateTables = @"
 -- Lakes
@@ -42,7 +43,9 @@ CREATE TABLE ponds (fid INTEGER NOT NULL PRIMARY KEY,name VARCHAR(64),type VARCH
 -- Named Places
 CREATE TABLE named_places (fid INTEGER NOT NULL PRIMARY KEY,name VARCHAR(64),boundary Geometry);
 -- Map Neatline
-CREATE TABLE map_neatlines (fid INTEGER NOT NULL PRIMARY KEY,neatline Geometry);";
+CREATE TABLE map_neatlines (fid INTEGER NOT NULL PRIMARY KEY,neatline Geometry);
+-- Employees
+CREATE TABLE employees (fid INTEGER NOT NULL IDENTITY PRIMARY KEY, OrgNode hierarchyid NULL) ";
 
         public static string CreateRows = @"
 -- Lakes
@@ -71,7 +74,75 @@ INSERT INTO ponds VALUES(120, NULL, 'Stock Pond',Geometry::STMPolyFromText('MULT
 INSERT INTO named_places VALUES(117, 'Ashton',Geometry::STPolyFromText('POLYGON( ( 62 48, 84 48, 84 30, 56 30, 56 34, 62 48) )', 101));
 INSERT INTO named_places VALUES(118, 'Goose Island',Geometry::STPolyFromText('POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )', 101));
 -- Map Neatlines
-INSERT INTO map_neatlines VALUES(115,Geometry::STPolyFromText('POLYGON( ( 0 0, 0 48, 84 48, 84 0, 0 0 ) )', 101));";
+INSERT INTO map_neatlines VALUES(115,Geometry::STPolyFromText('POLYGON( ( 0 0, 0 48, 84 48, 84 0, 0 0 ) )', 101));
+-- Employees
+INSERT INTO employees VALUES(null);
+INSERT INTO employees VALUES('/');
+INSERT INTO employees VALUES('/0/');
+INSERT INTO employees VALUES('/1/');
+INSERT INTO employees VALUES('/2/');
+INSERT INTO employees VALUES('/3/');
+INSERT INTO employees VALUES('/4/');
+INSERT INTO employees VALUES('/5/');
+INSERT INTO employees VALUES('/6/');
+INSERT INTO employees VALUES('/8/');
+INSERT INTO employees VALUES('/9/');
+INSERT INTO employees VALUES('/10/');
+INSERT INTO employees VALUES('/11/');
+INSERT INTO employees VALUES('/12/');
+INSERT INTO employees VALUES('/13/');
+INSERT INTO employees VALUES('/14/');
+INSERT INTO employees VALUES('/16/');
+INSERT INTO employees VALUES('/72/');
+INSERT INTO employees VALUES('/80/');
+INSERT INTO employees VALUES('/1088/');
+INSERT INTO employees VALUES('/1104/');
+INSERT INTO employees VALUES('/2128/');
+INSERT INTO employees VALUES('/3152/');
+INSERT INTO employees VALUES('/4176/');
+INSERT INTO employees VALUES('/5199/');
+INSERT INTO employees VALUES('/5200/');
+INSERT INTO employees VALUES('/123123123/');
+INSERT INTO employees VALUES('/2147483647/');
+
+INSERT INTO employees VALUES('/-1/');
+INSERT INTO employees VALUES('/-2/');
+INSERT INTO employees VALUES('/-3/');
+INSERT INTO employees VALUES('/-4/');
+INSERT INTO employees VALUES('/-5/');
+INSERT INTO employees VALUES('/-6/');
+INSERT INTO employees VALUES('/-7/');
+INSERT INTO employees VALUES('/-8/');
+INSERT INTO employees VALUES('/-9/');
+INSERT INTO employees VALUES('/-10/');
+INSERT INTO employees VALUES('/-16/');
+INSERT INTO employees VALUES('/-24/');
+INSERT INTO employees VALUES('/-72/');
+INSERT INTO employees VALUES('/-73/');
+INSERT INTO employees VALUES('/-4168/');
+INSERT INTO employees VALUES('/-2147483648/');
+--INSERT INTO employees VALUES('/-4294971464/');
+
+
+INSERT INTO employees VALUES('/0/0/0/');
+INSERT INTO employees VALUES('/0/1/2/');
+INSERT INTO employees VALUES('/0.0/');
+INSERT INTO employees VALUES('/0.0.0/');
+INSERT INTO employees VALUES('/0.1.2/');
+INSERT INTO employees VALUES('/0.0/0.0/');
+INSERT INTO employees VALUES('/-14.0/');
+INSERT INTO employees VALUES('/-15.0/');
+INSERT INTO employees VALUES('/-100.-120/1.2/');
+";
+
+        /*
+INSERT INTO employees VALUES('/1/', 'Peter');
+INSERT INTO employees VALUES('/1/', 'Peter');
+INSERT INTO employees VALUES('/1/2/', 'Julia');
+INSERT INTO employees VALUES('/2/', 'Sandra');
+INSERT INTO employees VALUES('/2/1/', 'Seven');
+INSERT INTO employees VALUES('/2/1.5/', 'Bill')*/
+
 
     }
 }

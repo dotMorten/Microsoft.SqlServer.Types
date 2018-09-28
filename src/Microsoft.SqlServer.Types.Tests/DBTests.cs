@@ -1,6 +1,12 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -204,6 +210,65 @@ namespace Microsoft.SqlServer.Types.Tests
                     }
                 }
             }
+        }
+
+        [Fact]
+        public void QuerySqlHierarchyId()
+        {
+            List<SqlHierarchyId> hierarchyIds = new List<SqlHierarchyId>();
+            StringBuilder ssb = new StringBuilder();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = $"SELECT OrgNode.ToString(), OrgNode FROM employees";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var str = reader.IsDBNull(0) ? null : reader.GetString(0);
+                        var sqlHierId = reader.IsDBNull(1) ? (SqlHierarchyId?)null : reader.GetFieldValue<SqlHierarchyId>(1);
+
+                        Assert.Equal(str, sqlHierId?.ToString());
+
+                        if (sqlHierId.HasValue)
+                        {
+                            var should = reader.GetSqlBytes(1).Value;
+                            var current = sqlHierId.Value.Serialize();
+
+                            Assert.Equal(should.Length, current.Length);
+                            for (int i = 0; i < should.Length; i++)
+                            {
+                                Assert.Equal(should[i], current[i]);
+                            }
+
+                            hierarchyIds.Add(sqlHierId.Value);
+                        }
+                    }
+                }
+            }
+
+            foreach (var shi in hierarchyIds)
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = $"SELECT Count(*) FROM employees WHERE OrgNode = @p";
+                    var p = cmd.CreateParameter();
+                    p.SqlDbType = SqlDbType.Udt;
+                    p.UdtTypeName = "HierarchyId";
+                    p.ParameterName = "@p";
+                    p.Value = shi;
+                    cmd.Parameters.Add(p);
+
+                    Assert.Equal(1, cmd.ExecuteScalar());
+                }
+            }
+        }
+    }
+    internal static class StreamExtensions
+    {
+        public static string ToBinaryString(this byte[] bytes)
+        {
+            var result = string.Join(" ", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
+            return result;
         }
     }
 }
