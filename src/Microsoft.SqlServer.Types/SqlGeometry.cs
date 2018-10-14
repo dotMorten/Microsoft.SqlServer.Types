@@ -33,6 +33,24 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
+        /// Constructs a <see cref="SqlGeometry"/> instance that represents a Point instance from its X and Y values and an SRID.
+        /// </summary>
+        /// <param name="x">A double that represents the X-coordinate of the Point being generated.</param>
+        /// <param name="y">A double that represents the Y-coordinate of the Point being generated.</param>
+        /// <param name="srid">An int expression that represents the spatial reference ID (SRID) of the <see cref="SqlGeometry"/> instance you wish to return.</param>
+        /// <returns>A <see cref="SqlGeometry"/> instance that represents a point on a Euclidian coordinate system.</returns>
+        [SqlMethod]
+        public static SqlGeometry Point(double x, double y, int srid)
+        {
+            if (!double.IsNaN(x) && !double.IsInfinity(x) && !double.IsNaN(y) && !double.IsInfinity(y))
+            {
+                return new SqlGeometry(new ShapeData(x, y, null, null), srid);
+            }
+            throw new FormatException("Invalid coordinates");
+        }
+
+
+        /// <summary>
         /// Gets the X-coordinate property of a Point instance. 
         /// </summary>
         /// <value>
@@ -329,10 +347,10 @@ namespace Microsoft.SqlServer.Types
             this._geometry.Read(r, 1);
         }
 
-        public void Write(BinaryWriter bw)
+        public void Write(BinaryWriter w)
         {
-            bw.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
-            _geometry.Write(bw);
+            w.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
+            _geometry.Write(w);
         }
 
         public override string ToString() => WktWriter.Write(_geometry);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -232,8 +233,12 @@ namespace Microsoft.SqlServer.Types.Tests
                         if (sqlHierId.HasValue)
                         {
                             var should = reader.GetSqlBytes(1).Value;
-                            var current = sqlHierId.Value.Serialize();
-
+                            SqlBytes current;
+                            using (var ms = new MemoryStream())
+                            {
+                                sqlHierId.Value.Write(new BinaryWriter(ms));
+                                current = new SqlBytes(ms.ToArray());
+                            }
                             Assert.Equal(should.Length, current.Length);
                             for (int i = 0; i < should.Length; i++)
                             {

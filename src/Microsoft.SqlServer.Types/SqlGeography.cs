@@ -22,6 +22,32 @@ namespace Microsoft.SqlServer.Types
             this._geometry = g;
         }
 
+        public SqlGeography()
+        {
+            _geometry = new ShapeData();
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="SqlGeography"/> instance representing a Point instance from its x and y values and a spatial reference ID (SRID).
+        /// </summary>
+        /// <param name="latitude">A double that represents the latitude coordinate of the Point being generated.</param>
+        /// <param name="longitude">A double that represents the longitude coordinate of the Point being generated.</param>
+        /// <param name="srid">An int expression that represents the SRID of the geography instance you wish to return</param>
+        /// <returns>A <see cref="SqlGeography"/> instance constructed from the specified latitude, longitude, and SRID values.</returns>
+        [SqlMethod]
+        public static SqlGeography Point(double latitude, double longitude, int srid)
+        {
+            if (!double.IsNaN(latitude) && !double.IsInfinity(latitude) && !double.IsNaN(longitude) && !double.IsInfinity(longitude))
+            {
+                if (Math.Abs(latitude) > 90.0)
+                    throw new FormatException("latitude is not a valid value");
+                if (Math.Abs(longitude) > 15069.0)
+                    throw new FormatException("longitude is not a valid value");
+                return new SqlGeography(new ShapeData(latitude, longitude, null, null), srid);
+            }
+            throw new FormatException("Invalid coordinates");
+        }
+
         /// <summary>
         /// Returns the longitude property of the geography instance.
         /// </summary>
@@ -343,14 +369,14 @@ namespace Microsoft.SqlServer.Types
         /// </summary>
         /// <param name="bytes">The data representing the spatial data being sent across the network.</param>
         /// <returns>The data being sent over the network.</returns>
-        public static SqlGeometry Deserialize(SqlBytes bytes)
+        public static SqlGeography Deserialize(SqlBytes bytes)
         {
             using (var r = new BinaryReader(bytes.Stream))
             {
                 var srid = r.ReadInt32();
                 var geometry = new ShapeData();
                 geometry.Read(r, 1);
-                return new SqlGeometry(geometry, srid);
+                return new SqlGeography(geometry, srid);
             }
         }
 

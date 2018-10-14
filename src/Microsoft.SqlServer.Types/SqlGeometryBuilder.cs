@@ -47,13 +47,13 @@ namespace Microsoft.SqlServer.Types
         /// <summary>
         /// Retrieves constructed spatial geometry object.
         /// </summary>
-        public SqlGeometry ConstructedGeometry => new SqlGeometry(_builder.ConstructedShapeData, _srid);
+        public virtual SqlGeometry ConstructedGeometry => new SqlGeometry(_builder.ConstructedShapeData, _srid);
 
         /// <summary>
         /// Initializes a call sequence for a geometry type.
         /// </summary>
         /// <param name="type"></param>
-        public void BeginGeometry(OpenGisGeometryType type) => _builder.BeginGeo((OGCGeometryType)type);
+        public virtual void BeginGeometry(OpenGisGeometryType type) => _builder.BeginGeo((OGCGeometryType)type);
 
         /// <summary>
         /// Starts the call sequence for a geometry figure.
@@ -69,7 +69,7 @@ namespace Microsoft.SqlServer.Types
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="m"></param>
-        public void BeginFigure(double x, double y, double? z, double? m)
+        public virtual void BeginFigure(double x, double y, double? z, double? m)
         {
             if (double.IsNaN(x))
                 throw new ArgumentException(nameof(x));
@@ -93,7 +93,7 @@ namespace Microsoft.SqlServer.Types
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <param name="m"></param>
-        public void AddLine(double x, double y, double? z, double? m)
+        public virtual void AddLine(double x, double y, double? z, double? m)
         {
             if (double.IsNaN(x) || double.IsInfinity(x))
                 throw new ArgumentException(nameof(x));
@@ -105,25 +105,27 @@ namespace Microsoft.SqlServer.Types
         /// <summary>
         /// Finishes a call sequence for a geometry figure.
         /// </summary>
-        public void EndFigure() => _builder.EndFigure();
+        public virtual void EndFigure() => _builder.EndFigure();
 
         /// <summary>
         /// Finishes a call sequence for a geometry type.
         /// </summary>
-        public void EndGeometry() => _builder.EndGeo();
+        public virtual void EndGeometry() => _builder.EndGeo();
 
         /// <summary>
         /// Sets the Spatial Reference Identifier (SRID) for a geometry type call sequence.
         /// </summary>
         /// <param name="srid"></param>
-        public void SetSrid(int srid)
+        public virtual void SetSrid(int srid)
         {
             _srid = srid;
         }
 
-        public void AddCircularArc(double x1, double y1, double? z1, double? m1, double x2, double y2, double? z2, double? m2)
+        public virtual void AddCircularArc(double x1, double y1, double? z1, double? m1, double x2, double y2, double? z2, double? m2)
         {
             throw new NotImplementedException();
         }
+
+        public void AddCircularArc(double x1, double y1, double x2, double y2) => AddCircularArc(x1, y2, null, null, x2, y2, null, null);
     }
 }

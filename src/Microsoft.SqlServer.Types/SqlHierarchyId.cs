@@ -136,7 +136,7 @@ namespace Microsoft.SqlServer.Types
         /// </list>
         /// </remarks>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = true, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetDescendant(SqlHierarchyId? child1, SqlHierarchyId? child2) => new SqlHierarchyId(_imp.GetDescendant(child1?._imp, child2?._imp));
+        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(_imp.GetDescendant(child1._imp, child2._imp));
 
         /// <summary>
         /// Gets a hash of the path from the root node of the hierarchy tree to the <see cref="SqlHierarchyId"/> node.
@@ -327,23 +327,23 @@ namespace Microsoft.SqlServer.Types
         /// <remarks>Returns null if either <paramref name="hid1"/> or <paramref name="hid2"/> are null.</remarks>
         public static SqlBoolean operator >=(SqlHierarchyId hid1, SqlHierarchyId hid2) => hid1.IsNull || hid2.IsNull ? SqlBoolean.Null : hid1._imp >= hid2._imp;
 
-        public static SqlHierarchyId Deserialize(SqlBytes bytes)
-        {
-            using (var r = new BinaryReader(bytes.Stream))
-            {
-                var hid = new SqlHierarchyId(new HierarchyId());
-                hid.Read(r);
-                return hid;
-            }
-        }
+        //public static SqlHierarchyId Deserialize(SqlBytes bytes)
+        //{
+        //    using (var r = new BinaryReader(bytes.Stream))
+        //    {
+        //        var hid = new SqlHierarchyId(new HierarchyId());
+        //        hid.Read(r);
+        //        return hid;
+        //    }
+        //}
 
-        public SqlBytes Serialize()
-        {
-            using (var ms = new MemoryStream())
-            {
-                Write(new BinaryWriter(ms));
-                return new SqlBytes(ms.ToArray());
-            }
-        }
+        //public SqlBytes Serialize()
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        Write(new BinaryWriter(ms));
+        //        return new SqlBytes(ms.ToArray());
+        //    }
+        //}
     }
 }

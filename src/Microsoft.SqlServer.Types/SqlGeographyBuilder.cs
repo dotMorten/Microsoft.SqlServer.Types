@@ -15,25 +15,25 @@ namespace Microsoft.SqlServer.Types
             _builder = new ShapeDataBuilder();
         }
 
-        public SqlGeography ConstructedGeography => new SqlGeography(_builder.ConstructedShapeData, _srid);
+        public virtual SqlGeography ConstructedGeography => new SqlGeography(_builder.ConstructedShapeData, _srid);
 
-        public void BeginGeography(OpenGisGeographyType type) => _builder.BeginGeo((OGCGeometryType)type);
+        public virtual void BeginGeography(OpenGisGeographyType type) => _builder.BeginGeo((OGCGeometryType)type);
 
-        public void BeginFigure(double lat, double lon) => BeginFigure(lat, lon, null, null);
+        public void BeginFigure(double latitude, double longitude) => BeginFigure(latitude, longitude, null, null);
 
-        public void BeginFigure(double lat, double lon, double? z, double? m)
+        public virtual void BeginFigure(double latitude, double longitude, double? z, double? m)
         {
-            ValidateLatLon(lat, lon);
+            ValidateLatLon(latitude, longitude);
             _builder.BeginFigure();
-            _builder.AddPoint(lat, lon, z, m);
+            _builder.AddPoint(latitude, longitude, z, m);
         }
 
-        public void AddLine(double lat, double lon) => AddLine(lat, lon, null, null);
+        public void AddLine(double latitude, double longitude) => AddLine(latitude, longitude, null, null);
 
-        public void AddLine(double lat, double lon, double? z, double? m)
+        public virtual void AddLine(double latitude, double longitude, double? z, double? m)
         {
-            ValidateLatLon(lat, lon);
-            _builder.AddPoint(lat, lon, z, m);
+            ValidateLatLon(latitude, longitude);
+            _builder.AddPoint(latitude, longitude, z, m);
         }
 
         private void ValidateLatLon(double lat, double lon)
@@ -48,18 +48,18 @@ namespace Microsoft.SqlServer.Types
                 throw new ArgumentException(nameof(lon));
         }
 
-        public void EndFigure() => _builder.EndFigure();
+        public virtual void EndFigure() => _builder.EndFigure();
 
-        public void EndGeography() => _builder.EndGeo();
+        public virtual void EndGeography() => _builder.EndGeo();
 
-        public void SetSrid(int srid)
+        public virtual void SetSrid(int srid)
         {
             if ((srid < 4120 || srid > 4999) && srid != 104001)
                 throw new ArgumentOutOfRangeException(nameof(srid), "SRID must be between 4120 and 4999 (inclusive)");
             _srid = srid;
         }
 
-        public void AddCircularArc(double x1, double y1, double? z1, double? m1, double x2, double y2, double? z2, double? m2)
+        public virtual void AddCircularArc(double latitude1, double longitude1, double? z1, double? m1, double latitude2, double longitude2, double? z2, double? m2)
         {
             throw new NotImplementedException();
         }
