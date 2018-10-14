@@ -1,6 +1,9 @@
 # Microsoft.SqlServer.Types
 a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Types`
 
+### NuGet:
+
+Install the package `dotMorten.Microsoft.SqlServer.Types` from NuGet.
 
 ### Usage
 
@@ -27,3 +30,7 @@ Instead you'll need to use the `Deserialize` method:
    var binvalue = reader.GetSqlBytes(rowid);
    var geometry = SqlGeometry.Deserialize(binvalue);
 ```
+
+### Notes:
+
+The spatial operations like intersection, area etc are not included here. You can perform these as part of your query instead and get them returned in a column.
