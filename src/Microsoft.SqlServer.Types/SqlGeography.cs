@@ -338,6 +338,69 @@ namespace Microsoft.SqlServer.Types
         [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
         public SqlChars STAsText() => new SqlChars(ToString());
 
+
+        /// <summary>
+        /// Tests if the <see cref="SqlGeography"/> instance is the same as the specified type.
+        /// </summary>
+        /// <param name="geometryType">Specifies the type of geometry that the calling <see cref="SqlGeography"/> will be compared to.</param>
+        /// <returns>A SqlBoolean value indicating if the calling <see cref="SqlGeography"/> is of the specified geometry type.
+        /// Returns true if the type of a <see cref="SqlGeography"/> instance is the same as the specified type, or if the specified 
+        /// type is an ancestor of the instance type. Otherwise, returns false.</returns>
+        /// <remarks>
+        /// The input for the method must be one of the following: Geometry, Point, Curve, LineString, Surface, Polygon, GeometryCollection,
+        /// MultiSurface, MultiPolygon, MultiCurve, MultiLineString, FullGlobe, and MultiPoint. This method throws an ArgumentException if 
+        /// any other strings are used for the input.
+        /// </remarks>
+        [SqlMethod]
+        public SqlBoolean InstanceOf(string geometryType)
+        {
+            if (geometryType == null)
+                throw new ArgumentNullException(nameof(geometryType));
+            if (IsNull)
+            {
+                return SqlBoolean.Null;
+            }
+            if (_geometry.IsValid)
+                throw new ArgumentException("Geometry is not valid");
+
+            string[] array = _parentGeometryTypeNames[(uint)_geometry.Type];
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (string.Compare(geometryType, array[i], StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
+            }
+            for (int j = 0; j < _validGeometryTypeNames.Length; j++)
+            {
+                if (string.Compare(geometryType, _validGeometryTypeNames[j], StringComparison.OrdinalIgnoreCase) == 0)
+                    return false;
+            }
+            throw new ArgumentException("Invalid geometryType name", nameof(geometryType));
+        }
+
+        private static readonly string[] _validGeometryTypeNames = new string[]
+        {
+            "Geometry", "Point", "LineString", "Polygon", "Curve",
+            "Surface", "MultiPoint", "MultiLineString", "MultiPolygon",
+            "MultiCurve", "MultiSurface", "GeometryCollection", "FullGlobe",
+            "CircularString", "CompoundCurve", "CurvePolygon"
+        };
+
+        private static readonly string[][] _parentGeometryTypeNames = new string[][]
+        {
+            new string[] { },
+            new [] { "Geometry", "Point" },
+            new [] { "Geometry", "Curve", "LineString" },
+            new [] { "Geometry", "Surface", "Polygon" },
+            new [] { "Geometry", "GeometryCollection", "MultiPoint" },
+            new [] { "Geometry", "GeometryCollection", "MultiCurve", "MultiLineString" },
+            new [] { "Geometry", "GeometryCollection", "MultiSurface", "MultiPolygon" },
+            new [] { "Geometry", "GeometryCollection" },
+            new [] { "Geometry", "Curve", "CircularString" },
+            new [] { "Geometry", "Curve", "CompounCurve" },
+            new [] { "Geometry", "Surface", "CurvePolygon" },
+            new [] { "Geometry", "FullGlobe" }
+        };
+
         /// <summary>
         /// Reads a binary representation of a geography type into a SqlGeometry object.
         /// </summary>

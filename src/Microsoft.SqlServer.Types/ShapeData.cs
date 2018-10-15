@@ -322,6 +322,8 @@ namespace Microsoft.SqlServer.Types
             this._isValid = fValid;
         }
 
+        internal bool IsValid => _isValid;
+
         [Flags]
         internal enum SerializationProps : byte
         {
