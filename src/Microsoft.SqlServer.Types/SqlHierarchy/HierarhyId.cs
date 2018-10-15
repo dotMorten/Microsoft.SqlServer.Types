@@ -64,7 +64,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             {
                 var nodesStr = hierarchyId.Split('/');
                 if (!string.IsNullOrEmpty(nodesStr[0]) || !string.IsNullOrEmpty(nodesStr[nodesStr.Length - 1]))
-                    throw new ArgumentException( string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
+                    throw new HierarchyIdException( string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
 
                 int nodesCount = nodesStr.Length - 2;
                 var nodes = new int[nodesCount][];
@@ -76,7 +76,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                     for (int j = 0; j < intsStr.Length; j++)
                     {
                         if (!int.TryParse(intsStr[j], out int num))
-                            throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId), "hierarchyId");
+                            throw new HierarchyIdException(string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
                         ints[j] = num;
                     }
                     nodes[i] = ints;

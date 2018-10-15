@@ -116,8 +116,18 @@ namespace Microsoft.SqlServer.Types
         /// If a negative number is passed, an exception is raised indicating that the argument is out of range.
         /// </returns>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetAncestor(int n) => new SqlHierarchyId(_imp.GetAncestor(n));
-
+        public SqlHierarchyId GetAncestor(int n)
+        {
+            if (IsNull)
+            {
+                return Null;
+            }
+            if (n < 0)
+            {
+                throw new ArgumentOutOfRangeException("Argument can't be negative");
+            }
+            return new SqlHierarchyId(_imp.GetAncestor(n));
+        }
         /// <summary>
         /// Gets the value of a descendant <see cref="SqlHierarchyId"/> node that is greater than <paramref name="child1"/> and less than <paramref name="child2"/>.
         /// </summary>
@@ -163,8 +173,18 @@ namespace Microsoft.SqlServer.Types
         /// <para>The <see cref="SqlHierarchyId"/> data type represents but does not enforce the hierarchical structure. Users must ensure that the <see cref="SqlHierarchyId"/> node is appropriately structured for the new location.</para>
         /// </remarks>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetReparentedValue(SqlHierarchyId oldRoot, SqlHierarchyId newRoot) => new SqlHierarchyId(_imp.GetReparentedValue(oldRoot._imp, newRoot._imp));
-
+        public SqlHierarchyId GetReparentedValue(SqlHierarchyId oldRoot, SqlHierarchyId newRoot)
+        {
+            if (!IsNull && !oldRoot.IsNull && !newRoot.IsNull)
+            {
+                if (!IsDescendantOf(oldRoot))
+                {
+                    throw new HierarchyIdException("Instance is not a descendant of 'oldRoot'");
+                }
+                return new SqlHierarchyId(_imp.GetReparentedValue(oldRoot._imp, newRoot._imp));
+            }
+            return Null;
+        }
         /// <summary>
         /// Gets a value indicating whether the <see cref="SqlHierarchyId"/> node is the descendant of the parent.
         /// </summary>
@@ -205,6 +225,10 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public void Write(BinaryWriter w)
         {
+            if (IsNull)
+                throw new HierarchyIdException("Instance cannot be Null");
+            if (w == null)
+                throw new ArgumentNullException(nameof(w));
             BitWriter bw = new BitWriter(w);
 
             var nodes = this._imp.GetNodes();
@@ -241,6 +265,8 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public void Read(BinaryReader r)
         {
+            if (r == null)
+                throw new ArgumentNullException(nameof(r));
             var bitR = new BitReader(r);
             List<List<int>> result = new List<List<int>>();
 
