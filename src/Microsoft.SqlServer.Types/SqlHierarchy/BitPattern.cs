@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Microsoft.SqlServer.Types.Tests")]
-
 namespace Microsoft.SqlServer.Types
 {
     internal class BitPattern

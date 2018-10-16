@@ -85,8 +85,9 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geom = reader.GetSqlBytes(geomColumn);
-                            var g = SqlGeometry.Deserialize(geom);
+                            var geomValue = reader.GetValue(geomColumn);
+                            Assert.IsType<SqlGeometry>(geomValue);
+                            var g = geomValue as SqlGeometry;
                             Assert.False(g.IsNull);
                             Assert.Equal("POINT", g.STGeometryType().Value, true);
                             Assert.Equal(1, g.STNumGeometries().Value);
@@ -117,8 +118,9 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geom = reader.GetSqlBytes(geomColumn);
-                            var g = SqlGeometry.Deserialize(geom);
+                            var geomValue = reader.GetValue(geomColumn);
+                            Assert.IsType<SqlGeometry>(geomValue);
+                            var g = geomValue as SqlGeometry;
                             Assert.False(g.IsNull);
                             Assert.Equal(101, g.STSrid);
                             Assert.Equal(1, g.STNumGeometries().Value);
@@ -145,8 +147,9 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geom = reader.GetSqlBytes(geomColumn);
-                            var g = SqlGeometry.Deserialize(geom);
+                            var geomValue = reader.GetValue(geomColumn);
+                            Assert.IsType<SqlGeometry>(geomValue);
+                            var g = geomValue as SqlGeometry;
                             Assert.False(g.IsNull);
                             Assert.Equal(101, g.STSrid);
                             Assert.Equal(2, g.STNumGeometries().Value);
@@ -174,8 +177,9 @@ namespace Microsoft.SqlServer.Types.Tests
                         if (table == "buildings") geomColumn++; //this table has two columns. Second is polygons
                         while (reader.Read())
                         {
-                            var geom = reader.GetSqlBytes(geomColumn);
-                            var g = SqlGeometry.Deserialize(geom);
+                            var geomValue = reader.GetValue(geomColumn);
+                            Assert.IsType<SqlGeometry>(geomValue);
+                            var g = geomValue as SqlGeometry;
                             Assert.False(g.IsNull);
                             Assert.Equal(101, g.STSrid);
                             Assert.Equal(1, g.STNumGeometries().Value);
@@ -201,8 +205,9 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geom = reader.GetSqlBytes(geomColumn);
-                            var g = SqlGeometry.Deserialize(geom);
+                            var geomValue = reader.GetValue(geomColumn);
+                            Assert.IsType<SqlGeometry>(geomValue);
+                            var g = geomValue as SqlGeometry;
                             Assert.False(g.IsNull);
                             Assert.Equal(101, g.STSrid);
                             Assert.Equal(2, g.STNumGeometries().Value);
@@ -226,6 +231,9 @@ namespace Microsoft.SqlServer.Types.Tests
                     while (reader.Read())
                     {
                         var str = reader.IsDBNull(0) ? null : reader.GetString(0);
+                        var value = reader.GetValue(1);
+                        if(!reader.IsDBNull(0))
+                            Assert.IsType<SqlHierarchyId>(value);
                         var sqlHierId = reader.IsDBNull(1) ? (SqlHierarchyId?)null : reader.GetFieldValue<SqlHierarchyId>(1);
 
                         Assert.Equal(str, sqlHierId?.ToString());

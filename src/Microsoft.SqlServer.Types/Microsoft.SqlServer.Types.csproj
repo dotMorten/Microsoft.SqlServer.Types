@@ -14,6 +14,9 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/dotMorten/Microsoft.SqlServer.Types/master/LICENSE</PackageLicenseUrl>
     <Copyright>(C) 2018 - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>

@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="BitPattern.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="BitReader.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="BitWriter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0-preview-20180320-02" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
