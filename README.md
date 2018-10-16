@@ -23,12 +23,12 @@ The geometry will automatically be correctly serialized.
 
 **Reading geometry and geography**
 
-Due to the "real" `Microsoft.SqlServer.Types` assembly isn't available, the types won't be deserialized automatically.
-Instead you'll need to use the `Deserialize` method:
+Use the common methods for getting fields of specific types:
 
 ```cs
-   var binvalue = reader.GetSqlBytes(rowid);
-   var geometry = SqlGeometry.Deserialize(binvalue);
+   var geom1 = reader.GetValue(geomColumn) as SqlGeometry;
+   var geom2 = reader.GetFieldValue<SqlGeometry>(geomColumn);
+   var geom3 =  = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn)); //Avoids any potential assembly-redirect issue. See https://docs.microsoft.com/en-us/sql/sql-server/install/warning-about-client-side-usage-of-geometry-geography-and-hierarchyid?view=sql-server-2014#corrective-action
 ```
 
 ### Notes:
