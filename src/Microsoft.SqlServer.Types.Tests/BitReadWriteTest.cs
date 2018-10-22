@@ -13,6 +13,8 @@ namespace src
     public class BitReadWriteTest
     {
         [TestMethod]
+        [TestCategory("SqlHierarchyId")]
+        [TestCategory("Serialize")]
         public void TestBitWriter()
         {
             using(MemoryStream ms = new MemoryStream())
@@ -44,6 +46,8 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlHierarchyId")]
+        [TestCategory("Deserialize")]
         public void TestBitReader()
         {
             byte[] array = "10011100 00111110 00000111 11110000 00001111 11111000 00000001 11111111 11000000".Split(' ').Select(a => (byte)Convert.ToInt32(a, 2)).ToArray();

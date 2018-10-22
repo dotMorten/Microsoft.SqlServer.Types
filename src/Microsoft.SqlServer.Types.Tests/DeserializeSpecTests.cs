@@ -9,9 +9,11 @@ namespace src
     /// Deserialize tests based on examples in the UDT specification
     /// </summary>
     [TestClass]
+    [TestCategory("Deserialize")]
     public class DeserializeSpecTests
     {
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestEmptyPoint()
         {
             var d = double.NaN;
@@ -30,6 +32,7 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestPoint()
         {
             var point = CreateBytes(4326, (byte)0x01, (byte)0x0C, 5d, 10d);
@@ -45,6 +48,7 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestLineString()
         {
             var line = CreateBytes(4326, (byte)0x01, (byte)0x05,
@@ -83,6 +87,7 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestGeometryCollection()
         {
             var coll = CreateBytes(4326, (byte)0x01, (byte)0x04,
@@ -117,6 +122,7 @@ namespace src
 
         [TestMethod]
         [ExpectedException(typeof(FormatException))]
+        [TestCategory("SqlGeometry")]
         public void TestCurvePolygon()
         {
             //TODO: Curve support not complete
@@ -135,6 +141,7 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlHierarchyId")]
         public void TestSqlHiarchy1()
         {
             // The first child of the root node, with a logical representation of / 1 /, is represented as the following bit sequence:
@@ -153,6 +160,7 @@ namespace src
         }
 
         [TestMethod]
+        [TestCategory("SqlHierarchyId")]
         public void TestSqlHiarchy2()
         {
             // As a more complicated example, the node with logical representation / 1 / -2.18 / (the child with label - 2.18 of the child with label 1 of the root node) is represented as the following sequence of bits(a space has been inserted after every grouping of 8 bits to make the sequence easier to follow):
@@ -167,22 +175,6 @@ namespace src
                 hid.Read(r);
             }
             Assert.AreEqual("/1/-2.18/", hid.ToString());
-        }
-
-        [TestMethod]
-        public void InsertFirstChild()
-        {
-            var id = Microsoft.SqlServer.Types.SqlHierarchyId.GetRoot();
-            var idChild = id.GetDescendant(SqlHierarchyId.Null, SqlHierarchyId.Null);
-            Assert.AreEqual(id, idChild.GetAncestor(1));
-        }
-
-        [TestMethod]
-        public void GetParentOfRootNode()
-        {
-            var root = SqlHierarchyId.GetRoot();
-            var parent = root.GetAncestor(1);
-            Assert.IsTrue(parent.IsNull);
         }
 
         private static byte[] CreateBytes(params object[] data)

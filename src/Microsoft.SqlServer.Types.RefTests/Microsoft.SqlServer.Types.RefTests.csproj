@@ -59,6 +59,9 @@
       <Link>OgcConformanceMap.cs</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="..\Microsoft.SqlServer.Types.Tests\SqlHierarchyIdTests.cs">
+      <Link>SqlHierarchyIdTests.cs</Link>
+    </Compile>
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs">
       <Link>BitPattern.cs</Link>
     </Compile>

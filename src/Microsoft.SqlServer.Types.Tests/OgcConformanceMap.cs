@@ -8,7 +8,7 @@ namespace Microsoft.SqlServer.Types.Tests
     /// Generates the OGC Conformance map in the test database.
     /// Source: http://sharpgis.net/post/2008/02/24/Creating-OGC-conformance-test-map-in-SQL-Server-2008
     /// </summary>
-    class OgcConformanceMap
+    internal class OgcConformanceMap
     {
         public static string DropTables = @"
 IF OBJECT_ID('dbo.lakes', 'U') IS NOT NULL DROP TABLE lakes;

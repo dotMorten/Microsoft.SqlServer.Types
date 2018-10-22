@@ -36,6 +36,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
     }
     [TestClass]
+    [TestCategory("Database")]
     public class DBTests : IDisposable
     {
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
@@ -93,6 +94,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void QueryPoints()
         {
             string[] lineTables = new[] { "bridges", "buildings" };
@@ -126,6 +128,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void QueryLineStrings()
         {
             string[] lineTables = new[] { "road_segments", "streams" };
@@ -155,6 +158,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void QueryMultiLineStrings()
         {
             string[] lineTables = new[] { "divided_routes" };
@@ -184,6 +188,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
 
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void QueryPolygons()
         {
             string[] lineTables = new[] { "lakes", "buildings", "named_places" };
@@ -214,6 +219,7 @@ namespace Microsoft.SqlServer.Types.Tests
             }
         }
         [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void QueryMultiPolygons()
         {
             string[] lineTables = new[] {"forests", "ponds" };
@@ -243,6 +249,7 @@ namespace Microsoft.SqlServer.Types.Tests
         }
 
         [TestMethod]
+        [TestCategory("SqlHierarchyId")]
         public void QuerySqlHierarchyId()
         {
             List<SqlHierarchyId> hierarchyIds = new List<SqlHierarchyId>();

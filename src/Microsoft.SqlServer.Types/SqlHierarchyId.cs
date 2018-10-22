@@ -124,7 +124,7 @@ namespace Microsoft.SqlServer.Types
             }
             if (n < 0)
             {
-                throw new ArgumentOutOfRangeException("Argument can't be negative");
+                throw new ArgumentOutOfRangeException("24011: SqlHierarchyId.GetAncestor failed because 'n' was negative.");
             }
             return new SqlHierarchyId(_imp.GetAncestor(n));
         }
