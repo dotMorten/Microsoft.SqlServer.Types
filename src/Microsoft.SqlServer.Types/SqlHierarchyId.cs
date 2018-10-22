@@ -118,7 +118,7 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
         public SqlHierarchyId GetAncestor(int n)
         {
-            if (IsNull)
+            if (IsNull || _imp.GetLevel() < n)
             {
                 return Null;
             }

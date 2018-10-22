@@ -177,6 +177,14 @@ namespace src
             Assert.AreEqual(id, idChild.GetAncestor(1));
         }
 
+        [TestMethod]
+        public void GetParentOfRootNode()
+        {
+            var root = SqlHierarchyId.GetRoot();
+            var parent = root.GetAncestor(1);
+            Assert.IsTrue(parent.IsNull);
+        }
+
         private static byte[] CreateBytes(params object[] data)
         {
             using (var ms = new MemoryStream())
