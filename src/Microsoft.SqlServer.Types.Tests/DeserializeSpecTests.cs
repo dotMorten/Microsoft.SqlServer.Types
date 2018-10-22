@@ -1,3 +1,4 @@
+using Microsoft.SqlServer.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -166,6 +167,14 @@ namespace src
                 hid.Read(r);
             }
             Assert.AreEqual("/1/-2.18/", hid.ToString());
+        }
+
+        [TestMethod]
+        public void InsertFirstChild()
+        {
+            var id = Microsoft.SqlServer.Types.SqlHierarchyId.GetRoot();
+            var idChild = id.GetDescendant(SqlHierarchyId.Null, SqlHierarchyId.Null);
+            Assert.AreEqual(id, idChild.GetAncestor(1));
         }
 
         private static byte[] CreateBytes(params object[] data)
