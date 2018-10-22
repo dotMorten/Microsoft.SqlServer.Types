@@ -116,8 +116,8 @@ namespace Microsoft.SqlServer.Types
             _figures = new[] { new Figure() { VertexOffset = 0, FigureAttribute = FigureAttributes.Line } };
             _shapes = new[] { new Shape() { FigureOffset = 0, ParentOffset = -1, type = OGCGeometryType.Point } };
             _segments = null;
-            _zValues = z.HasValue ? new[] { z.Value } : null;
-            _mValues = m.HasValue ? new[] { m.Value } : null;
+            _zValues = z.HasValue && !double.IsNaN(z.Value) ? new[] { z.Value } : null;
+            _mValues = m.HasValue && !double.IsNaN(m.Value) ? new[] { m.Value } : null;
             _isLargerThanAHemisphere = false;
         }
 
