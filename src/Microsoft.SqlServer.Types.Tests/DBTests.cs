@@ -1,4 +1,5 @@
 ﻿using Microsoft.SqlServer.Server;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,10 +10,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Xunit;
 
 namespace Microsoft.SqlServer.Types.Tests
 {
+    [TestClass]
     public class DBTests : IDisposable
     {
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
@@ -69,7 +70,7 @@ namespace Microsoft.SqlServer.Types.Tests
             conn.Dispose();
         }
 
-        [Fact]
+        [TestMethod]
         public void QueryPoints()
         {
             string[] lineTables = new[] { "bridges", "buildings" };
@@ -86,23 +87,23 @@ namespace Microsoft.SqlServer.Types.Tests
                         while (reader.Read())
                         {
                             var geomValue = reader.GetValue(geomColumn);
-                            Assert.IsType<SqlGeometry>(geomValue);
+                            //Assert.IsInstanceOfType(<SqlGeometry>(geomValue);
                             var g = geomValue as SqlGeometry;
-                            Assert.False(g.IsNull);
-                            Assert.Equal("POINT", g.STGeometryType().Value, true);
-                            Assert.Equal(1, g.STNumGeometries().Value);
-                            Assert.Equal(101, g.STSrid);
-                            Assert.False(g.STX.IsNull);
-                            Assert.False(g.STY.IsNull);
-                            Assert.True(g.Z.IsNull);
-                            Assert.True(g.M.IsNull);
+                            Assert.IsFalse(g.IsNull);
+                            Assert.AreEqual("POINT", g.STGeometryType().Value, true);
+                            Assert.AreEqual(1, g.STNumGeometries().Value);
+                            Assert.AreEqual(101, g.STSrid);
+                            Assert.IsFalse(g.STX.IsNull);
+                            Assert.IsFalse(g.STY.IsNull);
+                            Assert.IsTrue(g.Z.IsNull);
+                            Assert.IsTrue(g.M.IsNull);
                         }
                     }
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void QueryLineStrings()
         {
             string[] lineTables = new[] { "road_segments", "streams" };
@@ -119,19 +120,19 @@ namespace Microsoft.SqlServer.Types.Tests
                         while (reader.Read())
                         {
                             var geomValue = reader.GetValue(geomColumn);
-                            Assert.IsType<SqlGeometry>(geomValue);
+                            Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
-                            Assert.False(g.IsNull);
-                            Assert.Equal(101, g.STSrid);
-                            Assert.Equal(1, g.STNumGeometries().Value);
-                            Assert.Equal("LINESTRING", g.STGeometryType().Value, true);
+                            Assert.IsFalse(g.IsNull);
+                            Assert.AreEqual(101, g.STSrid);
+                            Assert.AreEqual(1, g.STNumGeometries().Value);
+                            Assert.AreEqual("LINESTRING", g.STGeometryType().Value, true);
                         }
                     }
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void QueryMultiLineStrings()
         {
             string[] lineTables = new[] { "divided_routes" };
@@ -148,19 +149,19 @@ namespace Microsoft.SqlServer.Types.Tests
                         while (reader.Read())
                         {
                             var geomValue = reader.GetValue(geomColumn);
-                            Assert.IsType<SqlGeometry>(geomValue);
+                            Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
-                            Assert.False(g.IsNull);
-                            Assert.Equal(101, g.STSrid);
-                            Assert.Equal(2, g.STNumGeometries().Value);
-                            Assert.Equal("MULTILINESTRING", g.STGeometryType().Value, true);
+                            Assert.IsFalse(g.IsNull);
+                            Assert.AreEqual(101, g.STSrid);
+                            Assert.AreEqual(2, g.STNumGeometries().Value);
+                            Assert.AreEqual("MULTILINESTRING", g.STGeometryType().Value, true);
                         }
                     }
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void QueryPolygons()
         {
             string[] lineTables = new[] { "lakes", "buildings", "named_places" };
@@ -178,18 +179,18 @@ namespace Microsoft.SqlServer.Types.Tests
                         while (reader.Read())
                         {
                             var geomValue = reader.GetValue(geomColumn);
-                            Assert.IsType<SqlGeometry>(geomValue);
+                            Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
-                            Assert.False(g.IsNull);
-                            Assert.Equal(101, g.STSrid);
-                            Assert.Equal(1, g.STNumGeometries().Value);
-                            Assert.Equal("POLYGON", g.STGeometryType().Value.ToUpper());
+                            Assert.IsFalse(g.IsNull);
+                            Assert.AreEqual(101, g.STSrid);
+                            Assert.AreEqual(1, g.STNumGeometries().Value);
+                            Assert.AreEqual("POLYGON", g.STGeometryType().Value.ToUpper());
                         }
                     }
                 }
             }
         }
-        [Fact]
+        [TestMethod]
         public void QueryMultiPolygons()
         {
             string[] lineTables = new[] {"forests", "ponds" };
@@ -206,19 +207,19 @@ namespace Microsoft.SqlServer.Types.Tests
                         while (reader.Read())
                         {
                             var geomValue = reader.GetValue(geomColumn);
-                            Assert.IsType<SqlGeometry>(geomValue);
+                            Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
-                            Assert.False(g.IsNull);
-                            Assert.Equal(101, g.STSrid);
-                            Assert.Equal(2, g.STNumGeometries().Value);
-                            Assert.Equal("MULTIPOLYGON", g.STGeometryType().Value.ToUpper());
+                            Assert.IsFalse(g.IsNull);
+                            Assert.AreEqual(101, g.STSrid);
+                            Assert.AreEqual(2, g.STNumGeometries().Value);
+                            Assert.AreEqual("MULTIPOLYGON", g.STGeometryType().Value.ToUpper());
                         }
                     }
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void QuerySqlHierarchyId()
         {
             List<SqlHierarchyId> hierarchyIds = new List<SqlHierarchyId>();
@@ -233,10 +234,10 @@ namespace Microsoft.SqlServer.Types.Tests
                         var str = reader.IsDBNull(0) ? null : reader.GetString(0);
                         var value = reader.GetValue(1);
                         if(!reader.IsDBNull(0))
-                            Assert.IsType<SqlHierarchyId>(value);
+                            Assert.IsInstanceOfType(value, typeof(SqlHierarchyId));
                         var sqlHierId = reader.IsDBNull(1) ? (SqlHierarchyId?)null : reader.GetFieldValue<SqlHierarchyId>(1);
 
-                        Assert.Equal(str, sqlHierId?.ToString());
+                        Assert.AreEqual(str, sqlHierId?.ToString());
 
                         if (sqlHierId.HasValue)
                         {
@@ -247,10 +248,10 @@ namespace Microsoft.SqlServer.Types.Tests
                                 sqlHierId.Value.Write(new BinaryWriter(ms));
                                 current = new SqlBytes(ms.ToArray());
                             }
-                            Assert.Equal(should.Length, current.Length);
+                            Assert.AreEqual(should.Length, current.Length);
                             for (int i = 0; i < should.Length; i++)
                             {
-                                Assert.Equal(should[i], current[i]);
+                                Assert.AreEqual(should[i], current[i]);
                             }
 
                             hierarchyIds.Add(sqlHierId.Value);
@@ -271,7 +272,7 @@ namespace Microsoft.SqlServer.Types.Tests
                     p.Value = shi;
                     cmd.Parameters.Add(p);
 
-                    Assert.Equal(1, cmd.ExecuteScalar());
+                    Assert.AreEqual(1, cmd.ExecuteScalar());
                 }
             }
         }

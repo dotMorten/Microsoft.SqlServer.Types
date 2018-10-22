@@ -1,15 +1,16 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using Xunit;
 
 namespace src
 {
     /// <summary>
     /// Deserialize tests based on examples in the UDT specification
     /// </summary>
+    [TestClass]
     public class DeserializeSpecTests
     {
-        [Fact]
+        [TestMethod]
         public void TestEmptyPoint()
         {
             var d = double.NaN;
@@ -17,32 +18,32 @@ namespace src
             bool isFinite = (bits & 0x7FFFFFFFFFFFFFFF) < 0x7FF0000000000000;
             var emptyPoint = CreateBytes(0, (byte)0x01, (byte)0x04, 0, 0, 1, -1, -1, (byte)0x01);
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(emptyPoint));
-            Assert.False(g.IsNull);
-            Assert.Equal("Point" , g.STGeometryType().Value);
-            Assert.Equal(0, g.STSrid.Value);
-            Assert.True(g.STX.IsNull);
-            Assert.True(g.STY.IsNull);
-            Assert.True(g.M.IsNull);
-            Assert.True(g.Z.IsNull);
-            Assert.Equal(0, g.STNumGeometries().Value);
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("Point" , g.STGeometryType().Value);
+            Assert.AreEqual(0, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.IsTrue(g.M.IsNull);
+            Assert.IsTrue(g.Z.IsNull);
+            Assert.AreEqual(0, g.STNumGeometries().Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestPoint()
         {
             var point = CreateBytes(4326, (byte)0x01, (byte)0x0C, 5d, 10d);
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(point));
-            Assert.False(g.IsNull);
-            Assert.Equal("Point", g.STGeometryType().Value);
-            Assert.Equal(4326, g.STSrid.Value);
-            Assert.Equal(5, g.STX.Value);
-            Assert.Equal(10, g.STY.Value);
-            Assert.False(g.HasZ);
-            Assert.False(g.HasM);
-            Assert.Equal(1, g.STNumGeometries().Value);
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("Point", g.STGeometryType().Value);
+            Assert.AreEqual(4326, g.STSrid.Value);
+            Assert.AreEqual(5, g.STX.Value);
+            Assert.AreEqual(10, g.STY.Value);
+            Assert.IsFalse(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(1, g.STNumGeometries().Value);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestLineString()
         {
             var line = CreateBytes(4326, (byte)0x01, (byte)0x05,
@@ -51,36 +52,36 @@ namespace src
                 1, -1, 0, (byte)0x02 //shapes
                 );
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(line));
-            Assert.False(g.IsNull);
-            Assert.Equal("LineString", g.STGeometryType().Value);
-            Assert.Equal(4326, g.STSrid.Value);
-            Assert.True(g.STX.IsNull);
-            Assert.True(g.STY.IsNull);
-            Assert.Equal(3, g.STNumPoints().Value);
-            Assert.True(g.HasZ);
-            Assert.False(g.HasM);
-            Assert.Equal(1, g.STNumGeometries().Value);
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("LineString", g.STGeometryType().Value);
+            Assert.AreEqual(4326, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.AreEqual(3, g.STNumPoints().Value);
+            Assert.IsTrue(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(1, g.STNumGeometries().Value);
 
-            Assert.Equal(0d, g.STPointN(1).STX.Value);
-            Assert.Equal(1d, g.STPointN(1).STY.Value);
-            Assert.Equal(1d, g.STPointN(1).Z.Value);
-            Assert.True(g.STPointN(1).M.IsNull);
+            Assert.AreEqual(0d, g.STPointN(1).STX.Value);
+            Assert.AreEqual(1d, g.STPointN(1).STY.Value);
+            Assert.AreEqual(1d, g.STPointN(1).Z.Value);
+            Assert.IsTrue(g.STPointN(1).M.IsNull);
 
-            Assert.Equal(3d, g.STPointN(2).STX.Value);
-            Assert.Equal(2d, g.STPointN(2).STY.Value);
-            Assert.Equal(2d, g.STPointN(2).Z.Value);
-            Assert.True(g.STPointN(2).M.IsNull);
+            Assert.AreEqual(3d, g.STPointN(2).STX.Value);
+            Assert.AreEqual(2d, g.STPointN(2).STY.Value);
+            Assert.AreEqual(2d, g.STPointN(2).Z.Value);
+            Assert.IsTrue(g.STPointN(2).M.IsNull);
 
             var p3 = g.STPointN(3);
-            Assert.Equal(4d, p3.STX.Value);
-            Assert.Equal(5d, p3.STY.Value);
-            Assert.True(p3.HasZ);
-            Assert.True(p3.Z.IsNull); //3rd vertex is NaN and should therefore return Null here
-            Assert.False(p3.HasM);
-            Assert.True(p3.M.IsNull);
+            Assert.AreEqual(4d, p3.STX.Value);
+            Assert.AreEqual(5d, p3.STY.Value);
+            Assert.IsTrue(p3.HasZ);
+            Assert.IsTrue(p3.Z.IsNull); //3rd vertex is NaN and should therefore return Null here
+            Assert.IsFalse(p3.HasM);
+            Assert.IsTrue(p3.M.IsNull);
         }
 
-        [Fact]
+        [TestMethod]
         public void TestGeometryCollection()
         {
             var coll = CreateBytes(4326, (byte)0x01, (byte)0x04,
@@ -89,31 +90,31 @@ namespace src
                4, -1, 0, (byte) 0x07, 0,0, (byte)0x01, 0, 1, (byte)0x02, 0, 2, (byte)0x03 //shapes
                );
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(coll));
-            Assert.False(g.IsNull);
-            Assert.Equal("GeometryCollection", g.STGeometryType().Value);
-            Assert.Equal(4326, g.STSrid.Value);
-            Assert.True(g.STX.IsNull);
-            Assert.True(g.STY.IsNull);
-            Assert.Equal(3, g.STNumGeometries());
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("GeometryCollection", g.STGeometryType().Value);
+            Assert.AreEqual(4326, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.AreEqual(3, g.STNumGeometries());
             var p = g.STGeometryN(1);
-            Assert.Equal("Point", p.STGeometryType());
-            Assert.Equal(0d, p.STX.Value);
-            Assert.Equal(4d, p.STY.Value);
+            Assert.AreEqual("Point", p.STGeometryType());
+            Assert.AreEqual(0d, p.STX.Value);
+            Assert.AreEqual(4d, p.STY.Value);
             var l = g.STGeometryN(2);
-            Assert.Equal("LineString", l.STGeometryType());
-            Assert.Equal(2, l.STNumPoints());
+            Assert.AreEqual("LineString", l.STGeometryType());
+            Assert.AreEqual(2, l.STNumPoints());
 
             var pg = g.STGeometryN(3);
-            Assert.Equal("Polygon", pg.STGeometryType());
-            Assert.Equal(10, pg.STNumPoints());
+            Assert.AreEqual("Polygon", pg.STGeometryType());
+            Assert.AreEqual(10, pg.STNumPoints());
             var extRing = pg.STExteriorRing();
-            Assert.False(extRing.IsNull);
-            Assert.Equal(5, extRing.STNumPoints());
-            Assert.Equal(1, pg.STNumInteriorRing().Value);
-            Assert.Equal(5, pg.STInteriorRingN(1).STNumPoints());
+            Assert.IsFalse(extRing.IsNull);
+            Assert.AreEqual(5, extRing.STNumPoints());
+            Assert.AreEqual(1, pg.STNumInteriorRing().Value);
+            Assert.AreEqual(5, pg.STInteriorRingN(1).STNumPoints());
         }
 
-        [Fact]
+        [TestMethod]
         public void TestCurvePolygon()
         {
             //TODO: Curve support not complete
@@ -125,13 +126,13 @@ namespace src
               );
 
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(coll));
-            Assert.False(g.IsNull);
-            Assert.Equal("CURVEPOLYGON", g.STGeometryType().Value);
-            Assert.Equal(4326, g.STSrid.Value);
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("CURVEPOLYGON", g.STGeometryType().Value);
+            Assert.AreEqual(4326, g.STSrid.Value);
             //TODO More asserts here
         }
 
-        [Fact]
+        [TestMethod]
         public void TestSqlHiarchy1()
         {
             // The first child of the root node, with a logical representation of / 1 /, is represented as the following bit sequence:
@@ -146,10 +147,10 @@ namespace src
             {
                 hid.Read(r);
             }
-            Assert.Equal("/1/", hid.ToString());
+            Assert.AreEqual("/1/", hid.ToString());
         }
 
-        [Fact]
+        [TestMethod]
         public void TestSqlHiarchy2()
         {
             // As a more complicated example, the node with logical representation / 1 / -2.18 / (the child with label - 2.18 of the child with label 1 of the root node) is represented as the following sequence of bits(a space has been inserted after every grouping of 8 bits to make the sequence easier to follow):
@@ -163,7 +164,7 @@ namespace src
             {
                 hid.Read(r);
             }
-            Assert.Equal("/1/-2.18/", hid.ToString());
+            Assert.AreEqual("/1/-2.18/", hid.ToString());
         }
 
         private static byte[] CreateBytes(params object[] data)
