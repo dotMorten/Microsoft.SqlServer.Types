@@ -14,6 +14,28 @@ using System.Text;
 namespace Microsoft.SqlServer.Types.Tests
 {
     [TestClass]
+    internal static class AssemblyLoader
+    {
+        [AssemblyInitialize]
+        public static void TestInit(TestContext context)
+        {
+            Init();
+        }
+        public static void Init()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        }
+
+        private static System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (args.Name == "Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" ||
+                args.Name == "Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" ||
+                args.Name == "Microsoft.SqlServer.Types, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91")
+                return typeof(SqlGeography).Assembly;
+            return null;
+        }
+    }
+    [TestClass]
     public class DBTests : IDisposable
     {
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
@@ -178,7 +200,8 @@ namespace Microsoft.SqlServer.Types.Tests
                         if (table == "buildings") geomColumn++; //this table has two columns. Second is polygons
                         while (reader.Read())
                         {
-                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
+                            var geomValue = reader.GetValue(geomColumn) as SqlGeometry;
+                            //var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);

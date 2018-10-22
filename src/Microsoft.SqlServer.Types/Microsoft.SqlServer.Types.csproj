@@ -14,9 +14,6 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/dotMorten/Microsoft.SqlServer.Types/master/LICENSE</PackageLicenseUrl>
     <Copyright>(C) 2018 - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>true</DelaySign>
     <Version>1.1.0</Version>
     <PackageReleaseNotes>Strong-name signed so the UDT types will automatically deserialize</PackageReleaseNotes>
   </PropertyGroup>
