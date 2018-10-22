@@ -405,7 +405,7 @@ namespace Microsoft.SqlServer.Types
         {
             var v = r.ReadByte();
             if (v > version)
-                throw new FormatException("Version not supported");
+                throw new FormatException("One of the identified items was in an invalid format.");
 
             var props = (SerializationProps)r.ReadByte();
             _isValid = props.HasFlag(SerializationProps.IsValid);

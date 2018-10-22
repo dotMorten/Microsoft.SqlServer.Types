@@ -115,6 +115,7 @@ namespace src
         }
 
         [TestMethod]
+        [ExpectedException(typeof(FormatException))]
         public void TestCurvePolygon()
         {
             //TODO: Curve support not complete
