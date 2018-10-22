@@ -86,7 +86,7 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geomValue = reader.GetValue(geomColumn);
+                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             //Assert.IsInstanceOfType(<SqlGeometry>(geomValue);
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);
@@ -119,7 +119,7 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geomValue = reader.GetValue(geomColumn);
+                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);
@@ -148,7 +148,7 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geomValue = reader.GetValue(geomColumn);
+                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);
@@ -178,7 +178,7 @@ namespace Microsoft.SqlServer.Types.Tests
                         if (table == "buildings") geomColumn++; //this table has two columns. Second is polygons
                         while (reader.Read())
                         {
-                            var geomValue = reader.GetValue(geomColumn);
+                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);
@@ -206,7 +206,7 @@ namespace Microsoft.SqlServer.Types.Tests
                             geomColumn++;
                         while (reader.Read())
                         {
-                            var geomValue = reader.GetValue(geomColumn);
+                            var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
                             var g = geomValue as SqlGeometry;
                             Assert.IsFalse(g.IsNull);

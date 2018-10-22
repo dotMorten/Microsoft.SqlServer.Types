@@ -75,7 +75,7 @@ namespace src
             var p3 = g.STPointN(3);
             Assert.AreEqual(4d, p3.STX.Value);
             Assert.AreEqual(5d, p3.STY.Value);
-            Assert.IsTrue(p3.HasZ);
+            Assert.IsFalse(p3.HasZ);
             Assert.IsTrue(p3.Z.IsNull); //3rd vertex is NaN and should therefore return Null here
             Assert.IsFalse(p3.HasM);
             Assert.IsTrue(p3.M.IsNull);

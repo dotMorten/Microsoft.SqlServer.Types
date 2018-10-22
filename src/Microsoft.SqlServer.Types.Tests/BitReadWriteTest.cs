@@ -46,7 +46,7 @@ namespace src
         [TestMethod]
         public void TestBitReader()
         {
-            byte[] array = "10011100 00111110 00000111 11110000 00001111 11111000 00000001 11111111 11000000".Split(" ").Select(a => (byte)Convert.ToInt32(a, 2)).ToArray();
+            byte[] array = "10011100 00111110 00000111 11110000 00001111 11111000 00000001 11111111 11000000".Split(' ').Select(a => (byte)Convert.ToInt32(a, 2)).ToArray();
 
             using (MemoryStream ms = new MemoryStream(array))
             using (BinaryReader byteR = new BinaryReader(ms))
