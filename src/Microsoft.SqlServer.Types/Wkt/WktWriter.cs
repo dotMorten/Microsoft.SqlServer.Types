@@ -45,7 +45,7 @@ namespace Microsoft.SqlServer.Types
                 sb.Append(" EMPTY");
                 return;
             }
-            else sb.Append("(");
+            else sb.Append(" (");
 			if (type == OGCGeometryType.Point)
 				WritePoint(geometry, sb, includeZ, includeM);
 			else if (type == OGCGeometryType.LineString)
@@ -143,7 +143,7 @@ namespace Microsoft.SqlServer.Types
 			foreach(var c in coords)
 			{
                 if (firstItem) firstItem = false;
-                else sb.Append(",");
+                else sb.Append(", ");
 				WriteCoordinate(c, sb, includeZ, includeM);
 			}
 		}
@@ -153,17 +153,13 @@ namespace Microsoft.SqlServer.Types
 			sb.AppendFormat(CultureInfo.InvariantCulture, "{0} {1}", coord.X, coord.Y);
             if (includeZ)
             {
-                if (double.IsNaN(coord.Z))
-                    sb.Append(" NULL");
-                else
+                if (!double.IsNaN(coord.Z))
                     sb.AppendFormat(CultureInfo.InvariantCulture, " {0}", coord.Z);
             }
 
             if (includeM)
             {
-                if (double.IsNaN(coord.M))
-                    sb.Append(" NULL");
-                else
+                if (!double.IsNaN(coord.M))
                     sb.AppendFormat(CultureInfo.InvariantCulture, " {0}", coord.M);
             }
 		}

@@ -49,6 +49,16 @@ namespace src
 
         [TestMethod]
         [TestCategory("SqlGeometry")]
+        public void TestPointToString()
+        {
+            var point = CreateBytes(4326, (byte)0x01, (byte)0x0C, 5d, 10d);
+            var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(point));
+            var str = g.ToString();
+            Assert.AreEqual("POINT (5 10)", str);
+        }
+
+        [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestLineString()
         {
             var line = CreateBytes(4326, (byte)0x01, (byte)0x05,
@@ -84,6 +94,19 @@ namespace src
             Assert.IsTrue(p3.Z.IsNull); //3rd vertex is NaN and should therefore return Null here
             Assert.IsFalse(p3.HasM);
             Assert.IsTrue(p3.M.IsNull);
+        }
+        [TestMethod]
+        [TestCategory("SqlGeometry")]
+        public void TestLineStringToString()
+        {
+            var line = CreateBytes(4326, (byte)0x01, (byte)0x05,
+                3, 0d, 1d, 3d, 2d, 4d, 5d, 1d, 2d, double.NaN, //vertices
+                1, (byte)0x01, 0, //figures
+                1, -1, 0, (byte)0x02 //shapes
+                );
+            var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(line));
+            var str = g.ToString();
+            Assert.AreEqual("LINESTRING (0 1 1, 3 2 2, 4 5)", str);
         }
 
         [TestMethod]
