@@ -14,6 +14,14 @@ namespace src
     {
         [TestMethod]
         [TestCategory("SqlGeometry")]
+        public void TestNullToString()
+        {
+            var str = SqlGeometry.Null.ToString();
+            Assert.AreEqual("Null", str);
+        }
+
+        [TestMethod]
+        [TestCategory("SqlGeometry")]
         public void TestEmptyPoint()
         {
             var d = double.NaN;

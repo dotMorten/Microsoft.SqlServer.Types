@@ -107,7 +107,9 @@ namespace Microsoft.SqlServer.Types
         private Figure[] _figures;
         private Shape[] _shapes;
 
-        public OGCGeometryType Type => _shapes[0].type;
+        public OGCGeometryType Type => _shapes == null || _shapes.Length == 0 ? OGCGeometryType.Unknown :  _shapes[0].type;
+
+        public bool IsNull => _shapes == null;
 
         public ShapeData(double x, double y, double? z = null, double? m = null)
         {

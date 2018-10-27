@@ -19,6 +19,8 @@ namespace Microsoft.SqlServer.Types
 		/// <returns>Well-Known Text</returns>
 		public static string Write(ShapeData g)
 		{
+            if (g.IsNull)
+                return "Null";
 			return Write(g, g.HasZ, g.HasM);
 		}
 
