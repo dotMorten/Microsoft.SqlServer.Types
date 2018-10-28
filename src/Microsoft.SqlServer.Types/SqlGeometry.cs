@@ -401,6 +401,41 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
+        /// <summary>
+        /// Returns a SqlGeometry instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation augmented with any Z (elevation) and M (measure) values carried by the instanc
+        /// </summary>
+        /// <param name="geometryTaggedText">The WKT representation of the SqlGeometry instance you wish to return. </param>
+        /// <param name="srid">An int expression that represents the spatial reference ID (SRID) of the SqlGeometry instance you wish to return.</param>
+        /// <returns>A SqlGeometry instance constructed from the specified WKT representation.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public static SqlGeometry STGeomFromText(SqlChars geometryTaggedText, int srid)
+        {
+            if (geometryTaggedText.IsNull)
+                return SqlGeometry.Null;
+            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString());
+            return new SqlGeometry(data, srid);
+        }
+
+        /// <summary>
+        /// Returns a SqlGeometry instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation.
+        /// </summary>
+        /// <param name="s">Specifies the the WKT representation of the SqlGeometry instance you wish to return.</param>
+        /// <returns>A SqlGeometry instance interpreted from the provided WKT representation.
+        /// Returns null if s is null.</returns>
+        /// <remarks>
+        /// <para>Parse is equivalent to STGeomFromText, with the exception that it assumes a spatial reference ID (SRID) of 0 as a parameter.</para>
+        /// <para>The input may carry optional Z(elevation) and M(measure) values.</para>
+        /// 
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public static SqlGeometry Parse(SqlString s)
+        {
+            if (s.IsNull)
+                return SqlGeometry.Null;
+            var data = Wkt.WktReader.Parse(s.ToString());
+            return new SqlGeometry(data, 0);
+        }
+
         public void Read(BinaryReader r)
         {
             srid = r.ReadInt32();

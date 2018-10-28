@@ -402,6 +402,42 @@ namespace Microsoft.SqlServer.Types
         };
 
         /// <summary>
+        /// Returns a SqlGeography instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation augmented with any Z (elevation) and M (measure) values carried by the instance.
+        /// </summary>
+        /// <param name="geometryTaggedText">The WKT representation of the SqlGeography instance you wish to return. </param>
+        /// <param name="srid">An int expression that represents the spatial reference ID (SRID) of the SqlGeography instance you wish to return.</param>
+        /// <returns>A SqlGeography instance constructed from the WKY representation.</returns>
+        /// <remarks>
+        /// <para>The OGC type of the SqlGeography instance returned by STGeomFromText is set to the corresponding WKT input.</para>
+        /// <para>This method will throw a <see cref="FormatException"/> if the input is not well-formatted.</para>
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public static SqlGeography STGeomFromText(SqlChars geometryTaggedText, int srid)
+        {
+            if (geometryTaggedText.IsNull)
+                return SqlGeography.Null;
+            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString());
+            return new SqlGeography(data, srid);
+        }
+
+        /// <summary>
+        /// Returns a SqlGeography instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation. 
+        /// </summary>
+        /// <param name="s">The WKT representation of the SqlGeography instance you wish to return. </param>
+        /// <returns>A SqlGeography value constructed from the specified WKT representation.</returns>
+        /// <remarks>
+        /// The Parse method is equivalent to <see cref="STGeomFromText"/> except that it assumes a spatial reference ID (SRID) of 4326 as a parameter. The input may carry optional Z (elevation) and M (measure) values.
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public static SqlGeography Parse(SqlString s)
+        {
+            if (s.IsNull)
+                return SqlGeography.Null;
+            var data = Wkt.WktReader.Parse(s.ToString());
+            return new SqlGeography(data, 4326);
+        }
+
+        /// <summary>
         /// Reads a binary representation of a geography type into a SqlGeometry object.
         /// </summary>
         /// <param name="r">BinaryReader object that reads a binary representation of a geography type.</param>
