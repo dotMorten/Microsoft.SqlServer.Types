@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="BitPattern.cs" />
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="BitReader.cs" />
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="BitWriter.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="HierarchyId\BitPattern.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="HierarchyId\BitReader.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="HierarchyId\BitWriter.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,10 @@
     <Compile Update="OgcConformanceMap.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Geography\" />
   </ItemGroup>
 
 </Project>
