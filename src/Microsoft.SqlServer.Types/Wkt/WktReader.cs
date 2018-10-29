@@ -21,6 +21,13 @@ namespace Microsoft.SqlServer.Types.Wkt
         List<Figure> _figures;
         List<Segment> _segments;
         List<Shape> _shapes;
+        CoordinateOrder _order;
+
+        public enum CoordinateOrder
+        {
+            XY,
+            LatLong
+        }
 
         private WktReader(string str)
         {
@@ -40,9 +47,10 @@ namespace Microsoft.SqlServer.Types.Wkt
             Current = wkt[0];
         }
 
-        public static ShapeData Parse(string str)
+        public static ShapeData Parse(string str, CoordinateOrder order)
         {
             WktReader reader = new WktReader(str);
+            reader._order = order;
             return reader.ReadShape();
         }
 
@@ -200,7 +208,12 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadCoordinate()
         {
-            _vertices.Add(new Point(ReadDouble(), ReadDouble()));
+            var x = ReadDouble();
+            var y = ReadDouble();
+            if(_order == CoordinateOrder.XY)
+                _vertices.Add(new Point(x, y));
+            else
+                _vertices.Add(new Point(y, x));
             hasZ = ReadOptionalDouble(out double z) || hasZ;
             _z.Add(z);
             hasM = ReadOptionalDouble(out double m) || hasM;

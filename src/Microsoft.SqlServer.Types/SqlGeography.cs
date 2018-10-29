@@ -416,7 +416,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (geometryTaggedText.IsNull)
                 return SqlGeography.Null;
-            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString());
+            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString(), Wkt.WktReader.CoordinateOrder.LatLong);
             return new SqlGeography(data, srid);
         }
 
@@ -433,7 +433,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (s.IsNull)
                 return SqlGeography.Null;
-            var data = Wkt.WktReader.Parse(s.ToString());
+            var data = Wkt.WktReader.Parse(s.ToString(), Wkt.WktReader.CoordinateOrder.LatLong);
             return new SqlGeography(data, 4326);
         }
 

@@ -368,18 +368,18 @@ namespace Microsoft.SqlServer.Types
                 bw.Write(NumPoints); // Number of Points = 0 (no points) 
             foreach (var p in _vertices)
             {
-                bw.Write(X); //X
-                bw.Write(Y); //Y
+                bw.Write(p.X); //X
+                bw.Write(p.Y); //Y
             }
             if (_zValues != null)
-                foreach (var p in _zValues)
+                foreach (var z in _zValues)
                 {
-                    bw.Write(Z);
+                    bw.Write(z);
                 }
             if (_mValues != null)
-                foreach (var p in _mValues)
+                foreach (var m in _mValues)
                 {
-                    bw.Write(Z);
+                    bw.Write(m);
                 }
             if (!props.HasFlag(SerializationProps.IsSingleLineSegment) &&
                 !props.HasFlag(SerializationProps.IsSinglePoint))
