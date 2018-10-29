@@ -27,8 +27,4 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Geography\" />
-  </ItemGroup>
-
 </Project>

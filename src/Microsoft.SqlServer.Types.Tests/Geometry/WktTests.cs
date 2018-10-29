@@ -3,10 +3,10 @@
 namespace Microsoft.SqlServer.Types.Tests.Geometry
 {
     [TestClass]
+    [TestCategory("SqlGeometry")]
+    [TestCategory("WKT")]
     public class WktTests
     {
-        public object StreamExtensions { get; private set; }
-
         [TestMethod]
         public void TestNullToString()
         {
@@ -45,6 +45,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             var str = g.ToString();
             Assert.AreEqual("LINESTRING (0 1 1, 3 2 2, 4 5)", str);
         }
+
         [TestMethod]
         public void TestLineStringFromString()
         {
@@ -78,6 +79,23 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             Assert.IsTrue(p3.M.IsNull);
         }
 
-
+        [TestMethod]
+        [WorkItem(13)]
+        public void UserSubmittedIssue_WKT1()
+        {
+            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            {
+                conn.Open();
+                var id = SqlGeometry.Parse("LINESTRING (100 100, 20 180, 180 180)");
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT @p";
+                    var p =cmd.Parameters.Add("@p", System.Data.SqlDbType.Udt);
+                    p.UdtTypeName = "geometry";
+                    p.Value = id;
+                    Assert.AreEqual(id.ToString(), cmd.ExecuteScalar().ToString());
+                }
+            }
+        }
     }
 }

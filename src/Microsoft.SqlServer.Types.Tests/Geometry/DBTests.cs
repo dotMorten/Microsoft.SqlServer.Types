@@ -22,29 +22,38 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
 
         private System.Data.SqlClient.SqlConnection conn;
         private static string path;
+        private static object lockObj = new object();
         static DBTests()
         {
-            path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
-            CreateSqlDatabase(path);
-            using (var conn = new System.Data.SqlClient.SqlConnection(connstr + path))
+            Init();
+        }
+        public static void Init()
+        {
+            lock(lockObj)
+            if(path == null)
             {
-                conn.Open();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = OgcConformanceMap.DropTables;
-                cmd.ExecuteNonQuery();
-                cmd.CommandText = OgcConformanceMap.CreateTables;
-                cmd.ExecuteNonQuery();
-                cmd.CommandText = OgcConformanceMap.CreateRows;
-                cmd.ExecuteNonQuery();
-                conn.Close();
+                path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
+                CreateSqlDatabase(path);
+                using (var conn = new System.Data.SqlClient.SqlConnection(connstr + path))
+                {
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = OgcConformanceMap.DropTables;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = OgcConformanceMap.CreateTables;
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = OgcConformanceMap.CreateRows;
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
             }
         }
 
         public static string ConnectionString => connstr + path;
 
-
         public DBTests()
         {
+            Init();
             conn = new System.Data.SqlClient.SqlConnection(ConnectionString);
             conn.Open();
         }

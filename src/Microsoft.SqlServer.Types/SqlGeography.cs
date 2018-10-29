@@ -416,7 +416,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (geometryTaggedText.IsNull)
                 return SqlGeography.Null;
-            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString(), Wkt.WktReader.CoordinateOrder.LatLong);
+            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString(), Wkt.CoordinateOrder.LatLong);
             return new SqlGeography(data, srid);
         }
 
@@ -433,7 +433,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (s.IsNull)
                 return SqlGeography.Null;
-            var data = Wkt.WktReader.Parse(s.ToString(), Wkt.WktReader.CoordinateOrder.LatLong);
+            var data = Wkt.WktReader.Parse(s.ToString(), Wkt.CoordinateOrder.LatLong);
             return new SqlGeography(data, 4326);
         }
 
@@ -495,6 +495,6 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
-        public override string ToString() => WktWriter.Write(_geometry);
+        public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.LatLong);
     }
 }

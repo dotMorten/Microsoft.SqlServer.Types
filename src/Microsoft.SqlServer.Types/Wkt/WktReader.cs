@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Microsoft.SqlServer.Types.Wkt
 {
+    internal enum CoordinateOrder
+    {
+        XY,
+        LatLong
+    }
+
     internal class WktReader
     {
         private int length = 0;
@@ -22,12 +28,6 @@ namespace Microsoft.SqlServer.Types.Wkt
         List<Segment> _segments;
         List<Shape> _shapes;
         CoordinateOrder _order;
-
-        public enum CoordinateOrder
-        {
-            XY,
-            LatLong
-        }
 
         private WktReader(string str)
         {

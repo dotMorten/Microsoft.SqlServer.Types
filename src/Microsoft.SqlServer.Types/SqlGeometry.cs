@@ -412,7 +412,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (geometryTaggedText.IsNull)
                 return SqlGeometry.Null;
-            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString(), Wkt.WktReader.CoordinateOrder.XY);
+            var data = Wkt.WktReader.Parse(geometryTaggedText.ToString(), Wkt.CoordinateOrder.XY);
             return new SqlGeometry(data, srid);
         }
 
@@ -432,7 +432,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (s.IsNull)
                 return SqlGeometry.Null;
-            var data = Wkt.WktReader.Parse(s.ToString(), Wkt.WktReader.CoordinateOrder.XY);
+            var data = Wkt.WktReader.Parse(s.ToString(), Wkt.CoordinateOrder.XY);
             return new SqlGeometry(data, 0);
         }
 
@@ -449,6 +449,6 @@ namespace Microsoft.SqlServer.Types
             _geometry.Write(w);
         }
 
-        public override string ToString() => WktWriter.Write(_geometry);
+        public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.XY);
     }
 }
