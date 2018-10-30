@@ -272,6 +272,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             {
                 return false;
             }
+            _index++;
             d = ReadDouble();
             return true;
         }
