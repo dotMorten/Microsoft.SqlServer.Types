@@ -143,6 +143,19 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         }
 
         [TestMethod]
+        public void GeometryCollectionFromString()
+        {
+            var g = SqlGeometry.Parse("GEOMETRYCOLLECTION ( POINT(-122.34900 47.65100), LINESTRING(-122.360 47.656, -122.343 47.656))");
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("GeometryCollection", g.STGeometryType().Value);
+            Assert.AreEqual(2, g.STNumGeometries().Value);
+            var g1 = g.STGeometryN(1);
+            var g2 = g.STGeometryN(2);
+            Assert.AreEqual("Point", g1.STGeometryType());
+            Assert.AreEqual("LineString", g2.STGeometryType());
+        }
+
+        [TestMethod]
         [WorkItem(13)]
         public void UserSubmittedIssue_WKT1()
         {

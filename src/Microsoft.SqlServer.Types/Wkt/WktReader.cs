@@ -14,7 +14,7 @@ namespace Microsoft.SqlServer.Types.Wkt
     internal class WktReader
     {
         private int length = 0;
-        private int _nextIndex = 0;
+        private int _nextIndex = 1;
         private String wkt;
         private bool _readEndOfStream = false;
         private char Current;
@@ -57,37 +57,33 @@ namespace Microsoft.SqlServer.Types.Wkt
         private ShapeData ReadShape(int parentOffset = -1)
         {
             SkipSpaces();
-            string str = Peek(18);
-            if (str.StartsWith("POINT", StringComparison.OrdinalIgnoreCase))
+            var nextToken = ReadNextToken();
+            switch (nextToken.ToUpper())
             {
-                ReadPoint(parentOffset);
+                case "POINT":
+                    ReadPoint(parentOffset);
+                    break;
+                case "LINESTRING":
+                    ReadLineString(parentOffset);
+                    break;
+                case "POLYGON":
+                    ReadPolygon(parentOffset);
+                    break;
+                case "MULTIPOINT":
+                    ReadMultiPoint(parentOffset);
+                    break;
+                case "MULTILINESTRING":
+                    ReadMultiLineString(parentOffset);
+                    break;
+                case "MULTIPOLYGON":
+                    ReadMultiPolygon(parentOffset);
+                    break;
+                case "GEOMETRYCOLLECTION":
+                    ReadGeometryCollection(parentOffset);
+                    break;
+                default:
+                    throw new FormatException("Invalid Well-known Text");
             }
-            else if (str.StartsWith("LINESTRING", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadLineString(parentOffset);
-            }
-            else if (str.StartsWith("POLYGON", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadPolygon(parentOffset);
-            }
-            else if (str.StartsWith("MULTIPOINT", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadMultiPoint(parentOffset);
-            }
-            else if (str.StartsWith("MULTILINESTRING", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadMultiLineString(parentOffset);
-            }
-            else if (str.StartsWith("MULTIPOLYGON", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadMultiPolygon(parentOffset);
-            }
-            else if (str.StartsWith("GEOMETRYCOLLECTION", StringComparison.OrdinalIgnoreCase))
-            {
-                ReadGeometryCollection(parentOffset);
-            }
-            else
-                throw new FormatException("Invalid Well-known Text");
             return new ShapeData(_vertices.ToArray(), _figures.ToArray(), _shapes.ToArray(), hasZ ? _z.ToArray() : null, hasM ? _m.ToArray() : null, _segments?.ToArray());
         }
 
@@ -95,7 +91,6 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadPoint(int parentOffset = -1)
         {
-            ReadToken("POINT");
             if (ReadOptionalToken("EMPTY"))
             {
                 //TODO
@@ -112,13 +107,11 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Point, VertexOffset = _vertices.Count });
-            ReadToken("MULTIPOINT");
             ReadCoordinateCollection();
         }
 
         private void ReadLineString(int parentOffset = -1)
         {
-            ReadToken("LINESTRING");
             if (ReadOptionalToken("EMPTY"))
             {
                 //TODO
@@ -132,7 +125,6 @@ namespace Microsoft.SqlServer.Types.Wkt
         }
         private void ReadMultiLineString(int parentOffset = -1)
         {
-            ReadToken("MULTILINESTRING");
             ReadToken("(");
             int parentIndex = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
@@ -148,7 +140,6 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadPolygon(int parentOffset = -1)
         {
-            ReadToken("POLYGON"); //Read Polygon string
             if (ReadOptionalToken("EMPTY"))
             {
                 //TODO
@@ -167,7 +158,6 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadMultiPolygon(int parentOffset = -1)
         {
-            ReadToken("MULTIPOLYGON");
             if (ReadOptionalToken("EMPTY"))
             {
                 //TODO
@@ -196,7 +186,6 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadGeometryCollection(int parentOffset = -1)
         {
-            ReadToken("GEOMETRYCOLLECTION");
             if (ReadOptionalToken("EMPTY"))
             {
                 // TODO
@@ -292,6 +281,25 @@ namespace Microsoft.SqlServer.Types.Wkt
             return (!_readEndOfStream && (((_nextIndex + c) - 1) <= length));
         }
 
+        private string ReadNextToken()
+        {
+            SkipSpaces();
+            int start = _nextIndex - 1;
+            char c = Current;
+            int i;
+            for (; _nextIndex < wkt.Length; _nextIndex++)
+            {
+                c = wkt[_nextIndex];
+                if(c == ' ' || c == '(' || c == ')' || c == ',')
+                {
+                    break;
+                }
+            }
+            Current = c;
+            _nextIndex++;
+            return wkt.Substring(start, _nextIndex - start - 1);
+        }
+
         private void ReadToken(string token)
         {
             SkipSpaces();
@@ -351,16 +359,6 @@ namespace Microsoft.SqlServer.Types.Wkt
                 _nextIndex += n;
             }
             Read();
-            return new string(buffer);
-        }
-
-        private string Peek(int n)
-        {
-            if (n + _nextIndex > length)
-                n = length - _nextIndex;
-            char[] buffer = new char[n];
-            for (int i = 0; i < n; i++)
-                buffer[i] = wkt[_nextIndex + i];
             return new string(buffer);
         }
     }
