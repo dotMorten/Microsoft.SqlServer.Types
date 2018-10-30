@@ -80,6 +80,23 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             Assert.IsTrue(p3.M.IsNull);
         }
 
+
+        [DataTestMethod]
+        [DataRow("POINT")]
+        [DataRow("MULTIPOINT")]
+        [DataRow("LINESTRING")]
+        [DataRow("MULTILINESTRING")]
+        [DataRow("POLYGON")]
+        [DataRow("MULTIPOLYGON")]
+        [DataRow("GEOMETRYCOLLECTION")]
+        public void EmptyGeometriesFromString(string parameter)
+        {
+            var g = SqlGeometry.Parse(parameter + " EMPTY");
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual(parameter, g.STGeometryType().Value.ToUpper());
+            Assert.IsTrue(g.STIsEmpty().Value);
+        }
+
         [TestMethod]
         public void MultiLineStringFromString()
         {

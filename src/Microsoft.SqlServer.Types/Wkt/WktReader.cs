@@ -13,6 +13,14 @@ namespace Microsoft.SqlServer.Types.Wkt
 
     internal ref struct WktReader
     {
+        private const byte WHITE_SPACE = 0x20;
+        private const byte COMMA = 0x2C;
+        private const byte PARAN_START = 0x28;
+        private const byte PARAN_END = 0x29;
+        private const byte M_UPPER = 0x4D;
+        private const byte M_LOWER = 0x6D;
+        private const byte L_UPPER = 0x4C;
+        private const byte L_LOWER = 0x6C;
         private int length;
         private int _index;
         bool hasZ;
@@ -55,9 +63,9 @@ namespace Microsoft.SqlServer.Types.Wkt
             //This is a very optimistic way to detect the token based on length
             if (nextToken.Length == 5) // "POINT"
                 ReadPoint(parentOffset);
-            else if (nextToken.Length == 10 && nextToken[0] == 'M') //"MULTIPOINT"
+            else if (nextToken.Length == 10 && (nextToken[0] == M_UPPER || nextToken[0] == M_LOWER)) //"MULTIPOINT"
                 ReadMultiPoint(parentOffset);
-            else if (nextToken.Length == 10 && nextToken[0] == 'L') //"LINESTRING": 
+            else if (nextToken.Length == 10 && (nextToken[0] == L_UPPER || nextToken[0] == L_LOWER)) //"LINESTRING": 
                 ReadLineString(parentOffset);
             else if (nextToken.Length == 15) //"MULTILINESTRING"
                 ReadMultiLineString(parentOffset);
@@ -104,18 +112,23 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                //TODO
+                _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = _figures.Count, ParentOffset = parentOffset });
                 return;
             }
             _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Point, VertexOffset = _vertices.Count });
-            ReadToken('(');
+            ReadToken(PARAN_START);
             ReadCoordinate();
-            ReadToken(')');
+            ReadToken(PARAN_END);
         }
 
         private void ReadMultiPoint(int parentOffset = -1)
         {
+            if (ReadOptionalEmptyToken())
+            {
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
+            }
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Point, VertexOffset = _vertices.Count });
             ReadCoordinateCollection();
@@ -125,7 +138,8 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                //TODO
+                _shapes.Add(new Shape() { type = OGCGeometryType.LineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
             }
             else
             {
@@ -136,7 +150,12 @@ namespace Microsoft.SqlServer.Types.Wkt
         }
         private void ReadMultiLineString(int parentOffset = -1)
         {
-            ReadToken('(');
+            if (ReadOptionalEmptyToken())
+            {
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
+            }
+            ReadToken(PARAN_START);
             int parentIndex = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             do
@@ -145,79 +164,82 @@ namespace Microsoft.SqlServer.Types.Wkt
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Line, VertexOffset = _vertices.Count });
                 ReadCoordinateCollection();
             }
-            while (ReadOptionalChar(','));
-            ReadToken(')');
+            while (ReadOptionalChar(COMMA));
+            ReadToken(PARAN_END);
         }
 
         private void ReadPolygon(int parentOffset = -1)
         {
             if (ReadOptionalEmptyToken())
             {
-                //TODO
+                _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
             }
             _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
-            ReadToken('(');
+            ReadToken(PARAN_START);
             ReadCoordinateCollection(); //Exterior ring
-            while (ReadOptionalChar(',')) //Interior rings
+            while (ReadOptionalChar(COMMA)) //Interior rings
             {
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
                 ReadCoordinateCollection();
             }
-            ReadToken(')');
+            ReadToken(PARAN_END);
         }
 
         private void ReadMultiPolygon(int parentOffset = -1)
         {
             if (ReadOptionalEmptyToken())
             {
-                //TODO
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPolygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
             }
 
             int index = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiPolygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
 
-            ReadToken('(');
+            ReadToken(PARAN_START);
             do
             {
                 _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = index });
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
-                ReadToken('(');
+                ReadToken(PARAN_START);
                 ReadCoordinateCollection(); //Exterior ring
-                while (ReadOptionalChar(',')) //Interior rings
+                while (ReadOptionalChar(COMMA)) //Interior rings
                 {
                     _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
                     ReadCoordinateCollection();
                 }
-                ReadToken(')');
+                ReadToken(PARAN_END);
             }
-            while (ReadOptionalChar(','));
-            ReadToken(')');
+            while (ReadOptionalChar(COMMA));
+            ReadToken(PARAN_END);
         }
 
         private void ReadGeometryCollection(int parentOffset = -1)
         {
             if (ReadOptionalEmptyToken())
             {
-                // TODO
+                _shapes.Add(new Shape() { type = OGCGeometryType.GeometryCollection, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                return;
             }
             int index = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.GeometryCollection, FigureOffset = _figures.Count, ParentOffset = parentOffset });
-            ReadToken('(');
+            ReadToken(PARAN_START);
             do
             {
                 ReadShape(index);
             }
-            while (ReadOptionalChar(','));
-            ReadToken(')');
+            while (ReadOptionalChar(COMMA));
+            ReadToken(PARAN_END);
         }
 
         private void ReadCoordinateCollection()
         {
-            ReadToken('(');
+            ReadToken(PARAN_START);
             do { ReadCoordinate(); }
-            while (ReadOptionalChar(','));
-            ReadToken(')');
+            while (ReadOptionalChar(COMMA));
+            ReadToken(PARAN_END);
         }
 
         private void ReadCoordinate()
@@ -246,7 +268,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         private bool ReadOptionalDouble(out double d)
         {
             d = double.NaN;
-            if (wkt[_index] != ' ')
+            if (wkt[_index] != WHITE_SPACE)
             {
                 return false;
             }
@@ -256,7 +278,7 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void SkipSpaces()
         {
-            while (_index < length && wkt[_index] == ' ')
+            while (_index < length && wkt[_index] == WHITE_SPACE)
             {
                 _index++;
             }
@@ -269,23 +291,23 @@ namespace Microsoft.SqlServer.Types.Wkt
             for (; _index < wkt.Length; _index++)
             {
                 var c = wkt[_index];
-                if (c == ' ' || c == '(' || c == ')' || c == ',')
+                if (c == WHITE_SPACE || c == PARAN_START || c == PARAN_END || c == COMMA)
                     break;
             }
             return wkt.Slice(start, _index - start);
         }
 
-        private void ReadToken(char token)
+        private void ReadToken(byte token)
         {
             SkipSpaces();
             if (_index >= wkt.Length || wkt[_index] != token)
             {
-                throw new FormatException(String.Format("Token '{0}' not found", token));
+                throw new FormatException($"Token '{(char)token}' not found");
             }
             _index++;
         }
 
-        private bool ReadOptionalChar(char token)
+        private bool ReadOptionalChar(byte token)
         {
             SkipSpaces();
             if (_index < length && wkt[_index] == token)
@@ -298,15 +320,17 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private bool ReadOptionalEmptyToken()
         {
+            //Checks for the token "EMPTY"
             SkipSpaces();
-            if (_index + 5 < length &&
-                wkt[_index] == 'E' &&
-                wkt[_index + 1] == 'M' &&
-                wkt[_index + 2] == 'P' &&
-                wkt[_index + 3] == 'T' &&
-                wkt[_index + 4] == 'Y')
+            if (_index + 5 <= length &&
+                wkt[_index] == 0x45 &&
+                wkt[_index + 1] == 0x4D &&
+                wkt[_index + 2] == 0x50 &&
+                wkt[_index + 3] == 0x54 &&
+                wkt[_index + 4] == 0x59)
             {
                 _index += 5;
+                return true;
             }
             return false;
         }
