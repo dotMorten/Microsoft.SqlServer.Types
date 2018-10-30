@@ -210,7 +210,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             ReadToken('(');
             do { ReadCoordinate(); }
-            while ( ReadOptionalChar(','));
+            while (ReadOptionalChar(','));
             ReadToken(')');
         }
 
@@ -218,7 +218,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             var x = ReadDouble();
             var y = ReadDouble();
-            if(_order == CoordinateOrder.XY)
+            if (_order == CoordinateOrder.XY)
                 _vertices.Add(new Point(x, y));
             else
                 _vertices.Add(new Point(y, x));
@@ -263,7 +263,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             for (; _index < wkt.Length; _index++)
             {
                 var c = wkt[_index];
-                if(c == ' ' || c == '(' || c == ')' || c == ',')
+                if (c == ' ' || c == '(' || c == ')' || c == ',')
                     break;
             }
             return wkt.Slice(start, _index - start);
@@ -278,7 +278,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             }
             _index++;
         }
-        
+
         private bool ReadOptionalChar(char token)
         {
             SkipSpaces();
@@ -293,7 +293,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         private bool ReadOptionalEmptyToken()
         {
             SkipSpaces();
-            if (_index + 5 < length && 
+            if (_index + 5 < length &&
                 wkt[_index] == 'E' &&
                 wkt[_index + 1] == 'M' &&
                 wkt[_index + 2] == 'P' &&

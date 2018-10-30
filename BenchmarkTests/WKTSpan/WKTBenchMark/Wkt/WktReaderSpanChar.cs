@@ -64,20 +64,20 @@ namespace Microsoft.SqlServer.Types.Wkt
             // else
             //     throw new FormatException("Invalid Well-known Text");
 
-            if(MemoryExtensions.Equals(nextToken, "POINT", StringComparison.InvariantCultureIgnoreCase))
-                    ReadPoint(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "LINESTRING", StringComparison.InvariantCultureIgnoreCase))
-                    ReadLineString(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "POLYGON", StringComparison.InvariantCultureIgnoreCase))
-                    ReadPolygon(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "MULTIPOINT", StringComparison.InvariantCultureIgnoreCase))
-                    ReadMultiPoint(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "MULTILINESTRING", StringComparison.InvariantCultureIgnoreCase))
-                    ReadMultiLineString(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "MULTIPOLYGON", StringComparison.InvariantCultureIgnoreCase))
-                    ReadMultiPolygon(parentOffset);
-            else if (MemoryExtensions.Equals(nextToken, "GEOMETRYCOLLECTION", StringComparison.InvariantCultureIgnoreCase))
-                    ReadGeometryCollection(parentOffset);
+            if (MemoryExtensions.Equals(nextToken, "POINT", StringComparison.InvariantCultureIgnoreCase))
+                ReadPoint(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "LINESTRING", StringComparison.OrdinalIgnoreCase))
+                ReadLineString(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "POLYGON", StringComparison.OrdinalIgnoreCase))
+                ReadPolygon(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "MULTIPOINT", StringComparison.OrdinalIgnoreCase))
+                ReadMultiPoint(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "MULTILINESTRING", StringComparison.OrdinalIgnoreCase))
+                ReadMultiLineString(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "MULTIPOLYGON", StringComparison.OrdinalIgnoreCase))
+                ReadMultiPolygon(parentOffset);
+            else if (MemoryExtensions.Equals(nextToken, "GEOMETRYCOLLECTION", StringComparison.OrdinalIgnoreCase))
+                ReadGeometryCollection(parentOffset);
             else
                 throw new FormatException("Invalid Well-known Text");
 
@@ -202,7 +202,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             ReadToken('(');
             do { ReadCoordinate(); }
-            while ( ReadOptionalChar(','));
+            while (ReadOptionalChar(','));
             ReadToken(')');
         }
 
@@ -210,7 +210,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             var x = ReadDouble();
             var y = ReadDouble();
-            if(_order == CoordinateOrder.XY)
+            if (_order == CoordinateOrder.XY)
                 _vertices.Add(new Point(x, y));
             else
                 _vertices.Add(new Point(y, x));
@@ -255,7 +255,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             for (; _index < wkt.Length; _index++)
             {
                 var c = wkt[_index];
-                if(c == ' ' || c == '(' || c == ')' || c == ',')
+                if (c == ' ' || c == '(' || c == ')' || c == ',')
                     break;
             }
             return wkt.Slice(start, _index - start);
@@ -270,7 +270,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             }
             _index++;
         }
-        
+
         private bool ReadOptionalChar(char token)
         {
             SkipSpaces();
@@ -285,7 +285,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         private bool ReadOptionalEmptyToken()
         {
             SkipSpaces();
-            if (_index + 5 < length && 
+            if (_index + 5 < length &&
                 wkt[_index] == 'E' &&
                 wkt[_index + 1] == 'M' &&
                 wkt[_index + 2] == 'P' &&
