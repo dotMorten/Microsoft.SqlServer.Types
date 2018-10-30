@@ -8,22 +8,23 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
     public class WktTests
     {
         [TestMethod]
-        public void TestNullToString()
+        public void NullToString()
         {
             var str = SqlGeometry.Null.ToString();
             Assert.AreEqual("Null", str);
         }
 
         [TestMethod]
-        public void TestPointToString()
+        public void PointToString()
         {
             var point = Tests.StreamExtensions.CreateBytes(4326, (byte)0x01, (byte)0x0C, 5d, 10d);
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(point));
             var str = g.ToString();
             Assert.AreEqual("POINT (5 10)", str);
         }
+
         [TestMethod]
-        public void TestPointFromString()
+        public void PointFromString()
         {
             var g = Microsoft.SqlServer.Types.SqlGeometry.Parse(new System.Data.SqlTypes.SqlString("POINT (5 10)"));
             Assert.AreEqual(0, g.STSrid.Value);
@@ -34,7 +35,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         }
 
         [TestMethod]
-        public void TestLineStringToString()
+        public void LineStringToString()
         {
             var line = Tests.StreamExtensions.CreateBytes(4326, (byte)0x01, (byte)0x05,
                 3, 0d, 1d, 3d, 2d, 4d, 5d, 1d, 2d, double.NaN, //vertices
@@ -47,7 +48,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         }
 
         [TestMethod]
-        public void TestLineStringFromString()
+        public void LineStringFromString()
         {
             var g = SqlGeometry.Parse("LINESTRING (0 1 1, 3 2 2, 4 5)");
             Assert.IsFalse(g.IsNull);
@@ -77,6 +78,68 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             Assert.IsTrue(p3.Z.IsNull); //3rd vertex is NaN and should therefore return Null here
             Assert.IsFalse(p3.HasM);
             Assert.IsTrue(p3.M.IsNull);
+        }
+
+        [TestMethod]
+        public void MultiLineStringFromString()
+        {
+            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT geometry::Parse('MULTILINESTRING((-10 11, 13 14, 15 16), (20 21, 22 23, 24 25, 26 27))')";
+                    var geom = cmd.ExecuteScalar();
+                    //Assert.AreEqual(id.ToString(), geom.ToString());
+                }
+            }
+
+
+            var g = SqlGeometry.Parse("MULTILINESTRING ((-10 11, 13 14, 15 16), (20 21, 22 23, 24 25, 26 27))");
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("MultiLineString", g.STGeometryType().Value);
+            Assert.AreEqual(0, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.IsFalse(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(2, g.STNumGeometries().Value);
+
+            var part1 = g.STGeometryN(1);
+            var part2 = g.STGeometryN(2);
+            Assert.AreEqual(3, part1.STNumPoints());
+            Assert.AreEqual(4, part2.STNumPoints());
+
+            Assert.AreEqual(-10d, part1.STPointN(1).STX.Value);
+            Assert.AreEqual(11d, part1.STPointN(1).STY.Value);
+            Assert.AreEqual(3, part1.STNumPoints().Value);
+            Assert.IsTrue(part2.STPointN(1).Z.IsNull);
+            Assert.IsTrue(part2.STPointN(1).M.IsNull);
+            Assert.AreEqual(4, part2.STNumPoints().Value);
+        }
+
+        [TestMethod]
+        public void PolygonFromString()
+        {
+            var g = SqlGeometry.Parse("POLYGON((-122.358 47.653, -122.348 47.649, -122.348 47.658, -122.358 47.658, -122.358 47.653))");
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("Polygon", g.STGeometryType().Value);
+            Assert.AreEqual(5, g.STNumPoints().Value);
+            Assert.IsFalse(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(1, g.STNumGeometries().Value);
+        }
+
+        [TestMethod]
+        public void MultiPolygonFromString()
+        {
+            var g = SqlGeometry.Parse("MULTIPOLYGON(((-122.358 47.653, -122.348 47.649, -122.358 47.658, -122.358 47.653)), ((-122.341 47.656, -122.341 47.661, -122.351 47.661, -122.341 47.656)))");
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("MultiPolygon", g.STGeometryType().Value);
+            Assert.AreEqual(8, g.STNumPoints().Value);
+            Assert.IsFalse(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(2, g.STNumGeometries().Value);
         }
 
         [TestMethod]

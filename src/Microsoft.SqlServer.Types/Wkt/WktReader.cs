@@ -138,6 +138,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             do
             {
+                _shapes.Add(new Shape() { type = OGCGeometryType.LineString, FigureOffset = _figures.Count, ParentOffset = parentIndex });
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Line, VertexOffset = _vertices.Count });
                 ReadCoordinateCollection();
             }
@@ -167,6 +168,10 @@ namespace Microsoft.SqlServer.Types.Wkt
         private void ReadMultiPolygon(int parentOffset = -1)
         {
             ReadToken("MULTIPOLYGON");
+            if (ReadOptionalToken("EMPTY"))
+            {
+                //TODO
+            }
 
             int index = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiPolygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
@@ -174,7 +179,16 @@ namespace Microsoft.SqlServer.Types.Wkt
             ReadToken("(");
             do
             {
-                ReadPolygon(index);
+                _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = index });
+                _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
+                ReadToken("(");
+                ReadCoordinateCollection(); //Exterior ring
+                while (ReadOptionalChar(',')) //Interior rings
+                {
+                    _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
+                    ReadCoordinateCollection();
+                }
+                ReadToken(")");
             }
             while (ReadOptionalChar(','));
             ReadToken(")");
