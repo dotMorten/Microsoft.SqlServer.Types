@@ -94,7 +94,13 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             var g = SqlGeometry.Parse(parameter + " EMPTY");
             Assert.IsFalse(g.IsNull);
             Assert.AreEqual(parameter, g.STGeometryType().Value.ToUpper());
-            Assert.IsTrue(g.STIsEmpty().Value);
+            Assert.IsTrue(g.STIsEmpty().Value, "STIsEmpty");
+            Assert.AreEqual(0, g.STNumGeometries(), "STNumGeometries");
+            Assert.AreEqual(0, g.STNumPoints(), "STNumPoints");
+            if(parameter == "POLYGON")
+                Assert.AreEqual(0, g.STNumInteriorRing().Value, "STNumInteriorRing");
+            else
+                Assert.IsTrue(g.STNumInteriorRing().IsNull, "STNumInteriorRing");
         }
 
         [TestMethod]

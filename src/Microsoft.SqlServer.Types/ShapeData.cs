@@ -205,7 +205,7 @@ namespace Microsoft.SqlServer.Types
             return _shapes[shapeIndex + 1].ParentOffset == shapeIndex; //next shape is a child of this shape
         }
 
-        public int NumInteriorRing => _figures == null || _figures.Length == 1 ? 0 : _figures.Length - 1;
+        public int NumInteriorRing => _figures == null || _figures.Length <= 1 ? 0 : _figures.Length - 1;
         public PointZM StartPoint => GetPointN(1);
         public PointZM EndPoint => GetPointN(_mValues.Length);
         public ShapeData GetRing(int index) => AsRing(index);
