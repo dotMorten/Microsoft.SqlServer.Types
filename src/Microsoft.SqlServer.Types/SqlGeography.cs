@@ -225,7 +225,7 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlInt32 STNumCurves()
         {
-            if (IsNull) return SqlInt32.Null;
+            if (IsNull || _geometry.IsEmpty) return SqlInt32.Null;
 
             if (_geometry.Type == OGCGeometryType.LineString)
                 return _geometry.IsEmpty ? 0 : _geometry.NumPoints - 1;
@@ -235,9 +235,11 @@ namespace Microsoft.SqlServer.Types
                 if (_geometry.IsEmpty) return 0;
                 return (_geometry.NumPoints - 1) / 2;
             }
+            if(_geometry.Type == OGCGeometryType.Polygon)
+                return _geometry.NumRings;
             if (_geometry.Type != OGCGeometryType.CompoundCurve)
                 return SqlInt32.Null;
-            return _geometry.NumSegments;
+            return _geometry.NumRings;
         }
 
         /// <summary>

@@ -203,6 +203,11 @@ namespace Microsoft.SqlServer.Types.Wkt
             {
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
                 ReadCoordinateCollection();
+                if(_figures[_figures.Count-1].VertexOffset == _vertices.Count)
+                {
+                    // Remove empty interior rings
+                    _figures.RemoveAt(_figures.Count - 1);
+                }
             }
             ReadToken(PARAN_END);
         }
@@ -222,15 +227,22 @@ namespace Microsoft.SqlServer.Types.Wkt
             do
             {
                 _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = index });
-                _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
-                ReadToken(PARAN_START);
-                ReadCoordinateCollection(); //Exterior ring
-                while (ReadOptionalChar(COMMA)) //Interior rings
+                if(ReadOptionalEmptyToken())
                 {
-                    _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
-                    ReadCoordinateCollection();
+
                 }
-                ReadToken(PARAN_END);
+                else
+                {
+                    _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
+                    ReadToken(PARAN_START);
+                    ReadCoordinateCollection(); //Exterior ring
+                    while (ReadOptionalChar(COMMA)) //Interior rings
+                    {
+                        _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
+                        ReadCoordinateCollection();
+                    }
+                    ReadToken(PARAN_END);
+                }
             }
             while (ReadOptionalChar(COMMA));
             ReadToken(PARAN_END);
