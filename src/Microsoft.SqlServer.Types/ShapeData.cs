@@ -207,7 +207,7 @@ namespace Microsoft.SqlServer.Types
 
         public int NumInteriorRing => _figures == null || _figures.Length <= 1 ? 0 : _figures.Length - 1;
         public PointZM StartPoint => GetPointN(1);
-        public PointZM EndPoint => GetPointN(_mValues.Length);
+        public PointZM EndPoint => GetPointN(_vertices.Length);
         public ShapeData GetRing(int index) => AsRing(index);
         public bool HasZ => _zValues != null;
         public bool HasM => _mValues != null;
@@ -225,7 +225,7 @@ namespace Microsoft.SqlServer.Types
             var mFigures = _figures[figureIndex].FigureAttribute;
             if (IsV2Data)
             {
-                if (mFigures == FigureAttributes.Line)
+                if (mFigures == FigureAttributes.Line || mFigures == FigureAttributes.InteriorRing || mFigures == FigureAttributes.ExteriorRing)
                 {
                     return AsLineString(figureIndex);
                 }
@@ -278,9 +278,16 @@ namespace Microsoft.SqlServer.Types
             }
             geoDatum._shapes = shapes.ToArray();
             geoDatum._figures = figures!=null || figures.Any() ? figures?.ToArray() : null;
-            geoDatum._vertices = vertices.ToArray();
-            geoDatum._zValues = zvalues?.ToArray();
-            geoDatum._mValues = mvalues?.ToArray();
+            if(vertices.Count == 1 && double.IsNaN(vertices[0].X) && double.IsNaN(vertices[0].Y)) //Empty point
+            {
+
+            }
+            else
+            { 
+                geoDatum._vertices = vertices.ToArray();
+                geoDatum._zValues = zvalues?.ToArray();
+                geoDatum._mValues = mvalues?.ToArray();
+            }
             geoDatum._isLargerThanAHemisphere = this._isLargerThanAHemisphere;
             //TODO: Segments
             geoDatum._isValid = _isValid;

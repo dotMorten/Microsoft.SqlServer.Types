@@ -89,7 +89,7 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public SqlDouble Z {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasZ ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasZ && !double.IsNaN(_geometry.Z) ? new SqlDouble(_geometry.Z) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public SqlDouble M {
             [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
-            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasM ? new SqlDouble(_geometry.M) : SqlDouble.Null;
+            get => _geometry.Type == OGCGeometryType.Point && _geometry.NumPoints == 1 && _geometry.HasM && !double.IsNaN(_geometry.M) ? new SqlDouble(_geometry.M) : SqlDouble.Null;
         }
 
         /// <summary>
@@ -164,6 +164,14 @@ namespace Microsoft.SqlServer.Types
             get;
         } = new SqlGeography(true);
 
+        /// <summary>
+        /// Returns the total number of rings in a Polygon instance. 
+        /// </summary>
+        /// <returns>
+        /// <para>A SqlInt32 value specifying the total number of rings.</para>
+        /// <para>This method will return NULL if this is not a Polygon instance and will return 0 if the instance is empty.</para>
+        /// </returns>
+        /// <remarks>In the SQL Server geography type, external and internal rings are not distinguished, as any ring can be taken to be the external ring.</remarks>
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlInt32 NumRings()
         {
@@ -181,6 +189,7 @@ namespace Microsoft.SqlServer.Types
         /// <remarks>
         /// The OGC type names that can be returned by the STGeometryType method are Point, LineString, Polygon, GeometryCollection, MultiPoint, MultiLineString, and MultiPolygon.
         /// </remarks>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlString STGeometryType()
         {
             if (IsNull) return SqlString.Null;
@@ -194,6 +203,7 @@ namespace Microsoft.SqlServer.Types
         /// <remarks>
         /// This method returns 1 if the geography instance is not a MultiPoint, MultiLineString, MultiPolygon, or GeometryCollection instance, or 0 if the SqlGeography instance is empty.
         /// </remarks>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlInt32 STNumGeometries() => IsNull ? SqlInt32.Null : _geometry.NumGeometries;
 
         /// <summary>
@@ -205,12 +215,14 @@ namespace Microsoft.SqlServer.Types
         /// If this instance is a GeometryCollection, this method returns of the total number of points in each of the
         /// elements in the collection.
         /// </remarks>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlInt32 STNumPoints() => IsNull ? SqlInt32.Null : _geometry.NumPoints;
 
         /// <summary>
         /// Returns the number of curves in a one-dimensional SqlGeography instance.
         /// </summary>
         /// <returns>The number of curves.</returns>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlInt32 STNumCurves()
         {
             if (IsNull) return SqlInt32.Null;
@@ -237,7 +249,7 @@ namespace Microsoft.SqlServer.Types
         /// <para>When this method is used on a subtype of a GeometryCollection, such as MultiPoint or MultiLineString, this method returns the SqlGeography instance if called with N=1.</para>
         /// <para>This method returns null if the parameter is larger than the result of STNumGeometries and will throw an ArgumentOutOfRangeException if the expression parameter is less than 1.</para>
         /// </remarks>
-        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public SqlGeography STGeometryN(int n)
         {
             if (n < 1)
@@ -246,6 +258,24 @@ namespace Microsoft.SqlServer.Types
             if (IsNull || n > STNumGeometries())
                 return SqlGeography.Null;
             return new SqlGeography(_geometry.GetGeometryN(n), srid);
+        }
+
+        /// <summary>
+        /// Returns the curve specified from a SqlGeography instance that is a LineString, CircularString, or CompoundCurve. 
+        /// </summary>
+        /// <param name="n">An integer between 1 and the number of curves in the SqlGeography instance.</param>
+        /// <returns>The specified curve.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeography STCurveN(int n)
+        {
+            if (n < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(n));
+            }
+            SqlInt32 val = STNumCurves();
+            if (val.IsNull)
+                return Null;
+            return new SqlGeography(_geometry.GetRing(n - 1), srid);
         }
 
         /// <summary>

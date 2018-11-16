@@ -198,6 +198,28 @@ namespace Microsoft.SqlServer.Types
         public SqlInt32 STNumGeometries() => IsNull ? SqlInt32.Null : _geometry.NumGeometries;
 
         /// <summary>
+        /// Returns the number of curves in a one-dimensional SqlGeometry instance.
+        /// </summary>
+        /// <returns>The number of curves.</returns>
+        [SqlMethod(IsDeterministic = true, IsPrecise = true)]
+        public SqlInt32 STNumCurves()
+        {
+            if (IsNull) return SqlInt32.Null;
+
+            if (_geometry.Type == OGCGeometryType.LineString)
+                return _geometry.IsEmpty ? 0 : _geometry.NumPoints - 1;
+
+            if (_geometry.Type == OGCGeometryType.CircularString)
+            {
+                if (_geometry.IsEmpty) return 0;
+                return (_geometry.NumPoints - 1) / 2;
+            }
+            if (_geometry.Type != OGCGeometryType.CompoundCurve)
+                return SqlInt32.Null;
+            return _geometry.NumSegments;
+        }
+
+        /// <summary>
         /// Returns the sum of the number of points in each of the figures in a SqlGeometry instance.
         /// </summary>
         /// <returns>A SqlInt32 value that contains the sum of the number of points in each of the figures in the calling instance.</returns>
@@ -235,6 +257,24 @@ namespace Microsoft.SqlServer.Types
             if (IsNull || n > STNumGeometries())
                 return SqlGeometry.Null;
             return new SqlGeometry(_geometry.GetGeometryN(n), srid);
+        }
+
+        /// <summary>
+        /// Returns the curve specified from a SqlGeometry instance that is a LineString, CircularString, or CompoundCurve. 
+        /// </summary>
+        /// <param name="n">An integer between 1 and the number of curves in the geometry instance.</param>
+        /// <returns>The specified curve.</returns>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
+        public SqlGeometry STCurveN(int n)
+        {
+            if (n < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(n));
+            }
+            SqlInt32 val = STNumCurves();
+            if (val.IsNull)
+                return Null;
+            return new SqlGeometry(_geometry.GetRing(n - 1), srid);
         }
 
         /// <summary>

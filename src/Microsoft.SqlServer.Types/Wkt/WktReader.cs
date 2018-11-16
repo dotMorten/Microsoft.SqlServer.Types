@@ -129,9 +129,29 @@ namespace Microsoft.SqlServer.Types.Wkt
                 _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
                 return;
             }
+            int index = _shapes.Count;
             _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Point, VertexOffset = _vertices.Count });
-            ReadCoordinateCollection();
+            ReadToken(PARAN_START);
+            do
+            {
+                _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = _figures.Count, ParentOffset = index });
+                _figures.Add(new Figure() { FigureAttribute = FigureAttributes.Point, VertexOffset = _vertices.Count });
+                if (ReadOptionalEmptyToken())
+                {
+                    _vertices.Add(new Point(double.NaN, double.NaN));
+                    _z.Add(double.NaN);
+                    _m.Add(double.NaN);
+                }
+                else
+                {
+                    ReadToken(PARAN_START);                    
+                    ReadCoordinate();
+                    ReadToken(PARAN_END);
+                }
+            }
+            while (ReadOptionalChar(COMMA));
+            ReadToken(PARAN_END);
         }
 
         private void ReadLineString(int parentOffset = -1)
@@ -236,6 +256,8 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadCoordinateCollection()
         {
+            if (ReadOptionalEmptyToken())
+                return;
             ReadToken(PARAN_START);
             do { ReadCoordinate(); }
             while (ReadOptionalChar(COMMA));
@@ -252,8 +274,15 @@ namespace Microsoft.SqlServer.Types.Wkt
                 _vertices.Add(new Point(y, x));
             hasZ = ReadOptionalDouble(out double z) || hasZ;
             _z.Add(z);
-            hasM = ReadOptionalDouble(out double m) || hasM;
-            _m.Add(m);
+            if (hasZ)
+            {
+                hasM = ReadOptionalDouble(out double m) || hasM;
+                _m.Add(m);
+            }
+            else
+            {
+                _m.Add(double.NaN);
+            }
         }
         #endregion
 
@@ -268,18 +297,19 @@ namespace Microsoft.SqlServer.Types.Wkt
         private bool ReadOptionalDouble(out double d)
         {
             d = double.NaN;
-            if (wkt[_index] != WHITE_SPACE)
+            if (ReadOptionalNull())
+                return true;
+            if (wkt[_index] == COMMA || wkt[_index] == PARAN_END)
             {
                 return false;
             }
-            _index++;
             d = ReadDouble();
             return true;
         }
 
         private void SkipSpaces()
         {
-            while (_index < length && wkt[_index] == WHITE_SPACE)
+            while (_index < length && (wkt[_index] == WHITE_SPACE || wkt[_index] == 0x09 || wkt[_index] == 0x0A || wkt[_index] == 0x0D))
             {
                 _index++;
             }
@@ -292,7 +322,7 @@ namespace Microsoft.SqlServer.Types.Wkt
             for (; _index < wkt.Length; _index++)
             {
                 var c = wkt[_index];
-                if (c == WHITE_SPACE || c == PARAN_START || c == PARAN_END || c == COMMA)
+                if (c == WHITE_SPACE || c == PARAN_START || c == PARAN_END || c == COMMA || c == 0x09 || wkt[_index] == 0x0A || c == 0x0D)
                     break;
             }
             return wkt.Slice(start, _index - start);
@@ -331,6 +361,21 @@ namespace Microsoft.SqlServer.Types.Wkt
                 wkt[_index + 4] == 0x59)
             {
                 _index += 5;
+                return true;
+            }
+            return false;
+        }
+        private bool ReadOptionalNull()
+        {
+            //Checks for the token "NULL"
+            SkipSpaces();
+            if (_index + 4 <= length &&
+                wkt[_index] == 0x4E &&
+                wkt[_index + 1] == 0x55 &&
+                wkt[_index + 2] == 0x4C &&
+                wkt[_index + 3] == 0x4C)
+            {
+                _index += 4;
                 return true;
             }
             return false;
