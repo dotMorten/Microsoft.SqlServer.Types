@@ -1,4 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -492,5 +492,74 @@ namespace Microsoft.SqlServer.Types
         }
 
         public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.XY);
+
+        public void Populate(IGeometrySink110 sink)
+        {
+            Populate(_geometry, sink);
+        }
+
+        private void Populate(ShapeData geometry, IGeometrySink110 sink)
+        {
+            var geometryType = (OpenGisGeometryType)geometry.Type;
+
+            sink.BeginGeometry(geometryType);
+
+            switch (geometryType)
+            {
+                case OpenGisGeometryType.Point:
+                case OpenGisGeometryType.LineString:
+                case OpenGisGeometryType.Polygon:
+                    PopulateGeometry(geometry, sink);
+                    break;
+                case OpenGisGeometryType.MultiLineString:
+                case OpenGisGeometryType.MultiPolygon:
+                case OpenGisGeometryType.GeometryCollection:
+                    for (int i = 1; i <= geometry.NumGeometries; i++)
+                    {
+                        var geom = geometry.GetGeometryN(i);
+                        Populate(geom, sink);
+                    }
+                    break;
+            }
+
+            sink.EndGeometry();
+        }
+
+        private void PopulateGeometry(ShapeData geometry, IGeometrySink110 sink)
+        {
+            var geometryType = (OpenGisGeometryType)geometry.Type;
+
+            if (geometryType == OpenGisGeometryType.Point)
+            {
+                PopulatePoint(geometry, sink);
+            }
+            else
+            {
+                for (int i = 0; i < geometry.NumRings; i++)
+                {
+                    var ring = geometry.GetRing(i);
+                    PopulateRing(ring, sink);
+                }
+            }
+        }
+
+        private void PopulatePoint(ShapeData point, IGeometrySink110 sink)
+        {
+            var firstPoint = point.StartPoint;
+            sink.BeginFigure(firstPoint.X, firstPoint.Y, point.HasZ ? firstPoint.Z : (double?)null, point.HasM ? firstPoint.M : (double?)null);
+            sink.EndFigure();
+        }
+
+        private void PopulateRing(ShapeData ring, IGeometrySink110 sink)
+        {
+            var firstPoint = ring.StartPoint;
+            sink.BeginFigure(firstPoint.X, firstPoint.Y, firstPoint.Z, firstPoint.M);
+            for (int p = 1; p <= ring.NumPoints; p++)
+            {
+                var point = ring.GetPointN(p);
+                sink.AddLine(point.X, point.Y, point.Z, point.M);
+            }
+            sink.EndFigure();
+        }
     }
 }

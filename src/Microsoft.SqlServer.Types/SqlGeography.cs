@@ -1,4 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Data.SqlTypes;
 using System.IO;
@@ -528,5 +528,74 @@ namespace Microsoft.SqlServer.Types
         }
 
         public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.LatLong);
+
+        public void Populate(IGeographySink110 sink)
+        {
+            Populate(_geometry, sink);
+        }
+
+        private void Populate(ShapeData geography, IGeographySink110 sink)
+        {
+            var geographyType = (OpenGisGeographyType)geography.Type;
+
+            sink.BeginGeography(geographyType);
+
+            switch (geographyType)
+            {
+                case OpenGisGeographyType.Point:
+                case OpenGisGeographyType.LineString:
+                case OpenGisGeographyType.Polygon:
+                    PopulateGeography(geography, sink);
+                    break;
+                case OpenGisGeographyType.MultiLineString:
+                case OpenGisGeographyType.MultiPolygon:
+                case OpenGisGeographyType.GeometryCollection:
+                    for (int i = 1; i <= geography.NumGeometries; i++)
+                    {
+                        var geom = geography.GetGeometryN(i);
+                        Populate(geom, sink);
+                    }
+                    break;
+            }
+
+            sink.EndGeography();
+        }
+
+        private void PopulateGeography(ShapeData geography, IGeographySink110 sink)
+        {
+            var geographyType = (OpenGisGeographyType)geography.Type;
+
+            if (geographyType == OpenGisGeographyType.Point)
+            {
+                PopulatePoint(geography, sink);
+            }
+            else
+            {
+                for (int i = 0; i < geography.NumRings; i++)
+                {
+                    var ring = geography.GetRing(i);
+                    PopulateRing(ring, sink);
+                }
+            }
+        }
+
+        private void PopulatePoint(ShapeData point, IGeographySink110 sink)
+        {
+            var firstPoint = point.StartPoint;
+            sink.BeginFigure(firstPoint.X, firstPoint.Y, point.HasZ ? firstPoint.Z : (double?)null, point.HasM ? firstPoint.M : (double?)null);
+            sink.EndFigure();
+        }
+
+        private void PopulateRing(ShapeData ring, IGeographySink110 sink)
+        {
+            var firstPoint = ring.StartPoint;
+            sink.BeginFigure(firstPoint.X, firstPoint.Y, firstPoint.Z, firstPoint.M);
+            for (int p = 1; p <= ring.NumPoints; p++)
+            {
+                var point = ring.GetPointN(p);
+                sink.AddLine(point.X, point.Y, point.Z, point.M);
+            }
+            sink.EndFigure();
+        }
     }
 }
