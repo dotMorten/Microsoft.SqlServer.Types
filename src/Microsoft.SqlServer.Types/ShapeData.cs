@@ -128,7 +128,7 @@ namespace Microsoft.SqlServer.Types
             this._vertices = points;
             this._figures = figures;
             this._shapes = shapes;
-            this._isValid = false;
+            this._isValid = true;
             this._isLargerThanAHemisphere = false;
             _zValues = null;
             _mValues = null;
@@ -143,7 +143,7 @@ namespace Microsoft.SqlServer.Types
             this._figures = figures;
             this._shapes = shapes;
             this._segments = mSegments;
-            this._isValid = false;
+            this._isValid = true;
             this._isLargerThanAHemisphere = false;
         }
 
@@ -372,12 +372,13 @@ namespace Microsoft.SqlServer.Types
 
             if (!props.HasFlag(SerializationProps.IsSingleLineSegment) &&
                 !props.HasFlag(SerializationProps.IsSinglePoint))
-                bw.Write(NumPoints); // Number of Points = 0 (no points) 
-            foreach (var p in _vertices)
-            {
-                bw.Write(p.X); //X
-                bw.Write(p.Y); //Y
-            }
+                bw.Write(NumPoints); // Number of Points = 0 (no points)
+            if (_vertices != null)
+                foreach (var p in _vertices)
+                {
+                    bw.Write(p.X); //X
+                    bw.Write(p.Y); //Y
+                }
             if (_zValues != null)
                 foreach (var z in _zValues)
                 {

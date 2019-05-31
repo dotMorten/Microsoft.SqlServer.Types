@@ -112,7 +112,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             _shapes.Add(new Shape() { type = OGCGeometryType.Point, FigureOffset = _figures.Count, ParentOffset = parentOffset });
@@ -126,7 +126,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPoint, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             int index = _shapes.Count;
@@ -158,7 +158,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.LineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.LineString, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             else
@@ -172,7 +172,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiLineString, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             ReadToken(PARAN_START);
@@ -192,7 +192,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
@@ -216,7 +216,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPolygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.MultiPolygon, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
 
@@ -252,7 +252,7 @@ namespace Microsoft.SqlServer.Types.Wkt
         {
             if (ReadOptionalEmptyToken())
             {
-                _shapes.Add(new Shape() { type = OGCGeometryType.GeometryCollection, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+                _shapes.Add(new Shape() { type = OGCGeometryType.GeometryCollection, FigureOffset = -1, ParentOffset = parentOffset });
                 return;
             }
             int index = _shapes.Count;
