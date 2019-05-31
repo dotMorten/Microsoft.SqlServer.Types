@@ -64,7 +64,9 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             CollectionAssert.AreEqual(coll, serialized);
         }
 
-        //[TestMethod]
+        [TestMethod]
+        [Ignore]
+        [WorkItem(25)]
         public void TestGeometryCollectionWithEmpty()
         {
             var coll = StreamExtensions.CreateBytes(4326, (byte)0x01, (byte)0x04,
