@@ -82,6 +82,23 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         }
 
         [TestMethod]
+        public void TestEmptyGeometryCollection()
+        {
+            var coll = StreamExtensions.CreateBytes(4326, (byte)0x01, (byte)0x04,
+                0, //vertices
+                0, //figures
+                1, -1, -1, (byte)0x07 //shapes
+            );
+            var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(coll));
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("GeometryCollection", g.STGeometryType().Value);
+            Assert.AreEqual(4326, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.AreEqual(0, g.STNumGeometries());
+        }
+
+        [TestMethod]
         public void TestGeometryCollection()
         {
             var coll = StreamExtensions.CreateBytes(4326, (byte)0x01, (byte)0x04,
