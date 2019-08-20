@@ -15,10 +15,10 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - name: Clone NmeaParser
+    - name: Clone Repo
       uses: actions/checkout@v1
     
-    - name: Setup MSBuild.exe
+    - name: Setup Visual Studio Command Prompt
       uses: warrenbuckley/Setup-MSBuild@v1
       
     - name: Build
