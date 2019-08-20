@@ -18,10 +18,14 @@ jobs:
     - name: Clone NmeaParser
       uses: actions/checkout@v1
     
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+      
     - name: Build
       run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat"
+        REM call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat"
         msbuild /restore /t:Build src/Microsoft.SqlServer.Types.sln /p:Configuration=Release
+        
     - name: Tests
       run: |
         vstest.console.exe src\Microsoft.SqlServer.Types.Tests\bin\Release\netcoreapp2.1\Microsoft.SqlServer.Types.Tests.dll
