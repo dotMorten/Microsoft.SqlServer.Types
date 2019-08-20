@@ -22,6 +22,3 @@ jobs:
       run: |
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat"
         msbuild /restore /t:Build Microsoft.SqlServer.Types.sln /p:Configuration=Release
-        
-    - name: Tests
-      run: echo TODO: Run tests here
