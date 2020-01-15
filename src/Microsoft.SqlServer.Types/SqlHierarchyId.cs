@@ -91,22 +91,7 @@ namespace Microsoft.SqlServer.Types
         /// If both <see cref="SqlHierarchyId"/> nodes are null, returns 0.
         /// If one <see cref="SqlHierarchyId"/> node is null, it is considered to be less than the non-null <see cref="SqlHierarchyId"/> node.
         /// </remarks>
-        public int CompareTo(SqlHierarchyId hid)
-        {
-            if(IsNull)
-            {
-                if (!hid.IsNull)
-                    return -1;
-                return 0;
-            }
-            if (hid.IsNull)
-                return 1;
-            if (this < hid)
-                return -1;
-            if (this > hid)
-                return 1;
-            return 0;
-        }
+        public int CompareTo(SqlHierarchyId hid) => this._imp.CompareTo(hid._imp);
 
         /// <summary>
         /// Evaluates whether <see cref="SqlHierarchyId"/> and obj are equal.
@@ -119,7 +104,7 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public override bool Equals(object obj) => obj is SqlHierarchyId && Equals((SqlHierarchyId)obj);
 
-        private bool Equals(SqlHierarchyId other) => (IsNull && other.IsNull) || (this == other).IsTrue;
+        private bool Equals(SqlHierarchyId other) => this._imp.Equals(other._imp);
 
         /// <summary>
         /// Retrieves the <see cref="SqlHierarchyId"/> node n levels up the hierarchical tree.
