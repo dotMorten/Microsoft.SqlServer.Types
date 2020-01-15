@@ -1,6 +1,12 @@
 # Microsoft.SqlServer.Types
 a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Types`
 
+## Sponsoring
+
+If you like this library and use it a lot, consider sponsoring me. Anything helps and encourages me to keep going.
+
+See here for details: https://github.com/sponsors/dotMorten
+
 ### NuGet:
 
 Install the package `dotMorten.Microsoft.SqlServer.Types` from NuGet.
