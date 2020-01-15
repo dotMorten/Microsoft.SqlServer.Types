@@ -28,6 +28,25 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             Assert.IsTrue(parent.IsNull);
         }
 
+
+        [TestMethod]
+        public void RootIsNotNull()
+        {
+            Assert.AreNotEqual(SqlHierarchyId.GetRoot(), SqlHierarchyId.Null);
+        }
+
+        [TestMethod]
+        public void RootIsNotNull2()
+        {
+            Assert.IsFalse(SqlHierarchyId.GetRoot().IsNull);
+        }
+
+        [TestMethod]
+        public void NullIsNull()
+        {
+            Assert.IsTrue(SqlHierarchyId.Null.IsNull);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ThrowsOnNegativeAncestor()
