@@ -253,7 +253,7 @@ namespace Microsoft.SqlServer.Types
                 var subNodes = nodes[i];
                 for (int j = 0; j < subNodes.Length; j++)
                 {
-                    int val = subNodes[j];
+                    long val = subNodes[j];
 
                     BitPattern p = KnownPatterns.GetPatternByValue(val);
 
@@ -283,11 +283,11 @@ namespace Microsoft.SqlServer.Types
             if (r == null)
                 throw new ArgumentNullException(nameof(r));
             var bitR = new BitReader(r);
-            List<List<int>> result = new List<List<int>>();
+            List<List<long>> result = new List<List<long>>();
 
             while (true)
             {
-                List<int> step = new List<int>();
+                List<long> step = new List<long>();
 
                 while (true)
                 {

@@ -27,7 +27,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(-4294971464, -4169, "000101xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
-        internal static BitPattern GetPatternByValue(int value)
+        internal static BitPattern GetPatternByValue(long value)
         {
             if (value >= 0)
             {
