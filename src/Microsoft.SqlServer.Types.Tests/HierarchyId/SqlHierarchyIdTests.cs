@@ -64,5 +64,21 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var newSibling = SqlHierarchyId.Parse("/1/").GetDescendant(child1, child2);
             Assert.AreEqual(newSibling.ToString(), "/1/1.0/");
         }
+
+        [TestMethod]
+        public void ParseLongNodePositive()
+        {
+            var expected = "/281479271683151/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
+        }
+
+        [TestMethod]
+        public void ParseLongNodeNegative()
+        {
+            var expected = "/-281479271682120/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
+        }
     }
 }
