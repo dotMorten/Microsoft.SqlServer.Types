@@ -61,7 +61,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
                 SqlHierarchyId.Parse("/9/1/"),
                 SqlHierarchyId.Parse("/9/3/"));
-            Assert.AreEqual("/9/2/", newSibling.ToString(), );
+            Assert.AreEqual("/9/2/", newSibling.ToString());
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
                 SqlHierarchyId.Parse("/9/1.1/"),
                 SqlHierarchyId.Parse("/9/2/"));
-            Assert.AreEqual("/9/1.2/", newSibling.ToString(), );
+            Assert.AreEqual("/9/1.2/", newSibling.ToString());
         }
 
         [TestMethod]
@@ -80,7 +80,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
                 SqlHierarchyId.Parse("/9/1/"),
                 SqlHierarchyId.Parse("/9/1.1/"));
-            Assert.AreEqual("/9/1.0/", newSibling.ToString(), );
+            Assert.AreEqual("/9/1.0/", newSibling.ToString());
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
                 SqlHierarchyId.Parse("/9/1/"),
                 SqlHierarchyId.Parse("/9/2/"));
-            Assert.AreEqual("/9/1.1/", newSibling.ToString(), );
+            Assert.AreEqual("/9/1.1/", newSibling.ToString());
         }
     }
 }
