@@ -161,7 +161,9 @@ namespace Microsoft.SqlServer.Types
         /// </list>
         /// </remarks>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = true, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(_imp.GetDescendant(child1.IsNull ? default(HierarchyId?) : child1._imp, child2.IsNull ? default(HierarchyId?) : child2._imp));
+        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(_imp.GetDescendant(
+            child1.IsNull ? default(HierarchyId?) : child1._imp, 
+            child2.IsNull ? default(HierarchyId?) : child2._imp));
 
         /// <summary>
         /// Gets a hash of the path from the root node of the hierarchy tree to the <see cref="SqlHierarchyId"/> node.

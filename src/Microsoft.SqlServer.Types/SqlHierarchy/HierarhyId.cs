@@ -157,29 +157,45 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                     string.Format(CultureInfo.InvariantCulture, GetDescendantChild1MustLessThanChild2ExceptionMessage, child1, child2),
                     "child1");
             }
-            int firstDiffrenceIdx = 0;
-            for (; firstDiffrenceIdx < child1LastNode.Length; firstDiffrenceIdx++)
+            var newNode = GetBetween(child1LastNode, child2LastNode);
+          
+            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(IntArrayToString)) + PathSeparator + IntArrayToString(newNode) + PathSeparator;
+            return new HierarchyId(hierarchyStr);
+        }
+
+        static int[] GetBetween(int[] node1, int[] node2)
+        {  
+            int i = 0;
+            for (; i < node1.Length; i++)
             {
-                if (child1LastNode[firstDiffrenceIdx] < child2LastNode[firstDiffrenceIdx])
+                if (node1[i] < node2[i])
                 {
                     break;
                 }
             }
-            child1LastNode = child1LastNode.Take(firstDiffrenceIdx + 1).ToArray();
-            if(child1LastNode.Length >= firstDiffrenceIdx || child2LastNode.Length >= firstDiffrenceIdx)
+            if (i == node1.Length)
+                i--;
+
+            var result = node1.Take(i + 1).ToArray();
+            if (result[i] + 1 < node2[i])
             {
-                child1LastNode = child1LastNode.Concat(new[] { 0 }).ToArray();
+                result[i]++;
+                return result;
             }
-            else if (child1LastNode[firstDiffrenceIdx] + 1 < child2LastNode[firstDiffrenceIdx])
+            else if (node1.Length > i + 1)
             {
-                child1LastNode[firstDiffrenceIdx]++;
+                return result.Concat(new[] { node1[i + 1] + 1 }).ToArray();
             }
-            else
+            else if (node2.Length > i + 1)
             {
-                child1LastNode = child1LastNode.Concat(new[] { 1 }).ToArray();
+                return result.Concat(new[] { node2[i + 1] - 1 }).ToArray();
             }
-            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(IntArrayToString)) + PathSeparator + IntArrayToString(child1LastNode) + PathSeparator;
-            return new HierarchyId(hierarchyStr);
+            else if (node2.Length >= i + 1)
+            {
+                return result.Concat(new[] { 1 }).ToArray();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -365,7 +381,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         /// <returns> 
         ///      true if the the first parameter is greater or equal than the second parameter, false otherwise 
         /// </returns>
-        public static bool operator >=(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) <= 0;
+        public static bool operator >=(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) >= 0;
 
         /// <summary>
         /// Compares two HierarchyIds by their values.
