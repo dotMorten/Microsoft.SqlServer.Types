@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 {
     [TestClass]
