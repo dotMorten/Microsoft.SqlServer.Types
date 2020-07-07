@@ -92,5 +92,21 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
                 SqlHierarchyId.Parse("/9/2/"));
             Assert.AreEqual("/9/1.1/", newSibling.ToString());
         }
+
+        [TestMethod]
+        public void ParseLongNodePositive()
+        {
+            var expected = "/281479271683151/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
+        }
+
+        [TestMethod]
+        public void ParseLongNodeNegative()
+        {
+            var expected = "/-281479271682120/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
+        }
     }
 }

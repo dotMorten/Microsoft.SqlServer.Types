@@ -15,11 +15,11 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
     internal struct HierarchyId : IComparable
     {
         private readonly string _hierarchyId;
-        private readonly int[][] _nodes;
+        private readonly long[][] _nodes;
 
-        static readonly int[][] __RootNodes = new int[0][];
+        static readonly long[][] __RootNodes = new long[0][];
 
-        internal int[][] GetNodes() => _nodes ?? __RootNodes;
+        internal long[][] GetNodes() => _nodes ?? __RootNodes;
 
         /// <summary>
         /// The Path separator character
@@ -38,14 +38,14 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         private const string GetDescendantChild1MustLessThanChild2ExceptionMessage =
             "HierarchyId.GetDescendant failed because 'child1' must be less than 'child2'.  'child1' was '{0}' and 'child2' was '{1}'.";
 
-        internal HierarchyId(int[][] nodes)
+        internal HierarchyId(long[][] nodes)
         {
             if (nodes == null)
                 throw new ArgumentNullException(nameof(nodes));
 
             this._nodes= nodes;
             this._hierarchyId = nodes == null  || nodes.Length == 0 ? PathSeparator :
-                (PathSeparator + string.Join(PathSeparator, nodes.Select(IntArrayToString)) + PathSeparator);
+                (PathSeparator + string.Join(PathSeparator, nodes.Select(LongArrayToString)) + PathSeparator);
         }
 
         /// <summary>
@@ -67,15 +67,15 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                     throw new HierarchyIdException( string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
 
                 int nodesCount = nodesStr.Length - 2;
-                var nodes = new int[nodesCount][];
+                var nodes = new long[nodesCount][];
                 for (int i = 0; i < nodesCount; i++)
                 {
                     string node = nodesStr[i + 1];
                     var intsStr = node.Split('.');
-                    var ints = new int[intsStr.Length];
+                    var ints = new long[intsStr.Length];
                     for (int j = 0; j < intsStr.Length; j++)
                     {
-                        if (!int.TryParse(intsStr[j], out int num))
+                        if (!long.TryParse(intsStr[j], out long num))
                             throw new HierarchyIdException(string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
                         ints[j] = num;
                     }
@@ -99,7 +99,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             if (GetLevel() < n)
                 throw new ArgumentException(nameof(n));
 
-            string hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Take(GetLevel() - n).Select(IntArrayToString)) + PathSeparator;
+            string hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Take(GetLevel() - n).Select(LongArrayToString)) + PathSeparator;
             return new HierarchyId(hierarchyStr);
         }
 
@@ -136,7 +136,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                 var lastNode = result.GetNodes().Last();
                 //decrease the last part of the last node of the 1nd child
                 lastNode[lastNode.Length - 1]--;
-                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(IntArrayToString)) + PathSeparator;
+                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(LongArrayToString)) + PathSeparator;
                 return new HierarchyId(hierarchyStr);
             }
             if (child2 == null)
@@ -145,12 +145,12 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                 var lastNode = result.GetNodes().Last();
                 //increase the last part of the last node of the 2nd child
                 lastNode[lastNode.Length - 1]++;
-                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(IntArrayToString)) + PathSeparator;
+                hierarchyStr = PathSeparator + string.Join(PathSeparator, result.GetNodes().Select(LongArrayToString)) + PathSeparator;
                 return new HierarchyId(hierarchyStr);
             }
             var child1LastNode = child1.Value.GetNodes().Last();
             var child2LastNode = child2.Value.GetNodes().Last();
-            var cmp = CompareIntArrays(child1LastNode, child2LastNode);
+            var cmp = CompareLongArrays(child1LastNode, child2LastNode);
             if (cmp >= 0)
             {
                 throw new ArgumentException(
@@ -164,10 +164,10 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         }
 
         static int[] GetBetween(int[] node1, int[] node2)
-        {  
+            {
             int i = 0;
             for (; i < node1.Length; i++)
-            {
+                {
                 if (node1[i] < node2[i])
                 {
                     break;
@@ -230,7 +230,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             }
             for (int i = 0; i < parent.GetLevel(); i++)
             {
-                int cmp = CompareIntArrays(GetNodes()[i], parent.GetNodes()[i]);
+                int cmp = CompareLongArrays(GetNodes()[i], parent.GetNodes()[i]);
                 if (cmp != 0)
                 {
                     return false;
@@ -257,12 +257,12 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             sb.Append(PathSeparator);
             foreach (var node in newRoot.GetNodes())
             {
-                sb.Append(IntArrayToString(node));
+                sb.Append(LongArrayToString(node));
                 sb.Append(PathSeparator);
             }
             foreach (var node in GetNodes().Skip(oldRoot.GetLevel()))
             {
-                sb.Append(IntArrayToString(node));
+                sb.Append(LongArrayToString(node));
                 sb.Append(PathSeparator);
             }
             return new HierarchyId(sb.ToString());
@@ -278,18 +278,18 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             return new HierarchyId(input);
         }
 
-        private static string IntArrayToString(IEnumerable<int> array)
+        private static string LongArrayToString(IEnumerable<long> array)
         {
             return string.Join(".", array);
         }
 
-        private static int CompareIntArrays(int[] array1, int[] array2)
+        private static int CompareLongArrays(long[] array1, long[] array2)
         {
             int count = Math.Min(array1.Length, array2.Length);
             for (int i = 0; i < count; i++)
             {
-                int item1 = array1[i];
-                int item2 = array2[i];
+                long item1 = array1[i];
+                long item2 = array2[i];
 
                 if (item1 < item2)
                     return -1;
@@ -328,7 +328,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             {
                 var node1 = nodes1[i];
                 var node2 = nodes2[i];
-                int cmp = CompareIntArrays(node1, node2);
+                int cmp = CompareLongArrays(node1, node2);
                 if (cmp != 0)
                     return cmp;
 

@@ -39,16 +39,16 @@ namespace Microsoft.SqlServer.Types
         internal ulong PrefixOnes { get; }
         internal int PrefixBitLength { get; }
 
-        internal bool ContainsValue(int value)
+        internal bool ContainsValue(long value)
         {
             return MinValue <= value && value <= MaxValue;
         }
 
         public override string ToString() => Pattern;
 
-        public ulong EncodeValue(int val, bool isLast)
+        public ulong EncodeValue(long val, bool isLast)
         {
-            ulong expand = Expand(PatternMask, (int)(val - MinValue));
+            ulong expand = Expand(PatternMask, val - MinValue);
 
             ulong value = PatternOnes | expand | 1;
 
@@ -58,7 +58,7 @@ namespace Microsoft.SqlServer.Types
             return value;
         }
 
-        private ulong Expand(ulong mask, int value)
+        private ulong Expand(ulong mask, long value)
         {
             if (mask == 0)
                 return 0;
