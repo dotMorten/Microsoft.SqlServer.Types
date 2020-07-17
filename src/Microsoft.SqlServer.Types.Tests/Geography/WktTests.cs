@@ -1,5 +1,6 @@
 ﻿using Microsoft.SqlServer.Types.Tests.Geometry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Data.SqlTypes;
 
 namespace Microsoft.SqlServer.Types.Tests.Geography
 {
@@ -73,6 +74,24 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
                     Assert.AreEqual("LINESTRING (-122.36 47.656, -122.343 47.656)", cmd.ExecuteScalar().ToString());
                 }
             }
+        }
+
+        [TestMethod]
+        public void CreateFullGlobe()
+        {
+            var wkt = "FULLGLOBE";
+            var value = SqlGeography.STGeomFromText(new SqlChars(new SqlString(wkt)), 4326);
+            Assert.IsNotNull(value);
+        }
+
+        [TestMethod]
+        public void FullGlobeWkt()
+        {
+            var wkt = "FULLGLOBE";
+            var value = SqlGeography.STGeomFromText(new SqlChars(new SqlString(wkt)), 4326);
+
+            var valueWkt = value.STAsText().ToSqlString().Value;
+            Assert.AreEqual(wkt, valueWkt);
         }
     }
 }

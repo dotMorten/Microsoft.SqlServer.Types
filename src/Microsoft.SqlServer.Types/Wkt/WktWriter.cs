@@ -41,6 +41,14 @@ namespace Microsoft.SqlServer.Types.Wkt
         private static void WriteGeometry(ShapeData geometry, StringBuilder sb, bool includeZ, bool includeM, CoordinateOrder order)
         {
             var type = geometry.Type;
+            
+            // Special handling for FULLGLOBE
+            if(type == OGCGeometryType.FullGlobe)
+            {
+                sb.Append("FULLGLOBE");
+                return;
+            }
+
             sb.Append(type.ToString().ToUpperInvariant());
             if (geometry.IsEmpty)
             {
