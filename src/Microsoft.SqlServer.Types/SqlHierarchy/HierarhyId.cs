@@ -43,8 +43,8 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             if (nodes == null)
                 throw new ArgumentNullException(nameof(nodes));
 
-            this._nodes= nodes;
-            this._hierarchyId = nodes == null  || nodes.Length == 0 ? PathSeparator :
+            this._nodes = nodes;
+            this._hierarchyId = nodes == null || nodes.Length == 0 ? PathSeparator :
                 (PathSeparator + string.Join(PathSeparator, nodes.Select(LongArrayToString)) + PathSeparator);
         }
 
@@ -64,7 +64,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             {
                 var nodesStr = hierarchyId.Split('/');
                 if (!string.IsNullOrEmpty(nodesStr[0]) || !string.IsNullOrEmpty(nodesStr[nodesStr.Length - 1]))
-                    throw new HierarchyIdException( string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
+                    throw new HierarchyIdException(string.Format(CultureInfo.InvariantCulture, InvalidHierarchyIdExceptionMessage, hierarchyId));
 
                 int nodesCount = nodesStr.Length - 2;
                 var nodes = new long[nodesCount][];
@@ -123,9 +123,9 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             if (child1 != null && (child1.Value.GetLevel() != GetLevel() + 1 || !child1.Value.IsDescendantOf(this)))
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child1", child1, ToString()), "child1");
 
-            if (child2 != null&& (child2.Value.GetLevel() != GetLevel() + 1 || !child2.Value.IsDescendantOf(this)))
+            if (child2 != null && (child2.Value.GetLevel() != GetLevel() + 1 || !child2.Value.IsDescendantOf(this)))
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child2", child1, ToString()), "child2");
-           
+
             if (child1 == null && child2 == null)
                 return new HierarchyId(ToString() + 1 + PathSeparator);
 
@@ -158,16 +158,16 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
                     "child1");
             }
             var newNode = GetBetween(child1LastNode, child2LastNode);
-          
-            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(IntArrayToString)) + PathSeparator + IntArrayToString(newNode) + PathSeparator;
+
+            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(LongArrayToString)) + PathSeparator + LongArrayToString(newNode) + PathSeparator;
             return new HierarchyId(hierarchyStr);
         }
 
-        static int[] GetBetween(int[] node1, int[] node2)
-            {
+        static long[] GetBetween(long[] node1, long[] node2)
+        {
             int i = 0;
             for (; i < node1.Length; i++)
-                {
+            {
                 if (node1[i] < node2[i])
                 {
                     break;
@@ -192,7 +192,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             }
             else if (node2.Length >= i + 1)
             {
-                return result.Concat(new[] { 1 }).ToArray();
+                return result.Concat(new[] { 1L }).ToArray();
             }
 
             return result;
@@ -351,7 +351,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         /// <returns> 
         /// true if the the first parameter is less than the second parameter, false otherwise 
         /// </returns>
-        public static bool operator <(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) <  0;
+        public static bool operator <(HierarchyId hid1, HierarchyId hid2) => Compare(hid1, hid2) < 0;
 
         /// <summary>
         /// Compares two HierarchyIds by their values.
