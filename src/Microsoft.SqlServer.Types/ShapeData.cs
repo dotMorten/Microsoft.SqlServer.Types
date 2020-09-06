@@ -147,6 +147,8 @@ namespace Microsoft.SqlServer.Types
             this._isLargerThanAHemisphere = false;
         }
 
+        public Shape[] Shapes => _shapes;
+
         public PointZM GetPointN(int index)
         {
             Point p = _vertices[index - 1];

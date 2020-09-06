@@ -270,6 +270,8 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private void ReadFullGlobe(int parentOffset = -1)
         {
+            if(_shapes.Count > 0)
+                throw new FormatException("FullGlobe instances cannot be objects in the GeometryCollection. GeometryCollections can contain the following instances: Points, MultiPoints, LineStrings, MultiLineStrings, Polygons, MultiPolygons, CircularStrings, CompoundCurves, CurvePolygons and GeometryCollections.");
             _shapes.Add(new Shape() { type = OGCGeometryType.FullGlobe, FigureOffset = -1, ParentOffset = parentOffset });
         }
 

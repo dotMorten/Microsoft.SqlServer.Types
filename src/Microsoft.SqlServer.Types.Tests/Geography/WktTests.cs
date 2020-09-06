@@ -93,5 +93,15 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             var valueWkt = value.STAsText().ToSqlString().Value;
             Assert.AreEqual(wkt, valueWkt);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.FormatException))]
+        public void FailCollectionWithFullGlobe()
+        {
+            var wkt = "GEOMETRYCOLLECTION (POINT (40 10), LINESTRING (10 10, 20 20, 10 40), FULLGLOBE, POLYGON ((40 40, 20 45, 45 30, 40 40)))";
+            var value = SqlGeography.STGeomFromText(new SqlChars(new SqlString(wkt)), 4326);
+            var valueWkt = value.STAsText().ToSqlString().Value;
+            Assert.AreEqual(wkt, valueWkt);
+        }
     }
 }
