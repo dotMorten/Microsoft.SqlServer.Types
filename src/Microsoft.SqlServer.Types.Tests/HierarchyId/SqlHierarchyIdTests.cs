@@ -76,6 +76,15 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 
         [TestMethod]
         [WorkItem(21)]
+        public void GetDescendantsOfChildren()
+        {
+            var child1 = SqlHierarchyId.Parse("/1/1/");
+            var child2 = SqlHierarchyId.Parse("/1/1.1/");
+            var newSibling = SqlHierarchyId.Parse("/1/").GetDescendant(child1, child2);
+            Assert.AreEqual(newSibling.ToString(), "/1/1.0/");
+        }
+
+        [TestMethod]
         public void GetDescendantsDecrementSecond()
         {
             var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
