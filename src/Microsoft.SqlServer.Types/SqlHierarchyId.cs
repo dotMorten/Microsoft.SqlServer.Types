@@ -161,7 +161,9 @@ namespace Microsoft.SqlServer.Types
         /// </list>
         /// </remarks>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = true, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
-        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(_imp.GetDescendant(child1.IsNull ? default(HierarchyId?) : child1._imp, child2.IsNull ? default(HierarchyId?) : child2._imp));
+        public SqlHierarchyId GetDescendant(SqlHierarchyId child1, SqlHierarchyId child2) => new SqlHierarchyId(_imp.GetDescendant(
+            child1.IsNull ? default(HierarchyId?) : child1._imp, 
+            child2.IsNull ? default(HierarchyId?) : child2._imp));
 
         /// <summary>
         /// Gets a hash of the path from the root node of the hierarchy tree to the <see cref="SqlHierarchyId"/> node.
@@ -253,7 +255,7 @@ namespace Microsoft.SqlServer.Types
                 var subNodes = nodes[i];
                 for (int j = 0; j < subNodes.Length; j++)
                 {
-                    int val = subNodes[j];
+                    long val = subNodes[j];
 
                     BitPattern p = KnownPatterns.GetPatternByValue(val);
 
@@ -283,11 +285,11 @@ namespace Microsoft.SqlServer.Types
             if (r == null)
                 throw new ArgumentNullException(nameof(r));
             var bitR = new BitReader(r);
-            List<List<int>> result = new List<List<int>>();
+            List<List<long>> result = new List<List<long>>();
 
             while (true)
             {
-                List<int> step = new List<int>();
+                List<long> step = new List<long>();
 
                 while (true)
                 {

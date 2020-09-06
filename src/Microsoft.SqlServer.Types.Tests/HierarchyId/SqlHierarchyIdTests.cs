@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 {
     [TestClass]
@@ -56,6 +57,24 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
         }
 
         [TestMethod]
+        public void GetDescendantsNormal()
+        {
+            var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
+                SqlHierarchyId.Parse("/9/1/"),
+                SqlHierarchyId.Parse("/9/3/"));
+            Assert.AreEqual("/9/2/", newSibling.ToString());
+        }
+
+        [TestMethod]
+        public void GetDescendantsIncrementFirst()
+        {
+            var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
+                SqlHierarchyId.Parse("/9/1.1/"),
+                SqlHierarchyId.Parse("/9/2/"));
+            Assert.AreEqual("/9/1.2/", newSibling.ToString());
+        }
+
+        [TestMethod]
         [WorkItem(21)]
         public void GetDescendantsOfChildren()
         {
@@ -63,6 +82,40 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var child2 = SqlHierarchyId.Parse("/1/1.1/");
             var newSibling = SqlHierarchyId.Parse("/1/").GetDescendant(child1, child2);
             Assert.AreEqual(newSibling.ToString(), "/1/1.0/");
+        }
+
+        [TestMethod]
+        public void GetDescendantsDecrementSecond()
+        {
+            var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
+                SqlHierarchyId.Parse("/9/1/"),
+                SqlHierarchyId.Parse("/9/1.1/"));
+            Assert.AreEqual("/9/1.0/", newSibling.ToString());
+        }
+
+        [TestMethod]
+        public void GetDescendantsAddOne()
+        {
+            var newSibling = SqlHierarchyId.Parse("/9/").GetDescendant(
+                SqlHierarchyId.Parse("/9/1/"),
+                SqlHierarchyId.Parse("/9/2/"));
+            Assert.AreEqual("/9/1.1/", newSibling.ToString());
+        }
+
+        [TestMethod]
+        public void ParseLongNodePositive()
+        {
+            var expected = "/281479271683151/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
+        }
+
+        [TestMethod]
+        public void ParseLongNodeNegative()
+        {
+            var expected = "/-281479271682120/";
+            var result = SqlHierarchyId.Parse(expected);
+            Assert.AreEqual(expected, result.ToString());
         }
     }
 }
