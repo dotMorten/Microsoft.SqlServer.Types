@@ -49,6 +49,9 @@
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\AssemblyLoader.cs">
       <Link>AssemblyLoader.cs</Link>
     </Compile>
+    <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geography\SqlGeographyBuilderTests.cs">
+      <Link>Geography\SqlGeographyBuilderTests.cs</Link>
+    </Compile>
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geography\WktTests.cs">
       <Link>Geography\WktTests.cs</Link>
     </Compile>

@@ -8,16 +8,29 @@ namespace Microsoft.SqlServer.Types
     public class SqlGeographyBuilder : IGeographySink110
     {
         private readonly ShapeDataBuilder _builder;
-        private int _srid = 4326;
+        private int _srid = -1;
 
         public SqlGeographyBuilder()
         {
             _builder = new ShapeDataBuilder();
         }
 
-        public virtual SqlGeography ConstructedGeography => new SqlGeography(_builder.ConstructedShapeData, _srid);
+        public virtual SqlGeography ConstructedGeography
+        {
+            get
+            {
+                if (_srid < 0)
+                    throw new FormatException($"System.FormatException: 24300: Expected a call to SetSrid, but Finish was called.");
+                return new SqlGeography(_builder.ConstructedShapeData, _srid);
+            }
+        }
 
-        public virtual void BeginGeography(OpenGisGeographyType type) => _builder.BeginGeo((OGCGeometryType)type);
+        public virtual void BeginGeography(OpenGisGeographyType type)
+        {
+            if (_srid < 0)
+                throw new FormatException($"System.FormatException: 24300: Expected a call to SetSrid, but BeginGeography({type}) was called.");
+            _builder.BeginGeo((OGCGeometryType)type);
+        }
 
         public void BeginFigure(double latitude, double longitude) => BeginFigure(latitude, longitude, null, null);
 
