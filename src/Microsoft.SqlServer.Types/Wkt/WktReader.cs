@@ -75,6 +75,8 @@ namespace Microsoft.SqlServer.Types.Wkt
                 ReadMultiPolygon(parentOffset);
             else if (nextToken.Length == 18) //"GEOMETRYCOLLECTION"
                 ReadGeometryCollection(parentOffset);
+            else if (nextToken.Length == 9) //"FULLGLOBE"
+                ReadFullGlobe(parentOffset);
             else
                 throw new FormatException("Invalid Well-known Text");
             //switch (Encoding.UTF8.GetString(nextToken))
@@ -264,6 +266,13 @@ namespace Microsoft.SqlServer.Types.Wkt
             }
             while (ReadOptionalChar(COMMA));
             ReadToken(PARAN_END);
+        }
+
+        private void ReadFullGlobe(int parentOffset = -1)
+        {
+            if(_shapes.Count > 0)
+                throw new FormatException("FullGlobe instances cannot be objects in the GeometryCollection. GeometryCollections can contain the following instances: Points, MultiPoints, LineStrings, MultiLineStrings, Polygons, MultiPolygons, CircularStrings, CompoundCurves, CurvePolygons and GeometryCollections.");
+            _shapes.Add(new Shape() { type = OGCGeometryType.FullGlobe, FigureOffset = -1, ParentOffset = parentOffset });
         }
 
         private void ReadCoordinateCollection()
