@@ -8,21 +8,36 @@ namespace Microsoft.SqlServer.Types
     public class SqlGeographyBuilder : IGeographySink110
     {
         private readonly ShapeDataBuilder _builder;
-        private int _srid = 4326;
+        private int _srid = -1;
 
         public SqlGeographyBuilder()
         {
-            _builder = new ShapeDataBuilder();
+            _builder = new ShapeDataBuilder() { GeoType = "Geography" };
         }
 
-        public virtual SqlGeography ConstructedGeography => new SqlGeography(_builder.ConstructedShapeData, _srid);
+        public virtual SqlGeography ConstructedGeography
+        {
+            get
+            {
+                if (_srid < 0)
+                    throw new FormatException($"24300: Expected a call to SetSrid, but Finish was called.");
+                return new SqlGeography(_builder.ConstructedShapeData, _srid);
+            }
+        }
 
-        public virtual void BeginGeography(OpenGisGeographyType type) => _builder.BeginGeo((OGCGeometryType)type);
+        public virtual void BeginGeography(OpenGisGeographyType type)
+        {
+            if (_srid < 0)
+                throw new FormatException($"24300: Expected a call to SetSrid, but BeginGeography({type}) was called.");
+            _builder.BeginGeo((OGCGeometryType)type);
+        }
 
         public void BeginFigure(double latitude, double longitude) => BeginFigure(latitude, longitude, null, null);
 
         public virtual void BeginFigure(double latitude, double longitude, double? z, double? m)
         {
+            if (_srid < 0)
+                throw new FormatException($"24300: Expected a call to SetSrid, but BeginFigure was called.");
             ValidateLatLon(latitude, longitude);
             _builder.BeginFigure();
             _builder.AddPoint(latitude, longitude, z, m);
@@ -33,7 +48,7 @@ namespace Microsoft.SqlServer.Types
         public virtual void AddLine(double latitude, double longitude, double? z, double? m)
         {
             ValidateLatLon(latitude, longitude);
-            _builder.AddPoint(latitude, longitude, z, m);
+            _builder.AddLine(latitude, longitude, z, m);
         }
 
         private void ValidateLatLon(double lat, double lon)

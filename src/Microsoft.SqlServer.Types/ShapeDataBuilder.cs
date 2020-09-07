@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Microsoft.SqlServer.Types
 {
@@ -19,12 +21,16 @@ namespace Microsoft.SqlServer.Types
         private readonly bool _ignoreZM;
         private FigureAttributes _nextFigureAttribute;
         private ShapeDataBuilder.State _state;
+        private Stack<Operation> operationStack = new Stack<Operation>();
+        private Operation CurrentOperation => operationStack.Count > 0 ? operationStack.Peek() : Operation.None;
+        internal string GeoType { get; set; } = "Geometry";
 
         public ShapeData ConstructedShapeData
         {
             get
             {
-                _state = State.End;
+                if (_shapes.Count == 0)
+                    throw new FormatException($"24300: Expected a call to Begin{GeoType}, but Finish was called.");
                 if (_vertices.Count <= 0)
                 {
                     return new ShapeData(null, null, _shapes.ToArray());
@@ -67,15 +73,24 @@ namespace Microsoft.SqlServer.Types
             }
             _parents.Push(_shapes.Count);
             _shapes.Add(shape);
+            operationStack.Push(Operation.Geo);
         }
 
         public void EndGeo()
         {
+            if (CurrentOperation == Operation.Figure)
+                EndFigure();
+            if(CurrentOperation != Operation.Geo)
+                throw new FormatException($"24300: Expected a call to Begin{GeoType}, but End{GeoType} was called.");
+            operationStack.Pop();
             _parents.Pop();
         }
 
         public void BeginFigure()
         {
+            if (CurrentOperation != Operation.Geo)
+                throw new FormatException($"24300: Expected a call to Begin{GeoType}, but BeginFigure was called.");
+
             FigureAttributes nextFigureAttribute = FigureAttributes.Line;
             var shapeType = _shapes[_shapes.Count - 1].type;
             if (shapeType == OGCGeometryType.CircularString)
@@ -108,10 +123,15 @@ namespace Microsoft.SqlServer.Types
                 _state = State.Segment;
             }
             _figures.Add(figure);
+            operationStack.Push(Operation.Figure);
         }
 
         public void EndFigure()
         {
+            if (CurrentOperation != Operation.Figure)
+                throw new FormatException($"24301: Expected a call to BeginFigure or End{GeoType}, but EndFigure was called.");
+
+            operationStack.Pop();
             UpdateFigureOffsets(_figures.Count - 1, _shapes.Count - 1);
             if (_shapes[_shapes.Count - 1].type == OGCGeometryType.Polygon)
             {
@@ -137,7 +157,11 @@ namespace Microsoft.SqlServer.Types
 
         public void AddLine(double x, double y, double? z, double? m)
         {
-            //TODO: Handle curves
+            if (CurrentOperation != Operation.Figure)
+                throw new FormatException($"24301: Expected a call to BeginFigure or End{GeoType}, but AddLine was called.");
+            if (_shapes.Last().type == OGCGeometryType.Point)
+                throw new FormatException("24300: Expected a call to EndFigure, but AddLine was called.");
+           
             AddPoint(x, y, z, m);
         }
 
@@ -168,12 +192,20 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
-        private enum State
+        private enum State : int
         {
-            Start,
-            Figure,
-            Segment,
-            End
+            Start = 0,
+            Figure = 1,
+            Segment = 2,
+            End = 3,
+        }
+
+        private enum Operation : int
+        {
+            None = 0,
+            Geo = 1,
+            Figure = 2,
+            Segment = 3,
         }
 
         private enum SegmentType : byte
