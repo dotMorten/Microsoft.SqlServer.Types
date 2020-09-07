@@ -12,7 +12,7 @@ namespace Microsoft.SqlServer.Types
 
         public SqlGeographyBuilder()
         {
-            _builder = new ShapeDataBuilder();
+            _builder = new ShapeDataBuilder() { GeoType = "Geography" };
         }
 
         public virtual SqlGeography ConstructedGeography
@@ -20,7 +20,7 @@ namespace Microsoft.SqlServer.Types
             get
             {
                 if (_srid < 0)
-                    throw new FormatException($"System.FormatException: 24300: Expected a call to SetSrid, but Finish was called.");
+                    throw new FormatException($"24300: Expected a call to SetSrid, but Finish was called.");
                 return new SqlGeography(_builder.ConstructedShapeData, _srid);
             }
         }
@@ -28,7 +28,7 @@ namespace Microsoft.SqlServer.Types
         public virtual void BeginGeography(OpenGisGeographyType type)
         {
             if (_srid < 0)
-                throw new FormatException($"System.FormatException: 24300: Expected a call to SetSrid, but BeginGeography({type}) was called.");
+                throw new FormatException($"24300: Expected a call to SetSrid, but BeginGeography({type}) was called.");
             _builder.BeginGeo((OGCGeometryType)type);
         }
 
@@ -36,6 +36,8 @@ namespace Microsoft.SqlServer.Types
 
         public virtual void BeginFigure(double latitude, double longitude, double? z, double? m)
         {
+            if (_srid < 0)
+                throw new FormatException($"24300: Expected a call to SetSrid, but BeginFigure was called.");
             ValidateLatLon(latitude, longitude);
             _builder.BeginFigure();
             _builder.AddPoint(latitude, longitude, z, m);
@@ -46,7 +48,7 @@ namespace Microsoft.SqlServer.Types
         public virtual void AddLine(double latitude, double longitude, double? z, double? m)
         {
             ValidateLatLon(latitude, longitude);
-            _builder.AddPoint(latitude, longitude, z, m);
+            _builder.AddLine(latitude, longitude, z, m);
         }
 
         private void ValidateLatLon(double lat, double lon)
