@@ -23,7 +23,7 @@ namespace Microsoft.SqlServer.Types
         private ShapeDataBuilder.State _state;
         private Stack<Operation> operationStack = new Stack<Operation>();
         private Operation CurrentOperation => operationStack.Count > 0 ? operationStack.Peek() : Operation.None;
-        public string GeoType { get; set; } = "Geometry";
+        internal string GeoType { get; set; } = "Geometry";
 
         public ShapeData ConstructedShapeData
         {
