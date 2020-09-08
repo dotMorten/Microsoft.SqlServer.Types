@@ -117,5 +117,20 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var result = SqlHierarchyId.Parse(expected);
             Assert.AreEqual(expected, result.ToString());
         }
+
+        [TestMethod]
+        [WorkItem(45)]
+        public void NullToString()
+        {
+            Assert.AreEqual("NULL", SqlHierarchyId.Null.ToString());
+        }
+
+        [TestMethod]
+        [WorkItem(45)]
+        public void TestToString()
+        {
+            var h = SqlHierarchyId.Parse("/9/1/");
+            Assert.AreEqual("/9/1/", h.ToString());
+        }
     }
 }

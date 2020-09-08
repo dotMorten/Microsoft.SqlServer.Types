@@ -431,7 +431,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         /// <returns>A string representation of the hierarchyid value.</returns>
         public override string ToString()
         {
-            return _hierarchyId ?? PathSeparator;
+            return _hierarchyId ?? "NULL";
         }
 
         /// <summary>
