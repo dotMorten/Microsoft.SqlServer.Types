@@ -446,7 +446,7 @@ namespace Microsoft.SqlServer.Types
         [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
         public static SqlGeography STGeomFromText(SqlChars geometryTaggedText, int srid)
         {
-            if (geometryTaggedText.IsNull)
+            if (geometryTaggedText is null || geometryTaggedText.IsNull)
                 return SqlGeography.Null;
             var data = Wkt.WktReader.Parse(System.Text.Encoding.UTF8.GetBytes(geometryTaggedText.Buffer), Wkt.CoordinateOrder.LatLong);
             return new SqlGeography(data, srid);
@@ -479,6 +479,8 @@ namespace Microsoft.SqlServer.Types
         /// </remarks>
         public void Read(BinaryReader r)
         {
+            if (r is null)
+                throw new ArgumentNullException(nameof(r));
             srid = r.ReadInt32();
             this._geometry = new ShapeData();
             this._geometry.Read(r, 1);
@@ -491,6 +493,8 @@ namespace Microsoft.SqlServer.Types
         [SqlMethodAttribute(IsDeterministic = true, IsPrecise = true)]
         public void Write(BinaryWriter w)
         {
+            if (w is null)
+                throw new ArgumentNullException(nameof(w));
             w.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
             _geometry.Write(w);
         }
@@ -502,6 +506,8 @@ namespace Microsoft.SqlServer.Types
         /// <returns>The data being sent over the network.</returns>
         public static SqlGeography Deserialize(SqlBytes bytes)
         {
+            if (bytes is null)
+                throw new ArgumentNullException(nameof(bytes));
             using (var r = new BinaryReader(bytes.Stream))
             {
                 var srid = r.ReadInt32();
@@ -531,6 +537,8 @@ namespace Microsoft.SqlServer.Types
 
         public void Populate(IGeographySink110 sink)
         {
+            if (sink is null)
+                throw new ArgumentNullException(nameof(sink));
             Populate(_geometry, sink);
         }
 

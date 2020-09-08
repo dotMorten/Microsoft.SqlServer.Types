@@ -244,7 +244,7 @@ namespace Microsoft.SqlServer.Types
         {
             if (IsNull)
                 throw new HierarchyIdException("Instance cannot be Null");
-            if (w == null)
+            if (w is null)
                 throw new ArgumentNullException(nameof(w));
             BitWriter bw = new BitWriter(w);
 
@@ -282,7 +282,7 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public void Read(BinaryReader r)
         {
-            if (r == null)
+            if (r is null)
                 throw new ArgumentNullException(nameof(r));
             var bitR = new BitReader(r);
             List<List<long>> result = new List<List<long>>();

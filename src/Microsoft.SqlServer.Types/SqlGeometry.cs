@@ -425,7 +425,9 @@ namespace Microsoft.SqlServer.Types
 
         public static SqlGeometry Deserialize(SqlBytes bytes)
         {
-            using (var r = new BinaryReader(bytes.Stream))
+            if (bytes is null)
+                throw new ArgumentNullException(nameof(bytes));
+            using(var r = new BinaryReader(bytes.Stream))
             {
                 var srid = r.ReadInt32();
                 var geometry = new ShapeData();
@@ -452,7 +454,7 @@ namespace Microsoft.SqlServer.Types
         [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
         public static SqlGeometry STGeomFromText(SqlChars geometryTaggedText, int srid)
         {
-            if (geometryTaggedText.IsNull)
+            if (geometryTaggedText is null || geometryTaggedText.IsNull)
                 return SqlGeometry.Null;
             var data = Wkt.WktReader.Parse(System.Text.Encoding.UTF8.GetBytes(geometryTaggedText.Buffer), Wkt.CoordinateOrder.XY);
             return new SqlGeometry(data, srid);
@@ -480,6 +482,8 @@ namespace Microsoft.SqlServer.Types
 
         public void Read(BinaryReader r)
         {
+            if (r is null)
+                throw new ArgumentNullException(nameof(r));
             srid = r.ReadInt32();
             this._geometry = new ShapeData();
             this._geometry.Read(r, 1);
@@ -487,6 +491,8 @@ namespace Microsoft.SqlServer.Types
 
         public void Write(BinaryWriter w)
         {
+            if (w is null)
+                throw new ArgumentNullException(nameof(w));
             w.Write((!IsNull && !STSrid.IsNull ? STSrid.Value : 0)); //SRID
             _geometry.Write(w);
         }
@@ -495,6 +501,8 @@ namespace Microsoft.SqlServer.Types
 
         public void Populate(IGeometrySink110 sink)
         {
+            if (sink is null)
+                throw new ArgumentNullException(nameof(sink));
             Populate(_geometry, sink);
         }
 

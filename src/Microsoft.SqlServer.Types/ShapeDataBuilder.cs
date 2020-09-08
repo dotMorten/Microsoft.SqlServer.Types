@@ -14,9 +14,9 @@ namespace Microsoft.SqlServer.Types
         private readonly List<Figure> _figures = new List<Figure>();
         private readonly List<Shape> _shapes = new List<Shape>();
         private readonly Stack<int> _parents = new Stack<int>();
-        private List<double> _zValues;
-        private List<double> _mValues;
-        private List<Segment> _segments;
+        private List<double>? _zValues;
+        private List<double>? _mValues;
+        private List<Segment>? _segments;
         private readonly List<Point> _vertices = new List<Point>();
         private readonly bool _ignoreZM;
         private FigureAttributes _nextFigureAttribute;
@@ -175,7 +175,7 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
-        private void SetZMValue(ref List<double> list, double? d)
+        private void SetZMValue(ref List<double>? list, double? d)
         {
             // Only adds Z or M values if necessary
             if (d.HasValue && list == null)

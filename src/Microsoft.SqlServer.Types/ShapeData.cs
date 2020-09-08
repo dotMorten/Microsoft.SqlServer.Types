@@ -100,11 +100,11 @@ namespace Microsoft.SqlServer.Types
     {
         private bool _isValid;
         private bool _isLargerThanAHemisphere;
-        private double[] _mValues;
-        private double[] _zValues;
-        private Point[] _vertices;
-        private Segment[] _segments;
-        private Figure[] _figures;
+        private double[]? _mValues;
+        private double[]? _zValues;
+        private Point[]? _vertices;
+        private Segment[]? _segments;
+        private Figure[]? _figures;
         private Shape[] _shapes;
 
         public OGCGeometryType Type => _shapes == null || _shapes.Length == 0 ? OGCGeometryType.Unknown :  _shapes[0].type;
@@ -123,7 +123,7 @@ namespace Microsoft.SqlServer.Types
             _isLargerThanAHemisphere = false;
         }
 
-        public ShapeData(Point[] points, Figure[] figures, Shape[] shapes)
+        public ShapeData(Point[]? points, Figure[]? figures, Shape[] shapes)
         {
             this._vertices = points;
             this._figures = figures;
@@ -135,7 +135,7 @@ namespace Microsoft.SqlServer.Types
             _segments = null;
         }
 
-        public ShapeData(Point[] points, Figure[] figures, Shape[] shapes, double[] zValues, double[] mValues, Segment[] mSegments)
+        public ShapeData(Point[] points, Figure[] figures, Shape[] shapes, double[]? zValues, double[]? mValues, Segment[]? mSegments)
         {
             this._vertices = points;
             this._zValues = zValues;
@@ -151,6 +151,8 @@ namespace Microsoft.SqlServer.Types
 
         public PointZM GetPointN(int index)
         {
+            if (_vertices == null)
+                throw new IndexOutOfRangeException();
             Point p = _vertices[index - 1];
             return new PointZM()
             {
@@ -173,10 +175,10 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
-        public double X => this._vertices[0].X;
-        public double Y => this._vertices[0].Y;
-        public double Z => this._zValues[0];
-        public double M => this._mValues[0];
+        public double X => this._vertices?[0].X ?? double.NaN;
+        public double Y => this._vertices?[0].Y ?? double.NaN;
+        public double Z => this._zValues?[0] ?? double.NaN;
+        public double M => this._mValues?[0] ?? double.NaN;
         public int NumPoints => _vertices == null ? 0 : _vertices.Length;
         public int NumRings => _figures?.Length ?? 0;
         public int NumSegments => _segments?.Length ?? 0;        
@@ -204,12 +206,12 @@ namespace Microsoft.SqlServer.Types
         {
             if (shapeIndex == (_shapes?.Length ?? 0) - 1) //If last shape, it can't have children
                 return false;
-            return _shapes[shapeIndex + 1].ParentOffset == shapeIndex; //next shape is a child of this shape
+            return _shapes != null && _shapes[shapeIndex + 1].ParentOffset == shapeIndex; //next shape is a child of this shape
         }
 
         public int NumInteriorRing => _figures == null || _figures.Length <= 1 ? 0 : _figures.Length - 1;
         public PointZM StartPoint => GetPointN(1);
-        public PointZM EndPoint => GetPointN(_vertices.Length);
+        public PointZM EndPoint => GetPointN(_vertices?.Length ?? throw new IndexOutOfRangeException());
         public ShapeData GetRing(int index) => AsRing(index);
         public bool HasZ => _zValues != null;
         public bool HasM => _mValues != null;
@@ -224,7 +226,7 @@ namespace Microsoft.SqlServer.Types
 
         private ShapeData AsRing(int figureIndex)
         {
-            var mFigures = _figures[figureIndex].FigureAttribute;
+            var mFigures = _figures?[figureIndex].FigureAttribute;
             if (IsV2Data)
             {
                 if (mFigures == FigureAttributes.Line || mFigures == FigureAttributes.InteriorRing || mFigures == FigureAttributes.ExteriorRing)
@@ -258,18 +260,18 @@ namespace Microsoft.SqlServer.Types
             List<Shape> shapes = new List<Shape>(nextShape - shapeIndex);
             List<Figure> figures = new List<Figure>();
             List<Point> vertices = new List<Point>();
-            List<double> zvalues = _zValues == null ? null : new List<double>();
-            List<double> mvalues = _mValues == null ? null : new List<double>();
+            List<double>? zvalues = _zValues == null ? null : new List<double>();
+            List<double>? mvalues = _mValues == null ? null : new List<double>();
             for (int i = shapeIndex; i < nextShape; i++)
             {
                 var s = _shapes[i];
-                var nextFigure = i + 1 < _shapes.Length ? _shapes[i + 1].FigureOffset : _figures.Length;
+                var nextFigure = i + 1 < _shapes.Length ? _shapes[i + 1].FigureOffset : (_figures?.Length ?? 0);
                 var figureOffset = figures.Count;
                 for (int j = s.FigureOffset; j < nextFigure; j++)
                 {
-                    var f = _figures[j];
+                    var f = _figures![j];
                     figures.Add(new Figure() { FigureAttribute = f.FigureAttribute, VertexOffset = vertices.Count });
-                    var nextFigureVertexOffset = (j + 1 < _figures.Length ) ? _figures[j + 1].VertexOffset : _vertices.Length;
+                    var nextFigureVertexOffset = (j + 1 < _figures.Length ) ? _figures[j + 1].VertexOffset : (_vertices?.Length ?? 0);
                     vertices.AddRange(_vertices.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
                     if (zvalues != null)
                         zvalues.AddRange(_zValues.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
@@ -279,7 +281,7 @@ namespace Microsoft.SqlServer.Types
                 shapes.Add(new Shape() { type = s.type, ParentOffset = shape.ParentOffset - s.ParentOffset - 1, FigureOffset = figureOffset });
             }
             geoDatum._shapes = shapes.ToArray();
-            geoDatum._figures = figures!=null || figures.Any() ? figures?.ToArray() : null;
+            geoDatum._figures = figures != null || figures.Any() ? figures?.ToArray() : null;
             if(vertices.Count == 1 && double.IsNaN(vertices[0].X) && double.IsNaN(vertices[0].Y)) //Empty point
             {
 
@@ -311,12 +313,14 @@ namespace Microsoft.SqlServer.Types
             };
         }
 
-        private (Point[] points, double[] zvalues, double[] mvalues) GetFigure(int shapeIndex, int figureIndex)
+        private (Point[] points, double[]? zvalues, double[]? mvalues) GetFigure(int shapeIndex, int figureIndex)
         {
+            if (_figures == null || _vertices == null)
+                throw new IndexOutOfRangeException();
             Shape shape = _shapes[shapeIndex];
             var fidx = shape.FigureOffset + figureIndex;
             var start = _figures[fidx].VertexOffset;
-            int end = _vertices.Length;
+            int end = _vertices?.Length ?? 0;
             if (_figures.Length > fidx + 1)
                 end = _figures[fidx + 1].VertexOffset;
             var points = _vertices.Skip(start).Take(end - start);
@@ -362,7 +366,7 @@ namespace Microsoft.SqlServer.Types
                 props |= SerializationProps.IsSinglePoint;
             if (_shapes[0].type == OGCGeometryType.LineString)
             {
-                Point[] mPoints = this._vertices;
+                Point[]? mPoints = this._vertices;
                 if (_vertices != null && _vertices.Length == 2)
                 {
                     props |= SerializationProps.IsSingleLineSegment;

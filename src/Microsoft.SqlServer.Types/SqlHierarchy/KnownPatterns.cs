@@ -51,7 +51,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             }
         }
 
-        internal static BitPattern GetPatternByPrefix(BitReader bitR)
+        internal static BitPattern? GetPatternByPrefix(BitReader bitR)
         {
             var remaining = bitR.Remaining;
 
