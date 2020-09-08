@@ -22,7 +22,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         public void CreateEmptyNoSrid()
         {
             SqlGeographyBuilder b = new SqlGeographyBuilder();
-            ThrowsException(() => { var g = b.ConstructedGeography; }, typeof(FormatException), "24300: Expected a call to SetSrid, but Finish was called.");
+            AssertEx.ThrowsException(() => { var g = b.ConstructedGeography; }, typeof(FormatException), "24300: Expected a call to SetSrid, but Finish was called.");
         }
 
         [TestMethod]
@@ -30,7 +30,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         {
             SqlGeographyBuilder b = new SqlGeographyBuilder();
             b.SetSrid(4326);
-            ThrowsException(() => { var g = b.ConstructedGeography; }, typeof(FormatException), "24300: Expected a call to BeginGeography, but Finish was called.");
+            AssertEx.ThrowsException(() => { var g = b.ConstructedGeography; }, typeof(FormatException), "24300: Expected a call to BeginGeography, but Finish was called.");
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             SqlGeographyBuilder b = new SqlGeographyBuilder();
             b.SetSrid(4326);
 
-            ThrowsException(() => { b.EndGeography(); }, typeof(FormatException), "24300: Expected a call to BeginGeography, but EndGeography was called.");
+            AssertEx.ThrowsException(() => { b.EndGeography(); }, typeof(FormatException), "24300: Expected a call to BeginGeography, but EndGeography was called.");
             //var g = b.ConstructedGeography;
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         {
             SqlGeographyBuilder b = new SqlGeographyBuilder();
             b.SetSrid(4326);
-            ThrowsException(() => { b.BeginFigure(1, 2); }, typeof(FormatException), "24300: Expected a call to BeginGeography, but BeginFigure was called.");
+            AssertEx.ThrowsException(() => { b.BeginFigure(1, 2); }, typeof(FormatException), "24300: Expected a call to BeginGeography, but BeginFigure was called.");
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             SqlGeographyBuilder b = new SqlGeographyBuilder();
             b.SetSrid(4326);
             b.BeginGeography(OpenGisGeographyType.Point);
-            ThrowsException(() => { b.EndFigure(); }, typeof(FormatException), "24301: Expected a call to BeginFigure or EndGeography, but EndFigure was called.");
+            AssertEx.ThrowsException(() => { b.EndFigure(); }, typeof(FormatException), "24301: Expected a call to BeginFigure or EndGeography, but EndFigure was called.");
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             b.SetSrid(4326);
             b.BeginGeography(OpenGisGeographyType.Point);
             b.BeginFigure(1, 2);
-            ThrowsException(() => { b.AddLine(1,2); }, typeof(FormatException), "24300: Expected a call to EndFigure, but AddLine was called.");
+            AssertEx.ThrowsException(() => { b.AddLine(1,2); }, typeof(FormatException), "24300: Expected a call to EndFigure, but AddLine was called.");
         }
 
         [TestMethod]
@@ -91,21 +91,21 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             SqlGeographyBuilder b = new SqlGeographyBuilder();
             b.SetSrid(4326);
             b.BeginGeography(OpenGisGeographyType.LineString);
-            ThrowsException(() => { b.AddLine(1, 2); }, typeof(FormatException), "24301: Expected a call to BeginFigure or EndGeography, but AddLine was called.");
+            AssertEx.ThrowsException(() => { b.AddLine(1, 2); }, typeof(FormatException), "24301: Expected a call to BeginFigure or EndGeography, but AddLine was called.");
         }
 
         [TestMethod]
         public void BuildPoint_NoSrid()
         {
             SqlGeographyBuilder b = new SqlGeographyBuilder();
-            ThrowsException(() => { b.BeginGeography(OpenGisGeographyType.Point); }, typeof(FormatException), "24300: Expected a call to SetSrid, but BeginGeography(Point) was called.");
+            AssertEx.ThrowsException(() => { b.BeginGeography(OpenGisGeographyType.Point); }, typeof(FormatException), "24300: Expected a call to SetSrid, but BeginGeography(Point) was called.");
         }
 
         [TestMethod]
         public void BeginFigureBeforeBeginGeo()
         {
             SqlGeographyBuilder b = new SqlGeographyBuilder();
-            ThrowsException(() => { b.BeginFigure(1, 2); }, typeof(FormatException), "24300: Expected a call to SetSrid, but BeginFigure was called.");
+            AssertEx.ThrowsException(() => { b.BeginFigure(1, 2); }, typeof(FormatException), "24300: Expected a call to SetSrid, but BeginFigure was called.");
         }
 
         [TestMethod]
@@ -130,21 +130,6 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             Assert.AreEqual(4, g.STPointN(2).Long);
             Assert.IsTrue(g.STPointN(2).HasZ);
             Assert.IsFalse(g.STPointN(2).HasM);
-        }
-
-        private void ThrowsException(Action action, Type exceptionType, string message)
-        {
-            try
-            {
-                action();
-            }
-            catch(System.Exception ex)
-            {
-                Assert.IsInstanceOfType(ex, exceptionType);
-                Assert.AreEqual(message, ex.Message);
-                return;
-            }
-            Assert.Fail("Expected exception, but no exception was thrown");
         }
     }
 }

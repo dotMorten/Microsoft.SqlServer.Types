@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/dotMorten/Microsoft.SqlServer.Types/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>(C) 2018 - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
     <Version>1.1.0</Version>

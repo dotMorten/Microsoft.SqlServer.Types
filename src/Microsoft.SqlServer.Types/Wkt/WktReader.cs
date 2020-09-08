@@ -310,9 +310,14 @@ namespace Microsoft.SqlServer.Types.Wkt
         private double ReadDouble()
         {
             SkipSpaces();
-            if (System.Buffers.Text.Utf8Parser.TryParse(ReadNextToken(), out double value, out int bytesConsumed))
+            var token = ReadNextToken();
+            if (System.Buffers.Text.Utf8Parser.TryParse(token, out double value, out int bytesConsumed))
+            {
+                if (double.IsNaN(value))
+                    throw new FormatException($"24142: Expected \"NULL\" at position {_index - bytesConsumed}. The input has \"{System.Text.Encoding.UTF8.GetString(token.ToArray())})\".");
                 return value;
-            throw new FormatException("Not a number");
+            }
+            throw new FormatException($"24141: A number is expected at position {_index - bytesConsumed} of the input. The input has {System.Text.Encoding.UTF8.GetString(token.ToArray())}.");
         }
 
         private bool ReadOptionalDouble(out double d)

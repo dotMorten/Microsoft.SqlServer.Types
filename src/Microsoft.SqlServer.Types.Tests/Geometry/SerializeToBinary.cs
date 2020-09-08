@@ -41,11 +41,27 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
                 1, (byte)0x01, 0, //figures
                 1, -1, 0, (byte)0x02 //shapes
                 );
-            var g = SqlGeometry.Parse("LINESTRING (0 1 1, 3 2 2, 4 5 NaN)");
+            var g = SqlGeometry.Parse("LINESTRING (0 1 1, 3 2 2, 4 5 NULL)");
             g.STSrid = 4326;
 
             var serialized = g.Serialize().Value;
             CollectionAssert.AreEqual(line, serialized);
+        }
+
+        [TestMethod]
+        public void ReadNaNThrows()
+        {
+            AssertEx.ThrowsException(() => {
+                SqlGeometry.Parse("LINESTRING (0 1 1, 3 2 2, 4 5 NaN)");
+            }, typeof(FormatException), "24142: Expected \"NULL\" at position 30. The input has \"NaN)\".");
+        }
+
+        [TestMethod]
+        public void ReadNonNumberThrows()
+        {
+            AssertEx.ThrowsException(() => {
+                SqlGeometry.Parse("LINESTRING (0 1 1, 3 2 2, 4 ABC 9)");
+            }, typeof(FormatException), "24141: A number is expected at position 31 of the input. The input has ABC.");
         }
 
         [TestMethod]

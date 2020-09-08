@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+  
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -12,19 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0-preview-20180320-02" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <ProjectReference Include="..\Microsoft.SqlServer.Types\Microsoft.SqlServer.Types.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="OgcConformanceMap.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
+    <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
   </ItemGroup>
 
 </Project>
