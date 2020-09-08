@@ -7,7 +7,7 @@ using System.Text;
 namespace Microsoft.SqlServer.Types.Tests
 {
     [TestClass]
-    internal static class AssemblyLoader
+    public static class AssemblyLoader
     {
         [AssemblyInitialize]
         public static void TestInit(TestContext context)
