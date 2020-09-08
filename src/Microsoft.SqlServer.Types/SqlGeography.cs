@@ -453,6 +453,42 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
+        /// Returns the total length of the elements in a SqlGeography instance or the SqlGeography instances within a GeometryCollection.
+        /// </summary>
+        /// <returns>A SqlDouble value containing the total length.</returns>
+        /// <remarks>
+        /// If a SqlGeography instance is closed, its length is calculated as the total length 
+        /// around the instance; the length of any polygon is its perimeter, and the length of 
+        /// a point is 0. The length of a GeometryCollection is found by calculating the sum of 
+        /// the lengths of all of the SqlGeography instances contained within the collection.
+        /// </remarks>
+        [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
+        public SqlDouble STLength()
+        {
+            if(IsNull)
+                return SqlDouble.Null;
+            double length = 0;
+            var sr = SpatialReference.GetSR(srid);
+            if (sr == null)
+                return SqlDouble.Null;
+            foreach(var figure in _geometry.EnumerateVertices)
+            {
+                var enumerator = figure.GetEnumerator();
+                if(enumerator.MoveNext())
+                { 
+                    var start = enumerator.Current;
+                    while(enumerator.MoveNext())
+                    {
+                        var end = enumerator.Current;
+                        length += Vincenty.GetDistanceVincenty(start.X, start.Y, end.X, end.Y, sr.SemiMajor, sr.SemiMinor);
+                        start = end;
+                    }
+                }
+            }
+            return length;
+        }
+
+        /// <summary>
         /// Returns a SqlGeography instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation. 
         /// </summary>
         /// <param name="s">The WKT representation of the SqlGeography instance you wish to return. </param>

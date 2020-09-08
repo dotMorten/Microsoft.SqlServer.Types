@@ -49,6 +49,9 @@
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\AssemblyLoader.cs">
       <Link>AssemblyLoader.cs</Link>
     </Compile>
+    <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geography\STLengthTests.cs">
+      <Link>Geography\STLengthTests.cs</Link>
+    </Compile>
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geography\WktTests.cs">
       <Link>Geography\WktTests.cs</Link>
     </Compile>
@@ -57,6 +60,9 @@
     </Compile>
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geometry\DeserializeFromBinary.cs">
       <Link>Geometry\DeserializeFromBinary.cs</Link>
+    </Compile>
+    <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geometry\STLengthTests.cs">
+      <Link>Geometry\STLengthTests.cs</Link>
     </Compile>
     <Compile Include="..\Microsoft.SqlServer.Types.Tests\Geometry\WktTests.cs">
       <Link>Geometry\WktTests.cs</Link>

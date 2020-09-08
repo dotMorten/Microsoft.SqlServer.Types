@@ -198,6 +198,19 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
+        public IEnumerable<IEnumerable<Point>> EnumerateVertices
+        {
+            get
+            {
+                for (int i = 0; i < _figures.Length; i++)
+                {
+                    var start = _figures[i].VertexOffset;
+                    var end = i == _figures.Length - 1 ? _vertices.Length : _figures[i + 1].VertexOffset;
+                    yield return _vertices.Skip(start).Take(end - start);
+                }
+            }
+        }
+
         private bool HasChildren(int shapeIndex)
         {
             if (shapeIndex == (_shapes?.Length ?? 0) - 1) //If last shape, it can't have children

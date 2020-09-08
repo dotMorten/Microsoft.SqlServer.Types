@@ -356,6 +356,39 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
+        /// Returns the total length of the elements in a geometry instance.
+        /// </summary>
+        /// <returns>A SqlDouble value that contains the total length of the elements in the calling SqlGeometry.</returns>
+        /// <remarks>
+        /// If a SqlGeometry instance is closed, its length is calculated as the total length around 
+        /// the instance; the length of any polygon is its perimeter and the length of a point is 0.
+        /// The length of any SqlGeometry collection type is the sum of the lengths of its contained
+        /// SqlGeometry instances.
+        /// </remarks>
+        public SqlDouble STLength()
+        {
+            if (IsNull)
+                return SqlDouble.Null;
+            double length = 0;
+            foreach (var figure in _geometry.EnumerateVertices)
+            {
+                var enumerator = figure.GetEnumerator();
+                if (enumerator.MoveNext())
+                {
+                    var start = enumerator.Current;
+                    while (enumerator.MoveNext())
+                    {
+                        var end = enumerator.Current;
+                        length += Math.Sqrt(Math.Pow(start.X - end.X, 2) + Math.Pow(start.Y - end.Y, 2));
+                        start = end;
+                    }
+                }
+            }
+            return length;
+        }
+
+
+        /// <summary>
         /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a SqlGeometry instance. 
         /// </summary>
         /// <returns>A SqlChars object containing the WKT representation of the SqlGeometry.</returns>
