@@ -423,6 +423,11 @@ namespace Microsoft.SqlServer.Types
             new [] { "Geometry", "Surface", "CurvePolygon" }
         };
 
+        /// <summary>
+        /// Returns a constructed SqlGeometry from an internal SQL Server format for spatial data.
+        /// </summary>
+        /// <param name="bytes">A SqlBytes that specifies the spatial data being sent over the network.</param>
+        /// <returns>A SqlGeometry instance that represents the constructed geometry object being sent over the network.</returns>
         public static SqlGeometry Deserialize(SqlBytes bytes)
         {
             if (bytes is null)
@@ -436,6 +441,10 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
+        /// <summary>
+        /// Returns the bytes that represent an internal SQL Server format of SqlGeometry type.
+        /// </summary>
+        /// <returns>Returns the bytes that represent an internal SQL Server format of SqlGeometry type.</returns>
         public SqlBytes Serialize()
         {
             using (var ms = new MemoryStream())
@@ -480,6 +489,10 @@ namespace Microsoft.SqlServer.Types
             return new SqlGeometry(data, 0);
         }
 
+        /// <summary>
+        /// Reads a binary representation of a geometry type into a SqlGeometry object.
+        /// </summary>
+        /// <param name="r">BinaryReader object that reads a binary representation of a geometry type.</param>
         public void Read(BinaryReader r)
         {
             if (r is null)
@@ -489,6 +502,10 @@ namespace Microsoft.SqlServer.Types
             this._geometry.Read(r, 1);
         }
 
+        /// <summary>
+        /// Writes a SqlGeometry instance to a binary stream.
+        /// </summary>
+        /// <param name="w">BinaryWriter object that writes the SqlGeometry instance to a binary stream.</param>
         public void Write(BinaryWriter w)
         {
             if (w is null)
@@ -497,8 +514,16 @@ namespace Microsoft.SqlServer.Types
             _geometry.Write(w);
         }
 
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a <see cref="SqlGeometry"/> instance augmented with any Z (elevation) and M (measure) values carried by the instance.
+        /// </summary>
+        /// <returns>A string value containing the WKT representation of the calling instance.</returns>
         public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.XY);
 
+        /// <summary>
+        /// Applies a geometry type call sequence to IGeometrySink object.
+        /// </summary>
+        /// <param name="sink">IGeometrySink object that has a geometry type call sequence of figures, lines, and points applied to it.</param>
         public void Populate(IGeometrySink110 sink)
         {
             if (sink is null)

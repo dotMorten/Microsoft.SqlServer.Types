@@ -1,5 +1,8 @@
 ﻿namespace Microsoft.SqlServer.Types
 {
+    /// <summary>
+    /// Lists Open GIS geometry types.
+    /// </summary>
     public enum OpenGisGeometryType : byte
     {
         /// <summary>

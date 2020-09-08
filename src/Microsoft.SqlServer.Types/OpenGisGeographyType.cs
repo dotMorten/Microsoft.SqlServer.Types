@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Microsoft.SqlServer.Types
 {
+    /// <summary>
+    /// Lists supported and extended Open GIS geography types.
+    /// </summary>
     public enum OpenGisGeographyType : byte
     {
         /// <summary>

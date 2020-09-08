@@ -121,11 +121,29 @@ namespace Microsoft.SqlServer.Types
             _srid = srid;
         }
 
+        /// <summary>
+        /// Adds a circular arc to the path.
+        /// </summary>
+        /// <param name="x1">The x1 value.</param>
+        /// <param name="y1">The y1 value.</param>
+        /// <param name="z1">The z1 value.</param>
+        /// <param name="m1">The m1 value.</param>
+        /// <param name="x2">The x2 value.</param>
+        /// <param name="y2">The y2 value.</param>
+        /// <param name="z2">The z2 value.</param>
+        /// <param name="m2">The m2 value.</param>
         public virtual void AddCircularArc(double x1, double y1, double? z1, double? m1, double x2, double y2, double? z2, double? m2)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Adds a circular arc to the path.
+        /// </summary>
+        /// <param name="x1">The first latitude for the arc.</param>
+        /// <param name="y1">The first longitude for the arc.</param>
+        /// <param name="x2">The second latitude for the arc.</param>
+        /// <param name="y2">The second longitude for the arc.</param>
         public void AddCircularArc(double x1, double y1, double x2, double y2) => AddCircularArc(x1, y2, null, null, x2, y2, null, null);
     }
 }

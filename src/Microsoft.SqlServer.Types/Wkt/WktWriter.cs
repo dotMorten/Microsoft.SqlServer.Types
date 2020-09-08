@@ -11,11 +11,12 @@ namespace Microsoft.SqlServer.Types.Wkt
     /// Also supports Z and M values (OGC SFS v1.2.0) as well as reordering of X and Y.
     /// </summary>
     internal static class WktWriter
-    { 
+    {
         /// <summary>
-        /// Writes a <see cref="Geometry"/> instance as Well-Known Text according to the OGC Simple Features Specification 1.2.0.
+        /// Writes a <see cref="ShapeData"/> instance as Well-Known Text according to the OGC Simple Features Specification 1.2.0.
         /// </summary>
         /// <param name="g">Geometry</param>
+        /// <param name="order"></param>
         /// <returns>Well-Known Text</returns>
         public static string Write(ShapeData g, CoordinateOrder order)
         {
@@ -25,11 +26,12 @@ namespace Microsoft.SqlServer.Types.Wkt
         }
 
         /// <summary>
-        /// Writes a <see cref="Geometry"/> instance as Well-Known Text according to the OGC Simple Features Specification 1.2.0.
+        /// Writes a <see cref="ShapeData"/> instance as Well-Known Text according to the OGC Simple Features Specification 1.2.0.
         /// </summary>
         /// <param name="g">Geometry</param>
         /// <param name="includeZ">Include Z values</param>
         /// <param name="includeM">Include M values</param>
+        /// <param name="order"></param>
         /// <returns>Well-Known Text</returns>
         public static string Write(ShapeData g, bool includeZ, bool includeM, CoordinateOrder order)
         {

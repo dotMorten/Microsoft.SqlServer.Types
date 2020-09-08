@@ -22,6 +22,9 @@ namespace Microsoft.SqlServer.Types
             this._geometry = g;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlGeography"/> class.
+        /// </summary>
         public SqlGeography()
         {
             _geometry = new ShapeData();
@@ -455,7 +458,7 @@ namespace Microsoft.SqlServer.Types
         /// <summary>
         /// Returns a SqlGeography instance from an Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation. 
         /// </summary>
-        /// <param name="s">The WKT representation of the SqlGeography instance you wish to return. </param>
+        /// <param name="s">The WKT representation of the <see cref="SqlGeography"/> instance you wish to return. </param>
         /// <returns>A SqlGeography value constructed from the specified WKT representation.</returns>
         /// <remarks>
         /// The Parse method is equivalent to <see cref="STGeomFromText"/> except that it assumes a spatial reference ID (SRID) of 4326 as a parameter. The input may carry optional Z (elevation) and M (measure) values.
@@ -470,7 +473,7 @@ namespace Microsoft.SqlServer.Types
         }
 
         /// <summary>
-        /// Reads a binary representation of a geography type into a SqlGeometry object.
+        /// Reads a binary representation of a geography type into a <see cref="SqlGeography"/> object.
         /// </summary>
         /// <param name="r">BinaryReader object that reads a binary representation of a geography type.</param>
         /// <remarks>
@@ -533,8 +536,16 @@ namespace Microsoft.SqlServer.Types
             }
         }
 
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a <see cref="SqlGeography"/> instance augmented with any Z (elevation) and M (measure) values carried by the instance.
+        /// </summary>
+        /// <returns>A string containing the WKT representation of the calling <see cref="SqlGeography"/> instance.</returns>
         public override string ToString() => Wkt.WktWriter.Write(_geometry, Wkt.CoordinateOrder.LatLong);
 
+        /// <summary>
+        /// Applies a geography type call sequence to IGeographySink object.
+        /// </summary>
+        /// <param name="sink">IGeographySink object that has a geography type call sequence of figures, lines, and points applied to it.</param>
         public void Populate(IGeographySink110 sink)
         {
             if (sink is null)

@@ -18,6 +18,10 @@ namespace Microsoft.SqlServer.Types
     {
         private HierarchyId _imp;
 
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="SqlHierarchyId"/> is null.
+        /// </summary>
+        /// <value>Boolean representing true (1) if the <see cref="SqlHierarchyId"/> node is null; otherwise, false (0).</value>
         public bool IsNull { get; }
 
         /// <summary>
@@ -111,7 +115,7 @@ namespace Microsoft.SqlServer.Types
         /// <summary>
         /// Evaluates whether <see cref="SqlHierarchyId"/> and obj are equal.
         /// </summary>
-        /// <param name="other">The object against which to compare <c>this</c>.</param>
+        /// <param name="obj">The object against which to compare <c>this</c>.</param>
         /// <returns>Boolean. true (1) if this and obj are equal; otherwise, false (0).</returns>
         /// <remarks>
         /// <para>Returns false (0) if obj is not a SqlHierarchyId node.</para>
@@ -186,7 +190,7 @@ namespace Microsoft.SqlServer.Types
         /// <param name="newRoot">The <see cref="SqlHierarchyId"/> node that represents the new ancestor of <c>this</c>.</param>
         /// <returns>A <see cref="SqlHierarchyId"/> node representing the new hierarchical location of <c>this</c>. Will return <c>null</c> if <paramref name="oldRoot"/>, <paramref name="newRoot"/>, or this are <c>null</c>.</returns>
         /// <remarks>
-        /// <para>Returns a node whose path from the root is the path to <paramref name="newRoot"/>, followed by the path from <paramref name="oldRoot"/> to <see cref="this"/>.</para>
+        /// <para>Returns a node whose path from the root is the path to <paramref name="newRoot"/>, followed by the path from <paramref name="oldRoot"/> to <c>this</c>.</para>
         /// <para>The <see cref="SqlHierarchyId"/> data type represents but does not enforce the hierarchical structure. Users must ensure that the <see cref="SqlHierarchyId"/> node is appropriately structured for the new location.</para>
         /// </remarks>
         [SqlMethod(DataAccess = DataAccessKind.None, SystemDataAccess = SystemDataAccessKind.None, InvokeIfReceiverIsNull = false, OnNullCall = false, IsDeterministic = true, IsPrecise = true, IsMutator = false)]
@@ -348,7 +352,7 @@ namespace Microsoft.SqlServer.Types
         /// </summary>
         /// <param name="hid1">First node to compare.</param>
         /// <param name="hid2">Second node to compare.</param>
-        // <returns></returns>
+        /// <returns></returns>
         /// <remarks>Returns null if either <paramref name="hid1"/> or <paramref name="hid2"/> are null.</remarks>
         public static SqlBoolean operator >(SqlHierarchyId hid1, SqlHierarchyId hid2) => hid1.IsNull || hid2.IsNull ? SqlBoolean.Null : hid1._imp > hid2._imp;
 
