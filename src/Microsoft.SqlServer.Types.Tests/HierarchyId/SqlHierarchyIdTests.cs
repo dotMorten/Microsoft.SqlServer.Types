@@ -157,5 +157,14 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             z.Read(new System.IO.BinaryReader(new System.IO.MemoryStream(Convert.FromBase64String("P6T6"))));
             Assert.IsFalse(z.IsNull);  // IsNull property should now be false
         }
+
+        [TestMethod]
+        [WorkItem(34)]
+        public void ParseVeryLargeHierarchyId()
+        {
+            string id = "/9138844059576.194933736431247.745612732/136587127227772.29968291099783.2405269301/194815533346310.190518957122630.1754824175/131180557026026.166347272232468.2634227923/112680214461405.155342927909666.4090640326/38488193629220.193847278467647.3890935971/";
+            var h = SqlHierarchyId.Parse(id);
+            Assert.AreEqual(id, h.ToString());
+        }
     }
 }
