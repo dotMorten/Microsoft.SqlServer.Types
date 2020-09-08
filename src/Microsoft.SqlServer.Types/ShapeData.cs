@@ -213,7 +213,7 @@ namespace Microsoft.SqlServer.Types
         public ShapeData GetRing(int index) => AsRing(index);
         public bool HasZ => _zValues != null;
         public bool HasM => _mValues != null;
-        public bool IsEmpty => !(_vertices != null && _vertices.Length > 0 || _shapes.Length > 0 && _shapes[0].type == OGCGeometryType.FullGlobe);
+        public bool IsEmpty => !(_vertices != null && _vertices.Length > 0 || _shapes != null && _shapes.Length > 0 && _shapes[0].type == OGCGeometryType.FullGlobe);
 
         public ShapeData GetGeometryN(int index)
         {
