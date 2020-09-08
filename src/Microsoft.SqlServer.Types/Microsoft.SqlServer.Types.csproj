@@ -14,14 +14,14 @@
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
     <Version>1.2.0</Version>
     <PackageReleaseNotes>Strong-name signed so the UDT types will automatically deserialize</PackageReleaseNotes>
-    <LangVersion>7.3</LangVersion>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient">
       <Version>4.5.1</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Memory" Version="4.5.1" />
   </ItemGroup>
 </Project>
