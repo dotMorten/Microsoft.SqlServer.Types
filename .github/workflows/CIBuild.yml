@@ -27,4 +27,4 @@ jobs:
         
     - name: Tests
       run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/netcoreapp2.0/Microsoft.SqlServer.Types.Tests.dll -v normal
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/netcoreapp2.1/Microsoft.SqlServer.Types.Tests.dll -v normal
