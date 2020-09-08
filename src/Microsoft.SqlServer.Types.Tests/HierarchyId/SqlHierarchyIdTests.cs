@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -116,6 +117,13 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var expected = "/-281479271682120/";
             var result = SqlHierarchyId.Parse(expected);
             Assert.AreEqual(expected, result.ToString());
+        }
+
+        [TestMethod]
+        public void WriteNull()
+        {
+            var hnull = SqlHierarchyId.Null;
+            AssertEx.ThrowsException(() => hnull.Write(new System.IO.BinaryWriter(new MemoryStream())), typeof(HierarchyIdException), "24002: SqlHierarchyId.Write failed because 'this' was a NULL instance.");
         }
 
         [TestMethod]

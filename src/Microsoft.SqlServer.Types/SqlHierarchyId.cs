@@ -247,10 +247,10 @@ namespace Microsoft.SqlServer.Types
         [SqlMethod(IsDeterministic = true, IsPrecise = true)]
         public void Write(BinaryWriter w)
         {
-            if (IsNull)
-                throw new HierarchyIdException("Instance cannot be Null");
             if (w is null)
                 throw new ArgumentNullException(nameof(w));
+            if (IsNull)
+                throw new HierarchyIdException("24002: SqlHierarchyId.Write failed because 'this' was a NULL instance.");
             BitWriter bw = new BitWriter(w);
 
             var nodes = this._imp.GetNodes();
