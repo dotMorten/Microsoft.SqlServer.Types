@@ -14,7 +14,9 @@ namespace Microsoft.SqlServer.Types
         void EndGeography();
         void SetSrid(int srid);
     }
+#pragma warning disable CS0618 // Type or member is obsolete
     public interface IGeographySink110 : IGeographySink
+#pragma warning restore CS0618 // Type or member is obsolete
     {
         void AddCircularArc(double x1, double y1, double? z1, double? m1, double x2, double y2, double? z2, double? m2);
     }
