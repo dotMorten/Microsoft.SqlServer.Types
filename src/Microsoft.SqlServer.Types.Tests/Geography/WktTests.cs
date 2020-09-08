@@ -103,5 +103,13 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             var valueWkt = value.STAsText().ToSqlString().Value;
             Assert.AreEqual(wkt, valueWkt);
         }
+
+        [TestMethod]
+        public void TestToString()
+        {
+            var wkt = "POINT (40 10)";
+            var value = SqlGeography.STGeomFromText(new SqlChars(new SqlString(wkt)), 4326);
+            Assert.AreEqual(wkt, value.ToString());
+        }
     }
 }
