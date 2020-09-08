@@ -14,7 +14,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>(C) 2018 - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <PackageReleaseNotes>Strong-name signed so the UDT types will automatically deserialize</PackageReleaseNotes>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
