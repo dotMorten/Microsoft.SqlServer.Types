@@ -17,12 +17,13 @@ namespace Microsoft.SqlServer.Types
     public struct SqlHierarchyId : IBinarySerialize, INullable, IComparable
     {
         private HierarchyId _imp;
+        private bool _isNotNull;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="SqlHierarchyId"/> is null.
         /// </summary>
         /// <value>Boolean representing true (1) if the <see cref="SqlHierarchyId"/> node is null; otherwise, false (0).</value>
-        public bool IsNull { get; }
+        public bool IsNull => !_isNotNull; // This is a bit backwards, but is done so default(SqlHierarchyId) will return a null id
 
         /// <summary>
         /// Gets a <see cref="SqlHierarchyId"/> with a hierarchy identification of null.
@@ -36,7 +37,7 @@ namespace Microsoft.SqlServer.Types
 
         private SqlHierarchyId(HierarchyId imp, bool isNull = false)
         {
-            IsNull = isNull;
+            _isNotNull = !isNull;
             _imp = imp;
         }
 
