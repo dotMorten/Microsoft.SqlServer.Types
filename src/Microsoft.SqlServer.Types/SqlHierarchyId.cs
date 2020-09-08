@@ -319,6 +319,7 @@ namespace Microsoft.SqlServer.Types
             finish:
 
             this._imp = new HierarchyId(result.Select(a => a.ToArray()).ToArray());
+            this._isNotNull = !_imp.IsNull;
         }
 
         /// <summary>

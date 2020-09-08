@@ -140,5 +140,14 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var h = default(SqlHierarchyId);
             Assert.IsTrue(h.IsNull);
         }
+
+        [TestMethod]
+        [WorkItem(43)]
+        public void ReadResetsNull()
+        {
+            SqlHierarchyId z = SqlHierarchyId.Null;
+            z.Read(new System.IO.BinaryReader(new System.IO.MemoryStream(Convert.FromBase64String("P6T6"))));
+            Assert.IsFalse(z.IsNull);  // IsNull property should now be false
+        }
     }
 }

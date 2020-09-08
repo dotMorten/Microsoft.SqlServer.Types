@@ -434,6 +434,8 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             return _hierarchyId ?? "NULL";
         }
 
+        public bool IsNull => _hierarchyId == null;
+
         /// <summary>
         /// Implementation of IComparable.CompareTo()
         /// </summary>
