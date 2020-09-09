@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.SqlServer.Types.Tests.Geometry
 {
@@ -97,7 +98,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             Assert.IsTrue(g.STIsEmpty().Value, "STIsEmpty");
             Assert.AreEqual(0, g.STNumGeometries(), "STNumGeometries");
             Assert.AreEqual(0, g.STNumPoints(), "STNumPoints");
-            if(parameter == "POLYGON")
+            if (parameter == "POLYGON")
                 Assert.AreEqual(0, g.STNumInteriorRing().Value, "STNumInteriorRing");
             else
                 Assert.IsTrue(g.STNumInteriorRing().IsNull, "STNumInteriorRing");
@@ -189,12 +190,76 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "SELECT @p";
-                    var p =cmd.Parameters.Add("@p", System.Data.SqlDbType.Udt);
+                    var p = cmd.Parameters.Add("@p", System.Data.SqlDbType.Udt);
                     p.UdtTypeName = "geometry";
                     p.Value = id;
                     Assert.AreEqual(id.ToString(), cmd.ExecuteScalar().ToString());
                 }
             }
+        }
+
+        [TestMethod]
+        [TestCategory("SqlGeometry")]
+        public void ReadGeometryCollection()
+        {
+            var p = SqlGeometry.Parse("GEOMETRYCOLLECTION (POINT(10 11), LINESTRING(20 30, 20 40), POLYGON EMPTY, GEOMETRYCOLLECTION(POINT(30 31), POINT(40 41)))");
+            Assert.IsNotNull(p);
+            Assert.AreEqual("GeometryCollection", p.STGeometryType());
+            Assert.AreEqual(4, p.STNumGeometries());
+            var g1 = p.STGeometryN(1);
+            Assert.AreEqual("Point", g1.STGeometryType());
+            Assert.AreEqual(10d, g1.STX.Value);
+            Assert.AreEqual(11d, g1.STY.Value);
+            Assert.IsFalse(g1.HasZ);
+            Assert.IsFalse(g1.HasM);
+
+            var g2 = p.STGeometryN(2);
+            Assert.AreEqual("LineString", g2.STGeometryType());
+            Assert.AreEqual(2, g2.STNumPoints());
+            Assert.AreEqual(20, g2.STPointN(1).STX);
+            Assert.AreEqual(30, g2.STPointN(1).STY);
+            Assert.AreEqual(20, g2.STPointN(2).STX);
+            Assert.AreEqual(40, g2.STPointN(2).STY);
+
+            var g3 = p.STGeometryN(3);
+            Assert.AreEqual("Polygon", g3.STGeometryType());
+            Assert.IsTrue(g3.STIsEmpty().Value);
+
+            var g4 = p.STGeometryN(4);
+            Assert.AreEqual("GeometryCollection", g4.STGeometryType());
+            Assert.AreEqual(2, g4.STNumGeometries());
+            var g4_1 = g4.STGeometryN(1);
+            Assert.AreEqual("Point", g4_1.STGeometryType());
+            Assert.AreEqual(30d, g4_1.STX.Value);
+            Assert.AreEqual(31d, g4_1.STY.Value);
+            var g4_2 = g4.STGeometryN(2);
+            Assert.AreEqual("Point", g4_2.STGeometryType());
+            Assert.AreEqual(40d, g4_2.STX.Value);
+            Assert.AreEqual(41d, g4_2.STY.Value);
+        }
+
+        [TestMethod]
+        public void ReadPolygonWithEmptyRing()
+        {
+            AssertEx.ThrowsException(() =>
+                SqlGeometry.Parse("POLYGON ((10 20, 15 25, 20 30, 10 20), (15 25, 20 30, 25 35, 15 25), EMPTY, (5 5, 6 6, 7 7, 5 5))"),
+                typeof(FormatException), "24120: The Polygon input is not valid because the interior ring number 2 does not have enough points. Each ring of a polygon must contain at least four points.");
+        }
+
+        [TestMethod]
+        public void ReadPolygonWith3PtRing()
+        {
+            AssertEx.ThrowsException(() =>
+                SqlGeometry.Parse("POLYGON ((10 20, 15 25, 20 30, 10 20), (15 25, 20 30, 15 25))"),
+                typeof(FormatException), "24120: The Polygon input is not valid because the interior ring number 1 does not have enough points. Each ring of a polygon must contain at least four points.");
+        }
+
+        [TestMethod]
+        public void ReadPolygonEmpty()
+        {
+            var g = SqlGeometry.Parse("POLYGON EMPTY");
+            Assert.AreEqual("Polygon", g.STGeometryType());
+            Assert.IsTrue((bool)g.STIsEmpty());
         }
     }
 }

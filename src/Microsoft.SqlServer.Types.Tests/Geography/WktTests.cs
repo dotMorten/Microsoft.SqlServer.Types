@@ -111,5 +111,49 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
             var value = SqlGeography.STGeomFromText(new SqlChars(new SqlString(wkt)), 4326);
             Assert.AreEqual(wkt, value.ToString());
         }
+
+        [TestMethod]
+        [TestCategory("SqlGeography")]
+        public void ReadGeometryCollection()
+        {
+            var p = SqlGeography.Parse("GEOMETRYCOLLECTION (POINT(10 11), LINESTRING(20 30, 20 40), POLYGON EMPTY, GEOMETRYCOLLECTION(POINT(30 31)))");
+            Assert.IsNotNull(p);
+            Assert.AreEqual("GeometryCollection", p.STGeometryType());
+            Assert.AreEqual(4, p.STNumGeometries());
+            var g1 = p.STGeometryN(1);
+            Assert.AreEqual("Point", g1.STGeometryType());
+            Assert.AreEqual(10d, g1.Long.Value);
+            Assert.AreEqual(11d, g1.Lat.Value);
+            Assert.IsFalse(g1.HasZ);
+            Assert.IsFalse(g1.HasM);
+
+            var g2 = p.STGeometryN(2);
+            Assert.AreEqual("LineString", g2.STGeometryType());
+            Assert.AreEqual(2, g2.STNumPoints());
+            Assert.AreEqual(20, g2.STPointN(1).Long);
+            Assert.AreEqual(30, g2.STPointN(1).Lat);
+            Assert.AreEqual(20, g2.STPointN(2).Long);
+            Assert.AreEqual(40, g2.STPointN(2).Lat);
+
+            var g3 = p.STGeometryN(3);
+            Assert.AreEqual("Polygon", g3.STGeometryType());
+            Assert.IsTrue(g3.STIsEmpty().Value);
+
+            var g4 = p.STGeometryN(4);
+            Assert.AreEqual("GeometryCollection", g4.STGeometryType());
+            Assert.AreEqual(1, g4.STNumGeometries());
+            var g4_1 = g4.STGeometryN(1);
+            Assert.AreEqual("Point", g4_1.STGeometryType());
+            Assert.AreEqual(30d, g4_1.Long.Value);
+            Assert.AreEqual(31d, g4_1.Lat.Value);
+        }
+
+        [TestMethod]
+        public void ReadPolygonWithEmptyRing()
+        {
+            AssertEx.ThrowsException(() =>
+                SqlGeography.Parse("POLYGON ((10 20, 15 25, 20 30, 10 20), (15 25, 20 30, 25 35, 15 25), EMPTY, (5 5, 6 6, 7 7, 5 5))"),
+                typeof(System.FormatException), "24305: The Polygon input is not valid because the ring number 3 does not have enough points. Each ring of a polygon must contain at least four points.");
+        }
     }
 }

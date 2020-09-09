@@ -256,42 +256,54 @@ namespace Microsoft.SqlServer.Types
                 if (_shapes[nextShape].ParentOffset == shape.ParentOffset)
                     break;
             }
+            Figure[]? figures = null;
+            Point[]? vertices = null;
+            double[]? zvalues = null;
+            double[]? mvalues = null;
 
-            List<Shape> shapes = new List<Shape>(nextShape - shapeIndex);
-            List<Figure> figures = new List<Figure>();
-            List<Point> vertices = new List<Point>();
-            List<double>? zvalues = _zValues == null ? null : new List<double>();
-            List<double>? mvalues = _mValues == null ? null : new List<double>();
-            for (int i = shapeIndex; i < nextShape; i++)
+            var figureStart = shape.FigureOffset;
+            if (figureStart > -1 && _figures != null)
             {
-                var s = _shapes[i];
-                var nextFigure = i + 1 < _shapes.Length ? _shapes[i + 1].FigureOffset : (_figures?.Length ?? 0);
-                var figureOffset = figures.Count;
-                for (int j = s.FigureOffset; j < nextFigure; j++)
+                var figureEnd = _shapes.Length > nextShape ? _shapes[nextShape].FigureOffset : _figures.Length;
+                int i = nextShape;
+                while (figureEnd == -1) // Skip empty figures
                 {
-                    var f = _figures![j];
-                    figures.Add(new Figure() { FigureAttribute = f.FigureAttribute, VertexOffset = vertices.Count });
-                    var nextFigureVertexOffset = (j + 1 < _figures.Length ) ? _figures[j + 1].VertexOffset : (_vertices?.Length ?? 0);
-                    vertices.AddRange(_vertices.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
-                    if (zvalues != null)
-                        zvalues.AddRange(_zValues.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
-                    if (mvalues != null)
-                        mvalues.AddRange(_mValues.Skip(f.VertexOffset).Take(nextFigureVertexOffset - f.VertexOffset));
+                    i++;
+                    figureEnd = _shapes.Length > i ? _shapes[i].FigureOffset : _figures.Length;
                 }
-                shapes.Add(new Shape() { type = s.type, ParentOffset = shape.ParentOffset - s.ParentOffset - 1, FigureOffset = figureOffset });
+                var vertexStart = _figures[figureStart].VertexOffset;
+                var vertexEnd = _figures.Length > figureEnd ? _figures[figureEnd].VertexOffset : _vertices?.Length ?? 0;
+                vertices = _vertices.Skip(vertexStart).Take(vertexEnd - vertexStart).ToArray();
+                zvalues = _zValues == null ? null : _zValues.Skip(vertexStart).Take(vertexEnd - vertexStart).ToArray();
+                mvalues = _mValues == null ? null : _mValues.Skip(vertexStart).Take(vertexEnd - vertexStart).ToArray();
+                figures = new Figure[figureEnd - figureStart];
+                for (int f = figureStart; f < figureEnd; f++)
+                {
+                    var figure = _figures[f];
+                    figures[f - figureStart] = new Figure() { FigureAttribute = figure.FigureAttribute, VertexOffset = figure.VertexOffset - vertexStart };
+                }
             }
-            geoDatum._shapes = shapes.ToArray();
-            geoDatum._figures = figures != null || figures.Any() ? figures?.ToArray() : null;
-            if(vertices.Count == 1 && double.IsNaN(vertices[0].X) && double.IsNaN(vertices[0].Y)) //Empty point
+            Shape[] shapes = new Shape[nextShape - shapeIndex];
+            for (int s = shapeIndex; s < nextShape; s++)
             {
-
+                var sh = _shapes[s];
+                shapes[s - shapeIndex] = new Shape() { type = sh.type, FigureOffset = sh.FigureOffset == -1 ? -1 : (sh.FigureOffset - figureStart), ParentOffset = Math.Max(-1, sh.ParentOffset - shapeIndex) };
+            }
+            if (vertices != null && vertices.Length == 1 && double.IsNaN(vertices[0].X) && double.IsNaN(vertices[0].Y)) //Empty point
+            {
+                geoDatum._figures = null;
+                geoDatum._vertices = null;
+                geoDatum._zValues = null;
+                geoDatum._mValues = null;
             }
             else
             { 
-                geoDatum._vertices = vertices.ToArray();
-                geoDatum._zValues = zvalues?.ToArray();
-                geoDatum._mValues = mvalues?.ToArray();
+                geoDatum._figures = figures;
+                geoDatum._vertices = vertices;
+                geoDatum._zValues = zvalues;
+                geoDatum._mValues = mvalues;
             }
+            geoDatum._shapes = shapes;
             geoDatum._isLargerThanAHemisphere = this._isLargerThanAHemisphere;
             //TODO: Segments
             geoDatum._isValid = _isValid;

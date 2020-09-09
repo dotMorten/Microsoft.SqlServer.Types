@@ -198,17 +198,24 @@ namespace Microsoft.SqlServer.Types.Wkt
                 return;
             }
             _shapes.Add(new Shape() { type = OGCGeometryType.Polygon, FigureOffset = _figures.Count, ParentOffset = parentOffset });
+            int ringStart = _figures.Count;
             _figures.Add(new Figure() { FigureAttribute = FigureAttributes.ExteriorRing, VertexOffset = _vertices.Count });
             ReadToken(PARAN_START);
             ReadCoordinateCollection(); //Exterior ring
+            if (_figures[_figures.Count - 1].VertexOffset + 4 > _vertices.Count)
+            {
+                throw new FormatException($"24305: The Polygon input is not valid because the ring number {_figures.Count - ringStart} does not have enough points. Each ring of a polygon must contain at least four points.");
+            }
             while (ReadOptionalChar(COMMA)) //Interior rings
             {
                 _figures.Add(new Figure() { FigureAttribute = FigureAttributes.InteriorRing, VertexOffset = _vertices.Count });
                 ReadCoordinateCollection();
-                if(_figures[_figures.Count-1].VertexOffset == _vertices.Count)
+                if (_figures[_figures.Count - 1].VertexOffset + 4 > _vertices.Count)
                 {
-                    // Remove empty interior rings
-                    _figures.RemoveAt(_figures.Count - 1);
+                    if (_order == CoordinateOrder.LatLong)
+                        throw new FormatException($"24305: The Polygon input is not valid because the ring number {_figures.Count - ringStart} does not have enough points. Each ring of a polygon must contain at least four points.");
+                    else
+                        throw new FormatException($"24120: The Polygon input is not valid because the interior ring number {_figures.Count - ringStart - 1} does not have enough points. Each ring of a polygon must contain at least four points.");
                 }
             }
             ReadToken(PARAN_END);
