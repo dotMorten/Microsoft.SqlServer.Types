@@ -159,8 +159,8 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             }
             var newNode = GetBetween(child1LastNode, child2LastNode);
 
-            hierarchyStr = PathSeparator + string.Join(PathSeparator, GetNodes().Select(LongArrayToString)) + PathSeparator + LongArrayToString(newNode) + PathSeparator;
-            return new HierarchyId(hierarchyStr);
+            var nodesToJoin = GetNodes().Select(LongArrayToString).Concat(new[] {LongArrayToString(newNode)});
+            return new HierarchyId(PathSeparator + string.Join(PathSeparator, nodesToJoin) + PathSeparator);
         }
 
         static long[] GetBetween(long[] node1, long[] node2)
