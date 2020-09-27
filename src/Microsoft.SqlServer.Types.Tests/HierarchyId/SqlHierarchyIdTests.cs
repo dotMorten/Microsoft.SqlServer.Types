@@ -228,11 +228,12 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
         [DataRow("/1/", "/1/1/")]
         [DataRow("/2/", "/1/")]
         [DataRow("/1/1/", "/1/")]
+        [ExpectedException(typeof(Exception),AllowDerivedTypes = true)]
         public void ThrowExceptionWhenGetDescendantReceivesInvalidPairOfArguments(string hierarchyA, string hierarchyB)
         {
             var a = SqlHierarchyId.Parse(hierarchyA);
             var b = SqlHierarchyId.Parse(hierarchyB);
-            Assert.ThrowsException<ArgumentException>(() => a.GetAncestor(1).GetDescendant(a, b));
+            a.GetAncestor(1).GetDescendant(a, b);
         }
     }
 }
