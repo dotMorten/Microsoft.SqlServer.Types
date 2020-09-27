@@ -221,5 +221,18 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var idChild = id.GetDescendant(SqlHierarchyId.Parse("/0/"), SqlHierarchyId.Parse("/1/"));
             Assert.AreEqual("/0.1/", idChild.ToString());
         }
+
+        [DataTestMethod]
+        [DataRow("/1/", "/1/")]
+        [DataRow("/1/1/", "/1/1/")]
+        [DataRow("/1/", "/1/1/")]
+        [DataRow("/2/", "/1/")]
+        [DataRow("/1/1/", "/1/")]
+        public void ThrowExceptionWhenGetDescendantReceivesInvalidPairOfArguments(string hierarchyA, string hierarchyB)
+        {
+            var a = SqlHierarchyId.Parse(hierarchyA);
+            var b = SqlHierarchyId.Parse(hierarchyB);
+            Assert.ThrowsException<ArgumentException>(() => a.GetAncestor(1).GetDescendant(a, b));
+        }
     }
 }
