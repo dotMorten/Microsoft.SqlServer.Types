@@ -121,10 +121,10 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         public HierarchyId GetDescendant(HierarchyId? child1, HierarchyId? child2)
         {
             if (child1 != null && (child1.Value.GetLevel() != GetLevel() + 1 || !child1.Value.IsDescendantOf(this)))
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child1", child1, ToString()), "child1");
+                throw new HierarchyIdException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child1", child1, ToString()));
 
             if (child2 != null && (child2.Value.GetLevel() != GetLevel() + 1 || !child2.Value.IsDescendantOf(this)))
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child2", child1, ToString()), "child2");
+                throw new HierarchyIdException(string.Format(CultureInfo.InvariantCulture, GetDescendantMostBeChildExceptionMessage, "child2", child1, ToString()));
 
             if (child1 == null && child2 == null)
                 return new HierarchyId(ToString() + 1 + PathSeparator);
@@ -153,9 +153,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             var cmp = CompareLongArrays(child1LastNode, child2LastNode);
             if (cmp >= 0)
             {
-                throw new ArgumentException(
-                    string.Format(CultureInfo.InvariantCulture, GetDescendantChild1MustLessThanChild2ExceptionMessage, child1, child2),
-                    "child1");
+                throw new HierarchyIdException( string.Format(CultureInfo.InvariantCulture, GetDescendantChild1MustLessThanChild2ExceptionMessage, child1, child2));
             }
             var newNode = GetBetween(child1LastNode, child2LastNode);
 
