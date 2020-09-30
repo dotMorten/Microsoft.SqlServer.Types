@@ -166,7 +166,8 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var h = SqlHierarchyId.Parse(id);
             Assert.AreEqual(id, h.ToString());
         }
-                [TestMethod]
+        
+        [TestMethod]
         public void CreateSiblingOnFirstLevel()
         {
             var a = SqlHierarchyId.Parse("/9/");
