@@ -9,7 +9,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
     [TestClass]
     [TestCategory("SqlGeometry")]
     public class DeserializeFromBinary
-    {
+    {       
         [TestMethod]
         public void TestEmptyPoint()
         {
@@ -41,6 +41,25 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             Assert.IsFalse(g.HasZ);
             Assert.IsFalse(g.HasM);
             Assert.AreEqual(1, g.STNumGeometries().Value);
+        }
+
+        [TestMethod]
+        public void TestPolygonFromHexString()
+        {
+            var s = "0000000001041B000000C5F8D8708E885EC01C812C5F17D24740C57CD7938E885EC05C5D8C9918D24740C5406ACA88885EC08462D48918D24740C6EAC19B88885EC0BCB3D0DA06D24740C418796C87885EC05C8A60BB06D24740C49C778F87885EC04011C2EC09D24740C5348AC885885EC0E82B0ADD09D24740C5348AC885885EC058CB0AD40BD24740C6B037897D885EC0B0C3E2A40BD24740C47AE44E7D885EC034BDDEC803D24740C5DAD4CF7E885EC0347926B903D24740C4067FDB7E885EC080D9732900D24740C4DEB78B81885EC078ECE34800D24740C5580D8081885EC0D4395FF1F3D14740C668A62F83885EC0F8AEF448F2D14740C4E4D11A87885EC038009C7CF1D14740C4E4D11A87885EC0BCD115DD02D24740C626663389885EC0DCC1A5BD02D24740C5AA645689885EC0381B7C9700D24740C5D255B48A885EC064323B1EFFD14740C4CE653891885EC0E4CC5ADFFED14740C5F8027F92885EC0AC8514E600D24740C4B0A8F392885EC0E8DD4FDF05D24740C6CD0F4491885EC09032301E06D24740C47F645B91885EC0E40952CD09D24740C5F8D8708E885EC014E4E1AD09D24740C5F8D8708E885EC01C812C5F17D2474001000000020000000001000000FFFFFFFF0000000003";
+            var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(s.HexStringToByteArray()));
+            Assert.IsFalse(g.IsNull);
+            Assert.AreEqual("Polygon", g.STGeometryType().Value);
+            Assert.AreEqual(0, g.STSrid.Value);
+            Assert.IsTrue(g.STX.IsNull);
+            Assert.IsTrue(g.STY.IsNull);
+            Assert.AreEqual(27, g.STNumPoints().Value);
+            Assert.IsFalse(g.HasZ);
+            Assert.IsFalse(g.HasM);
+            Assert.AreEqual(1, g.STNumGeometries().Value);
+
+            Assert.AreEqual(47.641338249903328, g.STPointN(1).STY.Value);
+            Assert.AreEqual(-122.13369389713905, g.STPointN(1).STX.Value);
         }
 
         [TestMethod]
@@ -141,7 +160,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
               1, (byte)0x03, 0, //figures
               1, -1, 0, (byte)0x10, //shapes
               3, (byte)0x02, (byte)0x00, (byte)0x03 //Segments
-              );
+              );            
 
             var g = Microsoft.SqlServer.Types.SqlGeometry.Deserialize(new System.Data.SqlTypes.SqlBytes(coll));
             Assert.IsFalse(g.IsNull);

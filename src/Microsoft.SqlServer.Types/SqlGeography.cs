@@ -486,7 +486,7 @@ namespace Microsoft.SqlServer.Types
                 throw new ArgumentNullException(nameof(r));
             srid = r.ReadInt32();
             this._geometry = new ShapeData();
-            this._geometry.Read(r, 1);
+            this._geometry.Read(r, ShapeData.MAX_GEOGRAPHY_SERIALIZATION_FORMAT_SUPPORTED);
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace Microsoft.SqlServer.Types
             {
                 var srid = r.ReadInt32();
                 var geometry = new ShapeData();
-                geometry.Read(r, 1);
+                geometry.Read(r, ShapeData.MAX_GEOGRAPHY_SERIALIZATION_FORMAT_SUPPORTED); 
                 return new SqlGeography(geometry, srid);
             }
         }
