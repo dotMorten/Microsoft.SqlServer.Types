@@ -98,6 +98,9 @@ namespace Microsoft.SqlServer.Types
     /// </summary>
     internal struct ShapeData
     {
+        // As per https://docs.microsoft.com/en-us/openspecs/sql_server_protocols/ms-ssclrt/77460aa9-8c2f-4449-a65e-1d649ebd77fa
+        public const byte MAX_GEOGRAPHY_SERIALIZATION_FORMAT_SUPPORTED = 2;
+
         private bool _isValid;
         private bool _isLargerThanAHemisphere;
         private double[]? _mValues;

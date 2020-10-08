@@ -1,5 +1,10 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#if NETCOREAPP
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 
 namespace Microsoft.SqlServer.Types.Tests.Geometry
 {
@@ -107,7 +112,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         [TestMethod]
         public void MultiLineStringFromString()
         {
-            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            using (var conn = new SqlConnection(DBTests.ConnectionString))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -183,7 +188,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         [WorkItem(13)]
         public void UserSubmittedIssue_WKT1()
         {
-            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            using (var conn = new SqlConnection(DBTests.ConnectionString))
             {
                 conn.Open();
                 var id = SqlGeometry.Parse("LINESTRING (100 100, 20 180, 180 180)");

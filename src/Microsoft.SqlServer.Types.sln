@@ -10,17 +10,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug-Old-SqlClient|Any CPU = Debug-Old-SqlClient|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Release-Old-SqlClient|Any CPU = Release-Old-SqlClient|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug-Old-SqlClient|Any CPU.ActiveCfg = Debug-Old-SqlClient|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug-Old-SqlClient|Any CPU.Build.0 = Debug-Old-SqlClient|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release-Old-SqlClient|Any CPU.ActiveCfg = Release-Old-SqlClient|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release-Old-SqlClient|Any CPU.Build.0 = Release-Old-SqlClient|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug-Old-SqlClient|Any CPU.ActiveCfg = Debug-Old-SqlClient|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug-Old-SqlClient|Any CPU.Build.0 = Debug-Old-SqlClient|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release-Old-SqlClient|Any CPU.ActiveCfg = Release-Old-SqlClient|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release-Old-SqlClient|Any CPU.Build.0 = Release-Old-SqlClient|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
