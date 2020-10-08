@@ -1,4 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
+﻿using Microsoft.Data.SqlClient.Server;
 
 namespace Microsoft.SqlServer.Types
 {

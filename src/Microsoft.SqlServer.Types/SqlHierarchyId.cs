@@ -1,4 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
+﻿using Microsoft.Data.SqlClient.Server;
 using Microsoft.SqlServer.Types.SqlHierarchy;
 using System;
 using System.Collections;
