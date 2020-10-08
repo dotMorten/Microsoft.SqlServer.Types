@@ -6,6 +6,14 @@ namespace Microsoft.SqlServer.Types.Tests
 {
     internal static class StreamExtensions
     {
+        public static byte[] HexStringToByteArray(this string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
         public static string ToBinaryString(this byte[] bytes)
         {
             var result = string.Join(" ", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));

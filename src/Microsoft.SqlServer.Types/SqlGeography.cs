@@ -1,4 +1,4 @@
-using Microsoft.SqlServer.Server;
+using Microsoft.Data.SqlClient.Server;
 using System;
 using System.Data.SqlTypes;
 using System.IO;
@@ -486,7 +486,7 @@ namespace Microsoft.SqlServer.Types
                 throw new ArgumentNullException(nameof(r));
             srid = r.ReadInt32();
             this._geometry = new ShapeData();
-            this._geometry.Read(r, 1);
+            this._geometry.Read(r, 2);
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace Microsoft.SqlServer.Types
             {
                 var srid = r.ReadInt32();
                 var geometry = new ShapeData();
-                geometry.Read(r, 1);
+                geometry.Read(r, 2);
                 return new SqlGeography(geometry, srid);
             }
         }
