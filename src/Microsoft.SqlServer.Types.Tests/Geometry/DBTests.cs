@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
@@ -20,7 +20,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
     {
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
 
-        private System.Data.SqlClient.SqlConnection conn;
+        private Microsoft.Data.SqlClient.SqlConnection conn;
         private static string path;
         private static object lockObj = new object();
         static DBTests()
@@ -34,7 +34,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             {
                 path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
                 CreateSqlDatabase(path);
-                using (var conn = new System.Data.SqlClient.SqlConnection(connstr + path))
+                using (var conn = new Microsoft.Data.SqlClient.SqlConnection(connstr + path))
                 {
                     conn.Open();
                     var cmd = conn.CreateCommand();
@@ -54,7 +54,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         public DBTests()
         {
             Init();
-            conn = new System.Data.SqlClient.SqlConnection(ConnectionString);
+            conn = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
             conn.Open();
         }
 
@@ -65,7 +65,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
                 File.Delete(filename);
             if (File.Exists(filename.Replace(".mdf","_log.ldf")))
                 File.Delete(filename.Replace(".mdf", "_log.ldf"));
-            using (var connection = new System.Data.SqlClient.SqlConnection(
+            using (var connection = new Microsoft.Data.SqlClient.SqlConnection(
                 @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=master; Integrated Security=true;"))
             {
                 connection.Open();
