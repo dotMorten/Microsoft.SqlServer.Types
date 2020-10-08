@@ -12,17 +12,38 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>(C) 2018 - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-    <Version>1.2.0</Version>
+    <Version>1.2.0</Version>    
     <PackageReleaseNotes>Strong-name signed so the UDT types will automatically deserialize</PackageReleaseNotes>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <LangVersion>8.0</LangVersion>
-    <nullable>enable</nullable>
+    <nullable>enable</nullable>    
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DefineConstants>SQLCLIENT_NEW</DefineConstants>
+    <Configurations>Debug;Release;Debug-Old-SqlClient;Release-Old-SqlClient;</Configurations>
   </PropertyGroup>
-
+  
+  <Choose>
+    <When Condition="'$(Configuration)'=='Debug-Old-SqlClient' ">
+      <PropertyGroup>
+        <DefineConstants>SQLCLIENT_OLD</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)'=='Release-Old-SqlClient' ">
+      <PropertyGroup>
+        <DefineConstants>SQLCLIENT_OLD</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), '^(.*;)*SQLCLIENT_NEW(;.*)*$'))">
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), '^(.*;)*SQLCLIENT_OLD(;.*)*$'))">
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,8 @@
-﻿using Microsoft.Data.SqlClient.Server;
+﻿#if SQLCLIENT_NEW
+using Microsoft.Data.SqlClient.Server;
+#else
+using Microsoft.SqlServer.Server;
+#endif
 using Microsoft.SqlServer.Types.SqlHierarchy;
 using System;
 using System.Collections;
