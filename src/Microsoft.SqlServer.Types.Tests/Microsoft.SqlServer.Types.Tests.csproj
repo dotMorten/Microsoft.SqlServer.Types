@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <Configurations>Debug;Release;Debug-Old-SqlClient;Release-Old-SqlClient</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

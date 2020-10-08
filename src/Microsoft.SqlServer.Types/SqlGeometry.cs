@@ -1,4 +1,8 @@
+#if SQLCLIENT_NEW
 using Microsoft.Data.SqlClient.Server;
+#else
+using Microsoft.SqlServer.Server;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
