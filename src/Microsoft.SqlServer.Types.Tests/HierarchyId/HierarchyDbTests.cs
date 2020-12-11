@@ -11,65 +11,44 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
     [TestCategory("Database")]
     [TestCategory("SqlHierarchyId")]
     [TestClass]
-    public class HierarchyDbTests : IDisposable
+    public class HierarchyDbTests
     {
         const string DataSource = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
 
-
-        public static string DropTables = @"IF OBJECT_ID('dbo.TreeNode', 'U') IS NOT NULL DROP TABLE TreeNode;";
-
-        public static string CreateTables = @"
--- hierarchy_tests
-CREATE TABLE [dbo].[TreeNode]([Id] [int] IDENTITY(1,1) NOT NULL, [Route] [hierarchyid] NOT NULL);
-";
-
-        private readonly SqlConnection _connection;
+        private static SqlConnection _connection;
         private static string _path = null!;
-        private static readonly object lockObj = new object();
-        static HierarchyDbTests()
-        {
-            Init();
-        }
 
-        private static void Init()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext testContext)
         {
-            lock (lockObj)
+            if (_path == null)
             {
-                if (_path == null)
+                _path = Path.Combine(new FileInfo(typeof(HierarchyDbTests).Assembly.Location).Directory.FullName, "HierarchyUnitTestData.mdf");
+                if (File.Exists(_path))
+                    File.Delete(_path);
+                DatabaseUtil.CreateSqlDatabase(_path);
+                using (var conn = new SqlConnection(DataSource + _path))
                 {
-                    _path = Path.Combine(new FileInfo(typeof(HierarchyDbTests).Assembly.Location).Directory.FullName, "HierarchyUnitTestData.mdf");
-                    DatabaseUtil.CreateSqlDatabase(_path);
-                    using (var conn = new SqlConnection(DataSource + _path))
-                    {
-                        conn.Open();
-                        var cmd = conn.CreateCommand();
-                        cmd.CommandText = DropTables;
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = CreateTables;
-                        cmd.ExecuteNonQuery();
-                        conn.Close();
-                    }
+                    conn.Open();
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = "CREATE TABLE [dbo].[TreeNode]([Id] [int] IDENTITY(1,1) NOT NULL, [Route] [hierarchyid] NOT NULL);";
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
                 }
+
+                _connection = new SqlConnection(ConnectionString);
+                _connection.Open();
             }
         }
 
         private static string ConnectionString => DataSource + _path;
 
-        public HierarchyDbTests()
-        {
-            Init();
-            _connection = new SqlConnection(ConnectionString);
-            _connection.Open();
-        }
-
-        public void Dispose()
+        [ClassCleanup]
+        public static void ClassCleanup()
         {
             _connection.Close();
             _connection.Dispose();
         }
-
-
-
 
         [DataTestMethod]
         [DataRow("/-4294971464/")]
