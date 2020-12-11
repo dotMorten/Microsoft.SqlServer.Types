@@ -33,7 +33,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             if(path == null)
             {
                 path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
-                CreateSqlDatabase(path);
+                DatabaseUtil.CreateSqlDatabase(path);
                 using (var conn = new System.Data.SqlClient.SqlConnection(connstr + path))
                 {
                     conn.Open();
@@ -58,29 +58,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             conn.Open();
         }
 
-        private static void CreateSqlDatabase(string filename)
-        {
-            string databaseName = System.IO.Path.GetFileNameWithoutExtension(filename);
-            if (File.Exists(filename))
-                File.Delete(filename);
-            if (File.Exists(filename.Replace(".mdf","_log.ldf")))
-                File.Delete(filename.Replace(".mdf", "_log.ldf"));
-            using (var connection = new System.Data.SqlClient.SqlConnection(
-                @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=master; Integrated Security=true;"))
-            {
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText =
-                        String.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, filename);
-                    command.ExecuteNonQuery();
-
-                    command.CommandText =
-                        String.Format("EXEC sp_detach_db '{0}', 'true'", databaseName);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
+       
         public void Dispose()
         {
             conn.Close();

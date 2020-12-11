@@ -27,6 +27,14 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(-4294971464, -4169, "000101xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
+        internal static BitPattern RandomPattern(Random r)
+        {
+            var index = r.Next(PositivePatterns.Length + NegativePatterns.Length);
+
+            return index < PositivePatterns.Length ? PositivePatterns[index] :
+                NegativePatterns[index - PositivePatterns.Length];
+        }
+
         internal static BitPattern GetPatternByValue(long value)
         {
             if (value >= 0)
