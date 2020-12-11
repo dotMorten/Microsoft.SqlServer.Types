@@ -10,10 +10,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>(C) 2018 - Morten Nielsen</Copyright>
+    <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
     <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-    <Version>1.2.0</Version>
-    <PackageReleaseNotes>Strong-name signed so the UDT types will automatically deserialize</PackageReleaseNotes>
+    <Version>1.3.0</Version>
+    <PackageReleaseNotes>Several SqlHierarchyId fixes</PackageReleaseNotes>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <LangVersion>8.0</LangVersion>
     <nullable>enable</nullable>
