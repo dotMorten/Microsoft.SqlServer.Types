@@ -166,5 +166,75 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var h = SqlHierarchyId.Parse(id);
             Assert.AreEqual(id, h.ToString());
         }
+        
+        [TestMethod]
+        public void CreateSiblingOnFirstLevel()
+        {
+            var a = SqlHierarchyId.Parse("/9/");
+            var b = SqlHierarchyId.Parse("/10/");
+            Assert.AreEqual("/9.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+        
+        [TestMethod]
+        public void CreateSiblingOnFirstLevelWithADistance()
+        {
+            var a = SqlHierarchyId.Parse("/9/");
+            var b = SqlHierarchyId.Parse("/20/");
+            Assert.AreEqual("/10/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+        
+        [TestMethod]
+        public void CreateSiblingOnSecondLevel()
+        {
+            var a = SqlHierarchyId.Parse("/9/1/");
+            var b = SqlHierarchyId.Parse("/9/2/");
+            Assert.AreEqual("/9/1.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+        
+        [TestMethod]
+        public void CreateSiblingOnSecondLevelWithADistance()
+        {
+            var a = SqlHierarchyId.Parse("/9/1/");
+            var b = SqlHierarchyId.Parse("/9/10/");
+            Assert.AreEqual("/9/2/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+        
+        [TestMethod]
+        public void CreateSiblingOnDeeperLevel()
+        {
+            var a = SqlHierarchyId.Parse("/42/1/33.1/1.5/");
+            var b = SqlHierarchyId.Parse("/42/1/33.1/1.6/");
+            Assert.AreEqual("/42/1/33.1/1.5.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+
+        [TestMethod]
+        public void CreateSiblingWhenHierarchyIsNegative()
+        {
+            var a = SqlHierarchyId.Parse("/-1/");
+            var b = SqlHierarchyId.Parse("/0/");
+            Assert.AreEqual("/-1.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
+        }
+        
+        [TestMethod]
+        public void InsertTopLevelNodeBetweenNodes()
+        {
+            var id = SqlHierarchyId.GetRoot();
+            var idChild = id.GetDescendant(SqlHierarchyId.Parse("/0/"), SqlHierarchyId.Parse("/1/"));
+            Assert.AreEqual("/0.1/", idChild.ToString());
+        }
+
+        [DataTestMethod]
+        [DataRow("/1/", "/1/")]
+        [DataRow("/1/1/", "/1/1/")]
+        [DataRow("/1/", "/1/1/")]
+        [DataRow("/2/", "/1/")]
+        [DataRow("/1/1/", "/1/")]
+        [ExpectedException(typeof(HierarchyIdException),AllowDerivedTypes = false)]
+        public void ThrowExceptionWhenGetDescendantReceivesInvalidPairOfArguments(string hierarchyA, string hierarchyB)
+        {
+            var a = SqlHierarchyId.Parse(hierarchyA);
+            var b = SqlHierarchyId.Parse(hierarchyB);
+            a.GetAncestor(1).GetDescendant(a, b);
+        }
     }
 }
