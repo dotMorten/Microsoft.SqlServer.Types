@@ -260,15 +260,23 @@ namespace Microsoft.SqlServer.Types
                 var subNodes = nodes[i];
                 for (int j = 0; j < subNodes.Length; j++)
                 {
-                    long val = subNodes[j];
-
-                    BitPattern p = KnownPatterns.GetPatternByValue(val);
-
                     bool isLast = j == (subNodes.Length - 1);
 
-                    ulong value = p.EncodeValue(val, isLast);
 
-                    bw.Write(value, p.BitLength);
+                    long val = subNodes[j];
+
+                    if (isLast)
+                    {
+                        BitPattern p = KnownPatterns.GetPatternByValue(val);
+                        ulong value = p.EncodeValue(val);
+                        bw.Write(value, p.BitLength);
+                    }
+                    else
+                    {
+                        BitPattern p = KnownPatterns.GetPatternByValue(val + 1);
+                        ulong value = p.EncodeValue(val + 1) - 1;
+                        bw.Write(value, p.BitLength);
+                    }
                 }
             }
 
@@ -305,7 +313,7 @@ namespace Microsoft.SqlServer.Types
 
                     ulong encodedValue = bitR.Read(p.BitLength);
 
-                    int value = p.Decode(encodedValue, out bool isLast);
+                    long value = p.Decode(encodedValue, out bool isLast);
 
                     step.Add(value);
 

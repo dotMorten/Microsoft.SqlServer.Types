@@ -16,72 +16,37 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
     [TestClass]
     [TestCategory("Database")]
     [TestCategory("SqlGeometry")]
-    public class DBTests : IDisposable
+    public class DBTests
     {
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
 
-        private System.Data.SqlClient.SqlConnection conn;
+#pragma warning disable CS8618 // Guaranteed to be initialized in class initialize
+        private static System.Data.SqlClient.SqlConnection conn;
         private static string path;
-        private static object lockObj = new object();
-        static DBTests()
-        {
-            Init();
-        }
-        public static void Init()
-        {
-            lock(lockObj)
-            if(path == null)
-            {
-                path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
-                CreateSqlDatabase(path);
-                using (var conn = new System.Data.SqlClient.SqlConnection(connstr + path))
-                {
-                    conn.Open();
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = OgcConformanceMap.DropTables;
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = OgcConformanceMap.CreateTables;
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = OgcConformanceMap.CreateRows;
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-            }
-        }
-
+#pragma warning restore CS8618
         public static string ConnectionString => connstr + path;
 
-        public DBTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext testContext)
         {
-            Init();
-            conn = new System.Data.SqlClient.SqlConnection(ConnectionString);
+            path = Path.Combine(new FileInfo(typeof(DBTests).Assembly.Location).Directory.FullName, "UnitTestData.mdf");
+            if (File.Exists(path))
+                File.Delete(path);
+            DatabaseUtil.CreateSqlDatabase(path);
+            conn = new System.Data.SqlClient.SqlConnection(connstr + path);
             conn.Open();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = OgcConformanceMap.DropTables;
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = OgcConformanceMap.CreateTables;
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = OgcConformanceMap.CreateRows;
+            cmd.ExecuteNonQuery();
         }
 
-        private static void CreateSqlDatabase(string filename)
-        {
-            string databaseName = System.IO.Path.GetFileNameWithoutExtension(filename);
-            if (File.Exists(filename))
-                File.Delete(filename);
-            if (File.Exists(filename.Replace(".mdf","_log.ldf")))
-                File.Delete(filename.Replace(".mdf", "_log.ldf"));
-            using (var connection = new System.Data.SqlClient.SqlConnection(
-                @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=master; Integrated Security=true;"))
-            {
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText =
-                        String.Format("CREATE DATABASE {0} ON PRIMARY (NAME={0}, FILENAME='{1}')", databaseName, filename);
-                    command.ExecuteNonQuery();
 
-                    command.CommandText =
-                        String.Format("EXEC sp_detach_db '{0}', 'true'", databaseName);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-        public void Dispose()
+        [ClassCleanup]
+        public static void ClassCleanup()
         {
             conn.Close();
             conn.Dispose();
@@ -198,7 +163,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
                             var geomValue = reader.GetValue(geomColumn) as SqlGeometry;
                             //var geomValue = SqlGeometry.Deserialize(reader.GetSqlBytes(geomColumn));
                             Assert.IsInstanceOfType(geomValue, typeof(SqlGeometry));
-                            var g = geomValue as SqlGeometry;
+                            var g = (SqlGeometry)geomValue!;
                             Assert.IsFalse(g.IsNull);
                             Assert.AreEqual(101, g.STSrid);
                             Assert.AreEqual(1, g.STNumGeometries().Value);

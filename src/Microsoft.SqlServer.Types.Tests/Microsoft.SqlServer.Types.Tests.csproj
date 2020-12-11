@@ -1,14 +1,17 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
-  
+
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <nullable>enable</nullable>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="HierarchyId\BitPattern.cs" />
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="HierarchyId\BitReader.cs" />
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="HierarchyId\BitWriter.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\KnownPatterns.cs" Link="HierarchyId\KnownPatterns.cs" />
   </ItemGroup>
 
   <ItemGroup>

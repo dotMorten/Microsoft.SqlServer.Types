@@ -46,14 +46,11 @@ namespace Microsoft.SqlServer.Types
 
         public override string ToString() => Pattern;
 
-        public ulong EncodeValue(long val, bool isLast)
+        public ulong EncodeValue(long val)
         {
             ulong expand = Expand(PatternMask, val - MinValue);
 
             ulong value = PatternOnes | expand | 1;
-
-            if (!isLast)
-                value++;
 
             return value;
         }
@@ -69,12 +66,12 @@ namespace Microsoft.SqlServer.Types
             return Expand(mask >> 1, value) << 1;
         }
 
-        internal int Decode(ulong encodedValue, out bool isLast)
+        internal long Decode(ulong encodedValue, out bool isLast)
         {
             var decodedValue = Compress(encodedValue, PatternMask);
 
             isLast = (encodedValue & 0x1) == 0x1;
-            return (int)((isLast ? decodedValue : decodedValue - 1) + MinValue);
+            return ((isLast ? decodedValue : decodedValue - 1) + MinValue);
         }
 
         private long Compress(ulong value, ulong mask)
