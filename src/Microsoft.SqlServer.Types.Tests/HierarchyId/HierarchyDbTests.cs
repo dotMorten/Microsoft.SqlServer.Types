@@ -15,33 +15,31 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
     {
         const string DataSource = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
 
+#pragma warning disable CS8618 // Guaranteed to be initialized in class initialize
         private static SqlConnection _connection;
-        private static string _path = null!;
+        private static string _path;
+#pragma warning restore CS8618 
+        private static string ConnectionString => DataSource + _path;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            if (_path == null)
+            _path = Path.Combine(new FileInfo(typeof(HierarchyDbTests).Assembly.Location).Directory.FullName, "HierarchyUnitTestData.mdf");
+            if (File.Exists(_path))
+                File.Delete(_path);
+            DatabaseUtil.CreateSqlDatabase(_path);
+            using (var conn = new SqlConnection(DataSource + _path))
             {
-                _path = Path.Combine(new FileInfo(typeof(HierarchyDbTests).Assembly.Location).Directory.FullName, "HierarchyUnitTestData.mdf");
-                if (File.Exists(_path))
-                    File.Delete(_path);
-                DatabaseUtil.CreateSqlDatabase(_path);
-                using (var conn = new SqlConnection(DataSource + _path))
-                {
-                    conn.Open();
-                    var cmd = conn.CreateCommand();
-                    cmd.CommandText = "CREATE TABLE [dbo].[TreeNode]([Id] [int] IDENTITY(1,1) NOT NULL, [Route] [hierarchyid] NOT NULL);";
-                    cmd.ExecuteNonQuery();
-                    conn.Close();
-                }
-
-                _connection = new SqlConnection(ConnectionString);
-                _connection.Open();
+                conn.Open();
+                var cmd = conn.CreateCommand();
+                cmd.CommandText = "CREATE TABLE [dbo].[TreeNode]([Id] [int] IDENTITY(1,1) NOT NULL, [Route] [hierarchyid] NOT NULL);";
+                cmd.ExecuteNonQuery();
+                conn.Close();
             }
-        }
 
-        private static string ConnectionString => DataSource + _path;
+            _connection = new SqlConnection(ConnectionString);
+            _connection.Open();
+        }
 
         [ClassCleanup]
         public static void ClassCleanup()
