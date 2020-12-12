@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Morten Nielsen</Authors>
+    <Description>Allows you to use SQL Server spatial SqlHierarchy types on a machine without SQL Server installed and decode these UDT types in any .NET Standard client</Description>
+    <PackageTags>SqlGeometry, SqlGeography, SqlHierarchy, SqlServer, UDT</PackageTags>
+    <RepositoryUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
+    <PackageId>dotMorten.Microsoft.SqlServer.Types.M.D.S</PackageId>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>Adds support for Microsoft.Data.SqlClient</PackageReleaseNotes>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <LangVersion>8.0</LangVersion>
+    <nullable>enable</nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<DefineConstants>MDS</DefineConstants>
+    <AssemblyName>Microsoft.SqlServer.Types</AssemblyName>
+    <RootNamespace>Microsoft.SqlServer.Types</RootNamespace>
+	<SignAssembly>true</SignAssembly>
+	<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+	<DelaySign>true</DelaySign>  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Microsoft.SqlServer.Types\HierarchyIdException.cs" Link="HierarchyIdException.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\IGeographySink.cs" Link="IGeographySink.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\IGeometrySink.cs" Link="IGeometrySink.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\ISqlSpatialGridIndexable.cs" Link="ISqlSpatialGridIndexable.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\OpenGisGeographyType.cs" Link="OpenGisGeographyType.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\OpenGisGeometryType.cs" Link="OpenGisGeometryType.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\ShapeData.cs" Link="ShapeData.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\ShapeDataBuilder.cs" Link="ShapeDataBuilder.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlGeography.cs" Link="SqlGeography.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlGeographyBuilder.cs" Link="SqlGeographyBuilder.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlGeometry.cs" Link="SqlGeometry.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlGeometryBuilder.cs" Link="SqlGeometryBuilder.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchyId.cs" Link="SqlHierarchyId.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="SqlHierarchy\BitPattern.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="SqlHierarchy\BitReader.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="SqlHierarchy\BitWriter.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\HierarhyId.cs" Link="SqlHierarchy\HierarhyId.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\KnownPatterns.cs" Link="SqlHierarchy\KnownPatterns.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\Wkt\WktReader.cs" Link="Wkt\WktReader.cs" />
+    <Compile Include="..\Microsoft.SqlServer.Types\Wkt\WktWriter.cs" Link="Wkt\WktWriter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient">
+      <Version>2.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+</Project>

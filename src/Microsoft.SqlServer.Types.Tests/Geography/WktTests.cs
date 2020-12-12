@@ -1,5 +1,10 @@
 ﻿using Microsoft.SqlServer.Types.Tests.Geometry;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+#if NETCOREAPP3_1
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 using System.Data.SqlTypes;
 
 namespace Microsoft.SqlServer.Types.Tests.Geography
@@ -14,7 +19,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         [WorkItem(13)]
         public void UserSubmittedIssue_WKT2()
         {
-            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            using (var conn = new SqlConnection(DBTests.ConnectionString))
             {
                 conn.Open();
                 var id = SqlGeography.Parse("LINESTRING (-122.36 47.656, -122.343 47.656)");
@@ -38,7 +43,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         [WorkItem(13)]
         public void UserSubmittedIssue_WKT3()
         {
-            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            using (var conn = new SqlConnection(DBTests.ConnectionString))
             {
                 conn.Open();
                 var id = SqlGeography.Parse("LINESTRING (-122.36 47.656, -122.343 47.656)");
@@ -56,7 +61,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geography
         [WorkItem(14)]
         public void UserSubmittedIssue_WKT4()
         {
-            using (var conn = new System.Data.SqlClient.SqlConnection(DBTests.ConnectionString))
+            using (var conn = new SqlConnection(DBTests.ConnectionString))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())

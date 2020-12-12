@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <nullable>enable</nullable>
     <LangVersion>8.0</LangVersion>
@@ -21,7 +21,6 @@
     <Content Include="$(USERPROFILE)\.nuget\packages\microsoft.sqlserver.types\14.0.1016.290\nativeBinaries\x86\SqlServerSpatial140.dll" Link="x86\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
@@ -31,6 +30,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <ProjectReference Include="..\Microsoft.SqlServer.Types\Microsoft.SqlServer.Types.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+	<ProjectReference Include="..\Microsoft.SqlServer.Types.M.D.S\Microsoft.SqlServer.Types.M.D.S.csproj" />
+  </ItemGroup>	
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
   </ItemGroup>

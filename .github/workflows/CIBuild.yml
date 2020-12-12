@@ -29,6 +29,10 @@ jobs:
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/netcoreapp2.1/Microsoft.SqlServer.Types.Tests.dll -v normal
 
+    - name: Tests of Microsoft.Data.SqlClient
+      run: |
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/netcoreapp3.1/Microsoft.SqlServer.Types.Tests.dll -v normal
+
     - name: Reference Tests
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net461/Microsoft.SqlServer.Types.Tests.dll -v normal

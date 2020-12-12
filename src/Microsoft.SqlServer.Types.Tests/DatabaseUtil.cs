@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+#if NETCOREAPP3_1
+using Microsoft.Data.SqlClient;
+#else
+using System.Data.SqlClient;
+#endif
 using System.IO;
-using System.Text;
 
 namespace Microsoft.SqlServer.Types.Tests
 {
@@ -9,12 +12,12 @@ namespace Microsoft.SqlServer.Types.Tests
     {
         internal static void CreateSqlDatabase(string filename)
         {
-            string databaseName = System.IO.Path.GetFileNameWithoutExtension(filename);
+            string databaseName = Path.GetFileNameWithoutExtension(filename);
             if (File.Exists(filename))
                 File.Delete(filename);
             if (File.Exists(filename.Replace(".mdf", "_log.ldf")))
                 File.Delete(filename.Replace(".mdf", "_log.ldf"));
-            using (var connection = new System.Data.SqlClient.SqlConnection(
+            using (var connection = new SqlConnection(
                 @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=master; Integrated Security=true;"))
             {
                 connection.Open();

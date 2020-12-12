@@ -1,14 +1,13 @@
-﻿using Microsoft.SqlServer.Server;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
+#if NETCOREAPP3_1
+using Microsoft.Data.SqlClient;
+#else
 using System.Data.SqlClient;
+#endif
 using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace Microsoft.SqlServer.Types.Tests.Geometry
@@ -21,7 +20,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
         const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
 
 #pragma warning disable CS8618 // Guaranteed to be initialized in class initialize
-        private static System.Data.SqlClient.SqlConnection conn;
+        private static SqlConnection conn;
         private static string path;
 #pragma warning restore CS8618
         public static string ConnectionString => connstr + path;
@@ -33,7 +32,7 @@ namespace Microsoft.SqlServer.Types.Tests.Geometry
             if (File.Exists(path))
                 File.Delete(path);
             DatabaseUtil.CreateSqlDatabase(path);
-            conn = new System.Data.SqlClient.SqlConnection(connstr + path);
+            conn = new SqlConnection(connstr + path);
             conn.Open();
             var cmd = conn.CreateCommand();
             cmd.CommandText = OgcConformanceMap.DropTables;
