@@ -28,6 +28,7 @@
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+	<PackageReference Include="System.Data.SqlClient" Version="4.5.1" />  
     <ProjectReference Include="..\Microsoft.SqlServer.Types\Microsoft.SqlServer.Types.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
