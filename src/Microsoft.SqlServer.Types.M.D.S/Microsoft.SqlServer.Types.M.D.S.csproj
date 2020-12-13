@@ -18,12 +18,12 @@
     <LangVersion>8.0</LangVersion>
     <nullable>enable</nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<DefineConstants>MDS</DefineConstants>
+    <DefineConstants>MDS</DefineConstants>
     <AssemblyName>Microsoft.SqlServer.Types</AssemblyName>
     <RootNamespace>Microsoft.SqlServer.Types</RootNamespace>
-	<SignAssembly>true</SignAssembly>
-	<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-	<DelaySign>true</DelaySign>  
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>  
   </PropertyGroup>
 
   <ItemGroup>
