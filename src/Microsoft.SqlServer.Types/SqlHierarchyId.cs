@@ -1,12 +1,14 @@
-﻿using Microsoft.SqlServer.Server;
+﻿#if MDS
+using Microsoft.Data.SqlClient.Server;
+#else
+using Microsoft.SqlServer.Server;
+#endif
 using Microsoft.SqlServer.Types.SqlHierarchy;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Microsoft.SqlServer.Types
 {

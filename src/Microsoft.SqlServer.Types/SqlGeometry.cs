@@ -1,9 +1,11 @@
+#if MDS
+using Microsoft.Data.SqlClient.Server;
+#else
 using Microsoft.SqlServer.Server;
+#endif
 using System;
-using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
-using System.Linq;
 
 namespace Microsoft.SqlServer.Types
 {

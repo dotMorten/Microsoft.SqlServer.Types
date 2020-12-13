@@ -1,4 +1,8 @@
-﻿using Microsoft.SqlServer.Server;
+﻿#if MDS
+using Microsoft.Data.SqlClient.Server;
+#else
+using Microsoft.SqlServer.Server;
+#endif
 
 namespace Microsoft.SqlServer.Types
 {
