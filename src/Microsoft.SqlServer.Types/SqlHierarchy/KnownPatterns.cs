@@ -17,6 +17,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(80, 1103, "1110xxx0xxx0x1xxxT"),
             new BitPattern(1104, 5199, "11110xxxxx0xxx0x1xxxT"),
             new BitPattern(5200, 4294972495, "111110xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
+            new BitPattern(4294972496, 281479271683151,"111111xxxxxxxxxxxxxx0xxxxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
         private static BitPattern[] NegativePatterns = new[]
@@ -25,6 +26,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
             new BitPattern(-72, -9, "0010xx0x1xxxT"),
             new BitPattern(-4168, -73, "000110xxxxx0xxx0x1xxxT"),
             new BitPattern(-4294971464, -4169, "000101xxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
+            new BitPattern(-281479271682120, -4294971465,"000100xxxxxxxxxxxxxx0xxxxxxxxxxxxxxxxxxxxx0xxxxxx0xxx0x1xxxT"),
         };
 
         internal static BitPattern RandomPattern(Random r)
