@@ -222,7 +222,7 @@ namespace Microsoft.SqlServer.Types.SqlHierarchy
         /// <param name="parent">parent</param>
         public bool IsDescendantOf(HierarchyId parent)
         {
-            if (parent.GetLevel() > GetLevel())
+            if (parent.GetLevel() >= GetLevel())
             {
                 return false;
             }
