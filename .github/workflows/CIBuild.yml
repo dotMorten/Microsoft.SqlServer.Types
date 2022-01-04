@@ -44,3 +44,9 @@ jobs:
     - name: Reference Tests (Legacy)
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net461/Microsoft.SqlServer.Types.Tests.dll -v normal
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: NuGet Packages
+        path: artifacts/NuGet/Release
