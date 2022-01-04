@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.CompilerServices;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     internal class BitPattern
     {

@@ -1,6 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// <para>This API supports the product infrastructure and is not intended to be used directly from your code.</para>

@@ -1,10 +1,16 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.44">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFrameworks>net6.0;net461</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <nullable>enable</nullable>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
+    <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
+    <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="v1.0 Build" Condition="'$(IsLegacyBuild)'=='true'">
+    <DefineConstants>$(DefineConstants);LEGACY</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,14 +27,13 @@
     <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x86\SqlServerSpatial140.dll" Link="x86\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
+  <ItemGroup Condition="'$(TargetFramework)'!='net461'">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <ProjectReference Include="..\Microsoft.SqlServer.Types\Microsoft.SqlServer.Types.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">

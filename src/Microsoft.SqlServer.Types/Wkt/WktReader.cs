@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types.Wkt
+﻿namespace Microsoft.SqlServer.Types.Wkt
 {
     internal enum CoordinateOrder
     {

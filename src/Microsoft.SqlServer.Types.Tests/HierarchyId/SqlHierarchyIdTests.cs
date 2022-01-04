@@ -1,13 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace Microsoft.SqlServer.Types.Tests.HierarchyId
+﻿namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 {
     [TestClass]
     [TestCategory("SqlHierarchyId")]
@@ -166,7 +157,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var h = SqlHierarchyId.Parse(id);
             Assert.AreEqual(id, h.ToString());
         }
-        
+
         [TestMethod]
         public void CreateSiblingOnFirstLevel()
         {
@@ -174,7 +165,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var b = SqlHierarchyId.Parse("/10/");
             Assert.AreEqual("/9.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
         }
-        
+
         [TestMethod]
         public void CreateSiblingOnFirstLevelWithADistance()
         {
@@ -182,7 +173,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var b = SqlHierarchyId.Parse("/20/");
             Assert.AreEqual("/10/", a.GetAncestor(1).GetDescendant(a, b).ToString());
         }
-        
+
         [TestMethod]
         public void CreateSiblingOnSecondLevel()
         {
@@ -190,7 +181,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var b = SqlHierarchyId.Parse("/9/2/");
             Assert.AreEqual("/9/1.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
         }
-        
+
         [TestMethod]
         public void CreateSiblingOnSecondLevelWithADistance()
         {
@@ -198,7 +189,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var b = SqlHierarchyId.Parse("/9/10/");
             Assert.AreEqual("/9/2/", a.GetAncestor(1).GetDescendant(a, b).ToString());
         }
-        
+
         [TestMethod]
         public void CreateSiblingOnDeeperLevel()
         {
@@ -214,7 +205,7 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
             var b = SqlHierarchyId.Parse("/0/");
             Assert.AreEqual("/-1.1/", a.GetAncestor(1).GetDescendant(a, b).ToString());
         }
-        
+
         [TestMethod]
         public void InsertTopLevelNodeBetweenNodes()
         {
@@ -229,12 +220,58 @@ namespace Microsoft.SqlServer.Types.Tests.HierarchyId
         [DataRow("/1/", "/1/1/")]
         [DataRow("/2/", "/1/")]
         [DataRow("/1/1/", "/1/")]
-        [ExpectedException(typeof(HierarchyIdException),AllowDerivedTypes = false)]
+        [ExpectedException(typeof(HierarchyIdException), AllowDerivedTypes = false)]
         public void ThrowExceptionWhenGetDescendantReceivesInvalidPairOfArguments(string hierarchyA, string hierarchyB)
         {
             var a = SqlHierarchyId.Parse(hierarchyA);
             var b = SqlHierarchyId.Parse(hierarchyB);
             a.GetAncestor(1).GetDescendant(a, b);
+        }
+
+        [TestMethod]
+        [WorkItem(36)]
+        public void OperatorComparison()
+        {
+            var h1 = SqlHierarchyId.Parse("/9/2/");
+            var h2 = SqlHierarchyId.Parse("/9/1/");
+            var h3 = SqlHierarchyId.Parse("/9/1/");
+            Assert.IsTrue((bool)(h1 >= h2));
+            Assert.IsTrue((bool)(h2 <= h1));
+            Assert.IsFalse((bool)(h1 <= h2));
+            Assert.IsFalse((bool)(h2 >= h1));
+            Assert.IsFalse((bool)(h1 == h2));
+            Assert.IsTrue((bool)(h3 >= h2));
+        }
+
+        [TestMethod]
+        [WorkItem(68)]
+        public void SameLevelArentParents()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/1/");
+            var h2 = SqlHierarchyId.Parse("/1/2/");
+            var a1 = h1.GetAncestor(1);
+            var a2 = h2.GetAncestor(1);
+            Assert.AreEqual(a1.ToString(), a2.ToString());
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsFalse(h2.IsDescendantOf(h1).Value);
+        }
+
+        [TestMethod]
+        public void IsDescendantOf()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/");
+            var h2 = SqlHierarchyId.Parse("/1/2/");
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsTrue(h2.IsDescendantOf(h1).Value);
+        }
+
+        [TestMethod]
+        public void IsDescendantOf2()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/");
+            var h2 = SqlHierarchyId.Parse("/2/");
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsFalse(h2.IsDescendantOf(h1).Value);
         }
     }
 }

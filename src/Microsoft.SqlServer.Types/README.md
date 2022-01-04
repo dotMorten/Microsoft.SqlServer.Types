@@ -1,20 +1,10 @@
 # Microsoft.SqlServer.Types
-a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Types`
+a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Types`.
 
 ### Difference between v1.x and v2.x
 The v1.x and v2.x versions are identical and kept in sync. The only difference is the dependency:
 v1.x : Depends on the legacy `System.Data.SqlClient` package.
 v2.x : Depends on updated `Microsoft.Data.SqlClient` package.
-
-## Sponsoring
-
-If you like this library and use it a lot, consider sponsoring me. Anything helps and encourages me to keep going.
-
-See here for details: https://github.com/sponsors/dotMorten
-
-### NuGet:
-
-Install the package `dotMorten.Microsoft.SqlServer.Types` from NuGet.
 
 ### Examples
 

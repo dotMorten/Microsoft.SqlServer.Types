@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// Lists supported and extended Open GIS geography types.

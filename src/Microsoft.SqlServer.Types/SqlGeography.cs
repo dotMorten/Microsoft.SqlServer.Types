@@ -1,8 +1,3 @@
-using Microsoft.SqlServer.Server;
-using System;
-using System.Data.SqlTypes;
-using System.IO;
-
 namespace Microsoft.SqlServer.Types
 {
     /// <summary>
