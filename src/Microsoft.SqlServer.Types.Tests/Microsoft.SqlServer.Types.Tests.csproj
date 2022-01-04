@@ -21,12 +21,11 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <Content Include="$(USERPROFILE)\.nuget\packages\microsoft.sqlserver.types\14.0.1016.290\nativeBinaries\x64\msvcr120.dll" Link="x64\msvcr120.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="$(USERPROFILE)\.nuget\packages\microsoft.sqlserver.types\14.0.1016.290\nativeBinaries\x64\SqlServerSpatial140.dll" Link="x64\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="$(USERPROFILE)\.nuget\packages\microsoft.sqlserver.types\14.0.1016.290\nativeBinaries\x86\msvcr120.dll" Link="x86\msvcr120.dll" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="$(USERPROFILE)\.nuget\packages\microsoft.sqlserver.types\14.0.1016.290\nativeBinaries\x86\SqlServerSpatial140.dll" Link="x86\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x64\msvcr120.dll" Link="x64\msvcr120.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x64\SqlServerSpatial140.dll" Link="x64\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x86\msvcr120.dll" Link="x86\msvcr120.dll" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x86\SqlServerSpatial140.dll" Link="x86\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
@@ -38,7 +37,7 @@
     <ProjectReference Include="..\Microsoft.SqlServer.Types\Microsoft.SqlServer.Types.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
+    <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" GeneratePathProperty="true" />
   </ItemGroup>
 
 </Project>
