@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2022
     
     steps:
     - name: Clone Repo
@@ -27,8 +27,20 @@ jobs:
         
     - name: Tests
       run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/netcoreapp2.1/Microsoft.SqlServer.Types.Tests.dll -v normal
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net5.0/Microsoft.SqlServer.Types.Tests.dll -v normal
 
     - name: Reference Tests
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net461/Microsoft.SqlServer.Types.Tests.dll -v normal
+
+    - name: Build (Legacy)
+      run: |
+        msbuild /restore /t:Build src/Microsoft.SqlServer.Types.sln /p:Configuration=Release_Legacy
+        
+    - name: Tests (Legacy)
+      run: |
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net5.0/Microsoft.SqlServer.Types.Tests.dll -v normal
+
+    - name: Reference Tests (Legacy)
+      run: |
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net461/Microsoft.SqlServer.Types.Tests.dll -v normal

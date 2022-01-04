@@ -1,7 +1,3 @@
-using Microsoft.SqlServer.Types;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
 using System.Linq;
 
 namespace Microsoft.SqlServer.Types.Tests.HierarchyId

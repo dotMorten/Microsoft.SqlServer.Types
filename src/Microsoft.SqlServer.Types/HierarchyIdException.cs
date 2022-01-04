@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// The exception that is thrown for invalid SqlHierarchyId values.

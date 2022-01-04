@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// Defines the interface that the <see cref="SqlGeometryBuilder"/> class uses to construct a <see cref="SqlGeometryBuilder"/> object. This API is obsolete. <see cref="IGeometrySink110"/> should be used instead.

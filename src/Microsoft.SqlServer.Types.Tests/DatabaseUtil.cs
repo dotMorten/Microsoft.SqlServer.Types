@@ -14,7 +14,7 @@ namespace Microsoft.SqlServer.Types.Tests
                 File.Delete(filename);
             if (File.Exists(filename.Replace(".mdf", "_log.ldf")))
                 File.Delete(filename.Replace(".mdf", "_log.ldf"));
-            using (var connection = new System.Data.SqlClient.SqlConnection(
+            using (var connection = new SqlConnection(
                 @"Data Source=(localdb)\mssqllocaldb;Initial Catalog=master; Integrated Security=true;"))
             {
                 connection.Open();

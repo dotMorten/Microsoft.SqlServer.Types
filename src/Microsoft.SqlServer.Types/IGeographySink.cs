@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// Interface used by SqlGeographyBuilder to construct a SqlGeography object. This API is obsolete. <see cref="IGeographySink110"/> should be used instead.

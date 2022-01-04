@@ -1,13 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace Microsoft.SqlServer.Types.Tests.HierarchyId
+﻿namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 {
     [TestClass]
     [TestCategory("SqlHierarchyId")]
