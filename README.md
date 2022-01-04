@@ -3,8 +3,8 @@ a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Type
 
 ### Difference between v1.x and v2.x
 The v1.x and v2.x versions are identical and kept in sync. The only difference is the dependency:
-v1.x : Depends on the legacy `System.Data.SqlClient` package.
-v2.x : Depends on updated `Microsoft.Data.SqlClient` package.
+ - v1.x : Depends on the legacy `System.Data.SqlClient` package.
+ - v2.x : Depends on updated `Microsoft.Data.SqlClient` package.
 
 ## Sponsoring
 
