@@ -242,5 +242,36 @@
             Assert.IsFalse((bool)(h1 == h2));
             Assert.IsTrue((bool)(h3 >= h2));
         }
+
+        [TestMethod]
+        [WorkItem(68)]
+        public void SameLevelArentParents()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/1/");
+            var h2 = SqlHierarchyId.Parse("/1/2/");
+            var a1 = h1.GetAncestor(1);
+            var a2 = h2.GetAncestor(1);
+            Assert.AreEqual(a1.ToString(), a2.ToString());
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsFalse(h2.IsDescendantOf(h1).Value);
+        }
+
+        [TestMethod]
+        public void IsDescendantOf()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/");
+            var h2 = SqlHierarchyId.Parse("/1/2/");
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsTrue(h2.IsDescendantOf(h1).Value);
+        }
+
+        [TestMethod]
+        public void IsDescendantOf2()
+        {
+            var h1 = SqlHierarchyId.Parse("/1/");
+            var h2 = SqlHierarchyId.Parse("/2/");
+            Assert.IsFalse(h1.IsDescendantOf(h2).Value);
+            Assert.IsFalse(h2.IsDescendantOf(h1).Value);
+        }
     }
 }
