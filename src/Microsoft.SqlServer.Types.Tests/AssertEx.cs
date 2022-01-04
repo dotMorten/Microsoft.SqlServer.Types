@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace Microsoft.SqlServer.Types.Tests
+﻿namespace Microsoft.SqlServer.Types.Tests
 {
     public static class AssertEx
     {

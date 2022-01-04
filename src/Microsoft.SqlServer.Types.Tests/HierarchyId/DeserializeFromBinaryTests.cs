@@ -1,12 +1,3 @@
-using Microsoft.SqlServer.Types;
-using Microsoft.SqlServer.Types.SqlHierarchy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections;
-using System.Data.SqlClient;
-using System.IO;
-using System.Text;
-
 namespace Microsoft.SqlServer.Types.Tests.HierarchyId
 {
     /// <summary>

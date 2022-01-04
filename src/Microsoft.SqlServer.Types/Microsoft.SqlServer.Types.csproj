@@ -1,30 +1,63 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Sdk Name="Microsoft.DotNet.PackageValidation" Version="1.0.0-preview.7.21379.12" />
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Morten Nielsen</Authors>
-    <Description>Allows you to use SQL Server spatial SqlHierarchy types on a machine without SQL Server installed and decode these UDT types in any .NET Standard client</Description>
-    <PackageTags>SqlGeometry, SqlGeography, SqlHierarchy, SqlServer, UDT</PackageTags>
-    <RepositoryUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
-    <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-    <Version>1.3.0</Version>
-    <PackageReleaseNotes>Several SqlHierarchyId fixes</PackageReleaseNotes>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <LangVersion>8.0</LangVersion>
-    <nullable>enable</nullable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>10.0</LangVersion>
+        <nullable>enable</nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
+        <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
+        <MinorVersion>4.0</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
+        <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
+        <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="System.Memory" Version="4.5.1" />
-  </ItemGroup>
+    <PropertyGroup Label="Package properties">
+        <Authors>Morten Nielsen</Authors>
+        <Description>Allows you to use SQL Server spatial SqlHierarchy types on a machine without SQL Server installed and decode these UDT types in any .NET Standard client</Description>
+        <PackageTags>SqlGeometry, SqlGeography, SqlHierarchy, SqlServer, UDT</PackageTags>
+        <RepositoryUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/dotMorten/Microsoft.SqlServer.Types</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
+        <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+        <PackageOutputPath Condition="$(Configuration.Contains(&quot;Debug&quot;))">..\..\artifacts\NuGet\Debug\</PackageOutputPath>
+        <PackageOutputPath Condition="$(Configuration.Contains(&quot;Release&quot;))">..\..\artifacts\NuGet\Release\</PackageOutputPath>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    
+    <PropertyGroup Label="Package Validation">
+        <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.3.0</PackageValidationBaselineVersion>
+        <!--<PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'!='true'">2.4.0</PackageValidationBaselineVersion>-->
+        <!-- When updating this, make sure to delete PackageValidationSuppression.txt files -->
+        <GenerateCompatibilitySuppressionFile>false</GenerateCompatibilitySuppressionFile>
+        <!-- Set to true to generate suppresion files used to ignore _intended_ breaking changes. Should never be checked in true -->
+        <CompatibilitySuppressionFilePath Condition="('$(GenerateCompatibilitySuppressionFile)'=='true') OR Exists('$(MSBuildProjectDirectory)\PackageValidationSuppression.txt')">PackageValidationSuppression.txt</CompatibilitySuppressionFilePath>
+    </PropertyGroup>
+
+    <PropertyGroup Label="v1.0 Build" Condition="'$(IsLegacyBuild)'=='true'">
+        <DefineConstants>$(DefineConstants);LEGACY</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(IsLegacyBuild)'!='true'">
+        <PackageReference Include="Microsoft.Data.SqlClient">
+            <Version>4.0.0</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup Condition="'$(IsLegacyBuild)'=='true'">
+        <PackageReference Include="System.Data.SqlClient">
+            <Version>4.5.1</Version>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="System.Memory" Version="4.5.4" />
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

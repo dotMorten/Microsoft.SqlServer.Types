@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace Microsoft.SqlServer.Types.Tests.Geography
+﻿namespace Microsoft.SqlServer.Types.Tests.Geography
 {
     [TestClass]
     [TestCategory("SqlGeography")]

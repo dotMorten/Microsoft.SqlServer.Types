@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types.SqlHierarchy
+﻿namespace Microsoft.SqlServer.Types.SqlHierarchy
 {
     internal static class KnownPatterns
     {

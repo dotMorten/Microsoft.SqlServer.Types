@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.SqlServer.Types
+﻿namespace Microsoft.SqlServer.Types
 {
     /// <summary>
     /// Constructs instances of <see cref="SqlGeometry"/> objects by using <see cref="IGeometrySink"/> interface.
