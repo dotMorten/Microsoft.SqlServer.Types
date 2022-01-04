@@ -29,14 +29,6 @@ jobs:
       run: |
         msbuild /restore /t:Build src/Microsoft.SqlServer.Types.sln /p:Configuration=Release_Legacy
 
-    - name: Tests (Legacy)
-      run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net6.0/Microsoft.SqlServer.Types.Tests.dll -v normal
-
-    - name: Reference Tests (Legacy)
-      run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net461/Microsoft.SqlServer.Types.Tests.dll -v normal
-
     - name: Tests
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net6.0/Microsoft.SqlServer.Types.Tests.dll -v normal
@@ -45,6 +37,14 @@ jobs:
       run: |
         dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net461/Microsoft.SqlServer.Types.Tests.dll -v normal
         
+    - name: Tests (Legacy)
+      run: |
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net6.0/Microsoft.SqlServer.Types.Tests.dll -v normal
+
+    - name: Reference Tests (Legacy)
+      run: |
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net461/Microsoft.SqlServer.Types.Tests.dll -v normal
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
