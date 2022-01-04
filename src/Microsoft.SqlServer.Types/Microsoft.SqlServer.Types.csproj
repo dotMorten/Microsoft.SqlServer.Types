@@ -1,8 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Sdk Name="Microsoft.DotNet.PackageValidation" Version="1.0.0-preview.7.21379.12" />
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>10.0</LangVersion>
+        <nullable>enable</nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
+        <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
+        <MinorVersion>4.0</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
+        <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
+        <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Package properties">
         <Authors>Morten Nielsen</Authors>
         <Description>Allows you to use SQL Server spatial SqlHierarchy types on a machine without SQL Server installed and decode these UDT types in any .NET Standard client</Description>
         <PackageTags>SqlGeometry, SqlGeography, SqlHierarchy, SqlServer, UDT</PackageTags>
@@ -12,20 +24,20 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
         <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-        <PackageReleaseNotes>Several SqlHierarchyId fixes</PackageReleaseNotes>
+        <PackageReleaseNotes></PackageReleaseNotes>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-        <LangVersion>10.0</LangVersion>
-        <nullable>enable</nullable>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
-        <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
-        <MinorVersion>4.0</MinorVersion>
-        <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
-        <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
+    </PropertyGroup>
+    
+    <PropertyGroup Label="Package Validation">
+        <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.3.0</PackageValidationBaselineVersion>
+        <!--<PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'!='true'">2.4.0</PackageValidationBaselineVersion>-->
+        <!-- When updating this, make sure to delete PackageValidationSuppression.txt files -->
+        <GenerateCompatibilitySuppressionFile>false</GenerateCompatibilitySuppressionFile>
+        <!-- Set to true to generate suppresion files used to ignore _intended_ breaking changes. Should never be checked in true -->
+        <CompatibilitySuppressionFilePath Condition="('$(GenerateCompatibilitySuppressionFile)'=='true') OR Exists('$(MSBuildProjectDirectory)\PackageValidationSuppression.txt')">PackageValidationSuppression.txt</CompatibilitySuppressionFilePath>
     </PropertyGroup>
 
-    <PropertyGroup Label="v2.0 Build" Condition="'$(IsLegacyBuild)'!='true'">
-    </PropertyGroup>
     <PropertyGroup Label="v1.0 Build" Condition="'$(IsLegacyBuild)'=='true'">
         <DefineConstants>$(DefineConstants);LEGACY</DefineConstants>
     </PropertyGroup>
