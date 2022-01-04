@@ -27,7 +27,7 @@ jobs:
         
     - name: Tests
       run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net5.0/Microsoft.SqlServer.Types.Tests.dll -v normal
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release/net6.0/Microsoft.SqlServer.Types.Tests.dll -v normal
 
     - name: Reference Tests
       run: |
@@ -39,7 +39,7 @@ jobs:
         
     - name: Tests (Legacy)
       run: |
-        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net5.0/Microsoft.SqlServer.Types.Tests.dll -v normal
+        dotnet test src/Microsoft.SqlServer.Types.Tests/bin/Release_Legacy/net6.0/Microsoft.SqlServer.Types.Tests.dll -v normal
 
     - name: Reference Tests (Legacy)
       run: |
