@@ -28,6 +28,7 @@
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
         <PackageOutputPath Condition="$(Configuration.Contains(&quot;Debug&quot;))">..\..\artifacts\NuGet\Debug\</PackageOutputPath>
         <PackageOutputPath Condition="$(Configuration.Contains(&quot;Release&quot;))">..\..\artifacts\NuGet\Release\</PackageOutputPath>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     
     <PropertyGroup Label="Package Validation">
@@ -57,5 +58,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="System.Memory" Version="4.5.4" />
+        <None Include="README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
