@@ -273,5 +273,25 @@
             Assert.IsFalse(h1.IsDescendantOf(h2).Value);
             Assert.IsFalse(h2.IsDescendantOf(h1).Value);
         }
+
+        [TestMethod]
+        [WorkItem(64)]
+        public void FailToReadFromInvalidBinaryStream()
+        {
+            var stream = new MemoryStream();
+            var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, true);
+            var hierarchy = SqlHierarchyId.Parse(new System.Data.SqlTypes.SqlString("/1/"));
+            hierarchy.Write(writer);
+            //Add extra bytes after
+            for (int i = 0; i < 10; i++)
+            {
+                writer.Write(i);
+            }
+            writer.Close();
+            stream.Position = 0;
+            var reader = new BinaryReader(stream);
+            var hierarchy2 = new SqlHierarchyId();
+            AssertEx.ThrowsException(() => hierarchy2.Read(reader), typeof(HierarchyIdException), "24000: SqlHierarchyId operation failed because HierarchyId object was constructed from an invalid binary string. ");
+        }
     }
 }

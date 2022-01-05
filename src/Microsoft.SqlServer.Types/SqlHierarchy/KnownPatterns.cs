@@ -77,7 +77,7 @@
                         return pattern;
                 }
 
-                throw new InvalidCastException("No pattern found for: " + Convert.ToString((int)bitR.Peek(remaining), 2).PadLeft(remaining, '0'));
+                throw new HierarchyIdException("24000: SqlHierarchyId operation failed because HierarchyId object was constructed from an invalid binary string. ", new InvalidCastException("No pattern found for: " + Convert.ToString((int)bitR.Peek(remaining), 2).PadLeft(remaining, '0')));
             }
             else
             {
@@ -90,7 +90,7 @@
                         return pattern;
                 }
 
-                throw new InvalidCastException("No pattern found for: " + Convert.ToString((int)bitR.Peek(remaining), 2).PadLeft(remaining, '0'));
+                throw new HierarchyIdException("24000: SqlHierarchyId operation failed because HierarchyId object was constructed from an invalid binary string. ", new InvalidCastException("No pattern found for: " + Convert.ToString((int)bitR.Peek(remaining), 2).PadLeft(remaining, '0')));
             }
         }
     }
