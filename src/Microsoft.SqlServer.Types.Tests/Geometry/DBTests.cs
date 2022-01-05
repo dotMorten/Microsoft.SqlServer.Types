@@ -5,7 +5,7 @@
     [TestCategory("SqlGeometry")]
     public class DBTests
     {
-        const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;AttachDbFileName=";
+        const string connstr = @"Data Source=(localdb)\mssqllocaldb;Integrated Security=True;Connection Timeout=100;AttachDbFileName=";
 
 #pragma warning disable CS8618 // Guaranteed to be initialized in class initialize
         private static SqlConnection conn;
