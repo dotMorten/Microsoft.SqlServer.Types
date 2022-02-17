@@ -81,11 +81,13 @@ namespace Microsoft.SqlServer.Types.Wkt
 
         private static void WriteMultiPoint(ShapeData points, StringBuilder sb, bool includeZ, bool includeM, CoordinateOrder order)
         {
+            sb.Append('(');
             for (int i = 0; i < points.NumPoints; i++)
             {
-                if (i > 0) sb.Append(",");
+                if (i > 0) sb.Append("), (");
                 WriteCoordinate(points.GetPointN(i+1), sb, includeZ, includeM, order);
             }
+            sb.Append(")");
         }
 
         private static void WriteLineString(ShapeData line, StringBuilder sb, bool includeZ, bool includeM, CoordinateOrder order)

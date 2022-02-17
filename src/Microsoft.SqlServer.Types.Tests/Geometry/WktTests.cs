@@ -258,5 +258,35 @@
             Assert.AreEqual("Polygon", g.STGeometryType());
             Assert.IsTrue((bool)g.STIsEmpty());
         }
+
+        [WorkItem(72)]
+        [TestMethod]
+        public void RoundtripMultiPointWKT_OneCoordinate()
+        {
+            string wkt = "MULTIPOINT ((-78.21 43.869))";
+            var k = SqlGeometry.Parse(wkt);
+            var valueWKT = k.STAsText().ToSqlString(); 
+            Assert.AreEqual(wkt, valueWKT);
+        }
+
+        [WorkItem(72)]
+        [TestMethod]
+        public void RoundtripMultiPointWKT_TwoCoordinates()
+        {
+            string wkt = "MULTIPOINT ((-78.21 43.869), (-88.21 53.869))";
+            var k = SqlGeometry.Parse(wkt);
+            var valueWKT = k.STAsText().ToSqlString();
+            Assert.AreEqual(wkt, valueWKT);
+        }
+
+        [WorkItem(72)]
+        [TestMethod]
+        public void RoundtripMultiPointWKTWithoutExtraParenthesis()
+        {
+            string wkt = "MULTIPOINT (-78.21 43.869, -88.21 53.869)";
+            var k = SqlGeometry.Parse(wkt);
+            var valueWKT = k.STAsText().ToSqlString();
+            Assert.AreEqual("MULTIPOINT ((-78.21 43.869), (-88.21 53.869))", valueWKT);
+        }
     }
 }

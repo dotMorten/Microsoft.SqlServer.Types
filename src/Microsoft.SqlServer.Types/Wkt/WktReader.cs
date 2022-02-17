@@ -142,9 +142,10 @@
                 }
                 else
                 {
-                    ReadToken(PARAN_START);                    
+                    bool isInParens = ReadOptionalChar(PARAN_START); // MultiPoint coordinates pairs doesn't _have_ to be in parantheses (but should be according to spec)
                     ReadCoordinate();
-                    ReadToken(PARAN_END);
+                    if (isInParens)
+                        ReadToken(PARAN_END);
                 }
             }
             while (ReadOptionalChar(COMMA));
