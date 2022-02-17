@@ -9,7 +9,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
         <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
-        <MinorVersion>4.0</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
+        <MinorVersion>4.1</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
         <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
         <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
     </PropertyGroup>
@@ -33,8 +33,8 @@
     
     <PropertyGroup Label="Package Validation">
         <EnablePackageValidation>true</EnablePackageValidation>
-        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.3.0</PackageValidationBaselineVersion>
-        <!--<PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'!='true'">2.4.0</PackageValidationBaselineVersion>-->
+        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.4.0</PackageValidationBaselineVersion>
+        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'!='true'">2.4.0</PackageValidationBaselineVersion>
         <!-- When updating this, make sure to delete PackageValidationSuppression.txt files -->
         <GenerateCompatibilitySuppressionFile>false</GenerateCompatibilitySuppressionFile>
         <!-- Set to true to generate suppresion files used to ignore _intended_ breaking changes. Should never be checked in true -->
