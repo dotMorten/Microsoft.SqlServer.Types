@@ -366,8 +366,14 @@ namespace Microsoft.SqlServer.Types
         /// </summary>
         /// <returns>A SqlChars object containing the WKT representation of the SqlGeography.</returns>
         [SqlMethodAttribute(IsDeterministic = true, IsPrecise = false)]
-        public SqlChars STAsText() => new SqlChars(ToString());
+        public SqlChars STAsText() => new SqlChars(Wkt.WktWriter.Write(_geometry, false, false, Wkt.CoordinateOrder.LatLong));
 
+        /// <summary>
+        /// Returns the Open Geospatial Consortium (OGC) Well-Known Text (WKT) representation of a SqlGeography instance augmented with any Z (elevation) and M (measure) values carried by the instance.
+        /// </summary>
+        /// <returns>A SqlChars value containing the WKT representation of the SqlGeography instance.</returns>
+        [SqlMethod(IsDeterministic = true, IsPrecise = false)] 
+        public SqlChars AsTextZM() => new SqlChars(Wkt.WktWriter.Write(_geometry, true, true, Wkt.CoordinateOrder.LatLong));
 
         /// <summary>
         /// Tests if the <see cref="SqlGeography"/> instance is the same as the specified type.
