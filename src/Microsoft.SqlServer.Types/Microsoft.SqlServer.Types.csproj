@@ -24,7 +24,7 @@
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <Copyright>Copyright © 2018-$([System.DateTime]::Now.ToString('yyyy')) - Morten Nielsen</Copyright>
         <PackageId>dotMorten.Microsoft.SqlServer.Types</PackageId>
-        <PackageReleaseNotes></PackageReleaseNotes>
+        <PackageReleaseNotes>Added SqlGeography.AsTextZM(). Greatly improved WKT text and writing and closer match behavior of SQL Server.</PackageReleaseNotes>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
         <PackageOutputPath Condition="$(Configuration.Contains(&quot;Debug&quot;))">..\..\artifacts\NuGet\Debug\</PackageOutputPath>
         <PackageOutputPath Condition="$(Configuration.Contains(&quot;Release&quot;))">..\..\artifacts\NuGet\Release\</PackageOutputPath>
