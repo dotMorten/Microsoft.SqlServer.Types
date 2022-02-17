@@ -9,7 +9,7 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
         <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
-        <MinorVersion>4.1</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
+        <MinorVersion>5.0</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
         <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
         <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
     </PropertyGroup>

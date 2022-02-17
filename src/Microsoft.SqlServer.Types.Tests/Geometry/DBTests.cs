@@ -35,8 +35,11 @@
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            conn.Close();
-            conn.Dispose();
+            if (conn != null)
+            {
+                conn.Close();
+                conn.Dispose();
+            }
         }
 
         [TestMethod]

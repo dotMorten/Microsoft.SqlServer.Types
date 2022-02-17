@@ -36,8 +36,11 @@
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            _connection.Close();
-            _connection.Dispose();
+            if (_connection != null)
+            {
+                _connection.Close();
+                _connection.Dispose();
+            }
         }
 
         [DataTestMethod]
