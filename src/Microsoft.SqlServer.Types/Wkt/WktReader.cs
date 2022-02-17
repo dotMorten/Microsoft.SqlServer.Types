@@ -47,6 +47,8 @@
 
         public static ShapeData Parse(ReadOnlySpan<byte> str, CoordinateOrder order)
         {
+            if (str.Length == 0)
+                throw new FormatException("24112: The well-known text (WKT) input is empty. To input an empty instance, specify an empty instance of one of the following types: Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, CircularString, CompoundCurve, CurvePolygon or GeometryCollection.");
             var reader = new WktReader(str, order);
             return reader.ReadShape();
         }
@@ -73,7 +75,9 @@
             else if (nextToken.Length == 9) //"FULLGLOBE"
                 ReadFullGlobe(parentOffset);
             else
-                throw new FormatException("Invalid Well-known Text");
+            {
+                throw new FormatException($"24114 The label {Encoding.UTF8.GetString(nextToken.ToArray())} in the input well-known text (WKT) is not valid. Valid labels are POINT, LINESTRING, POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGON, GEOMETRYCOLLECTION, CIRCULARSTRING, COMPOUNDCURVE, CURVEPOLYGON and FULLGLOBE (geography Data Type only).");
+            }
             //switch (Encoding.UTF8.GetString(nextToken))
             //{
             //    case "POINT":
