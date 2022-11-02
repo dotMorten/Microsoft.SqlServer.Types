@@ -10,3 +10,7 @@ global using Microsoft.SqlServer.Server;
 #else
 global using Microsoft.Data.SqlClient.Server;
 #endif
+
+#if MSV5
+global using Microsoft.SqlServer.Server;
+#endif
