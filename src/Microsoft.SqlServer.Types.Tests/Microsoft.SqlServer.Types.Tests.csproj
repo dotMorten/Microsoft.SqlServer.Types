@@ -5,14 +5,21 @@
     <IsPackable>false</IsPackable>
     <nullable>enable</nullable>
     <LangVersion>10.0</LangVersion>
-    <Configurations>Debug;Release;Debug_Legacy;Release_Legacy</Configurations>
+    <Configurations>Debug;Release;Debug_MSv4;Release_MSv4;Debug_Legacy;Release_Legacy</Configurations>
     <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
+    <IsMSv4Build Condition="$(Configuration.Contains(&quot;MSv4&quot;))">true</IsMSv4Build>
+    <IsMSv5Build Condition="!$(Configuration.Contains(&quot;MSv4&quot;)) AND !$(Configuration.Contains(&quot;Legacy&quot;))">true</IsMSv5Build>
   </PropertyGroup>
 
   <PropertyGroup Label="v1.0 Build" Condition="'$(IsLegacyBuild)'=='true'">
     <DefineConstants>$(DefineConstants);LEGACY</DefineConstants>
   </PropertyGroup>
-
+  <PropertyGroup Label="v2.0 Build" Condition="'$(IsMSv4Build)'=='true'">
+    <DefineConstants>$(DefineConstants);MSV4</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Label="v3.0 Build" Condition="'$(IsMSv5Build)'=='true'">
+    <DefineConstants>$(DefineConstants);MSV5</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="HierarchyId\BitPattern.cs" />
     <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="HierarchyId\BitReader.cs" />

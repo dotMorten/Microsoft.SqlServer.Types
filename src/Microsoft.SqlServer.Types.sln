@@ -10,25 +10,35 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Legacy|Any CPU = Debug_Legacy|Any CPU
+		Debug_MSv4|Any CPU = Debug_MSv4|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release_Legacy|Any CPU = Release_Legacy|Any CPU
+		Release_MSv4|Any CPU = Release_MSv4|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug_Legacy|Any CPU.ActiveCfg = Debug_Legacy|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug_Legacy|Any CPU.Build.0 = Debug_Legacy|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug_MSv4|Any CPU.ActiveCfg = Debug_MSv4|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug_MSv4|Any CPU.Build.0 = Debug_MSv4|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release_Legacy|Any CPU.ActiveCfg = Release_Legacy|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release_Legacy|Any CPU.Build.0 = Release_Legacy|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release_MSv4|Any CPU.ActiveCfg = Release_MSv4|Any CPU
+		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release_MSv4|Any CPU.Build.0 = Release_MSv4|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CB9DE08-7654-48FD-90C1-EB8B5CA15CB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug_Legacy|Any CPU.ActiveCfg = Debug_Legacy|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug_Legacy|Any CPU.Build.0 = Debug_Legacy|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug_MSv4|Any CPU.ActiveCfg = Debug_MSv4|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug_MSv4|Any CPU.Build.0 = Debug_MSv4|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release_Legacy|Any CPU.ActiveCfg = Release_Legacy|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release_Legacy|Any CPU.Build.0 = Release_Legacy|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release_MSv4|Any CPU.ActiveCfg = Release_MSv4|Any CPU
+		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release_MSv4|Any CPU.Build.0 = Release_MSv4|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4C26011-C622-49F0-BE32-082A30292F3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
