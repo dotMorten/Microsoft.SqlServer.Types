@@ -1,3 +1,6 @@
+### Notice
+This project will slowly start to sunset, as the official `Microsoft.SqlServer.Types` NuGet package is starting to add .NET 6 support, and bring cross-platform support online. While it isn't quite there just yet, it does mean that efforts in this library will start to diminish, now that we are finally getting the support the types library always needed, and the need for this custom implementation is getting less and less important.
+
 # Microsoft.SqlServer.Types
 a .NET Standard implementation of the spatial types in `Microsoft.SqlServer.Types`
 
