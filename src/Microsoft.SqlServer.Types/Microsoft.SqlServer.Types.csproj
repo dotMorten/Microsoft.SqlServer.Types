@@ -47,7 +47,7 @@
 
     <ItemGroup Condition="'$(IsLegacyBuild)'!='true'">
         <PackageReference Include="Microsoft.Data.SqlClient">
-            <Version>4.0.0</Version>
+            <Version>5.0.1</Version>
         </PackageReference>
     </ItemGroup>
     <ItemGroup Condition="'$(IsLegacyBuild)'=='true'">
@@ -56,9 +56,9 @@
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="System.Memory" Version="4.5.4" />
-        <None Include="README.md" Pack="true" PackagePath="\"/>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+        <PackageReference Include="System.Memory" Version="4.5.5" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
   <Target Name="SignAssemblies" Condition="Exists($(CertificatePath)) AND '$(CertificatePassword)'!=''" BeforeTargets="CopyFilesToOutputDirectory" DependsOnTargets="ComputeIntermediateSatelliteAssemblies"> 
@@ -77,10 +77,8 @@
       <FilesToSign Include="@(IntermediateSatelliteAssembliesWithTargetPath)" />
       <FilesToSignFiltered Include="@(FilesToSign)" Condition="Exists(%(FilesToSign.Identity))" />
     </ItemGroup>
-    <Exec Condition="'@(FilesToSignFiltered->Count())' > 0" Command="&quot;$(SignToolPath)&quot; sign /v /fd SHA1 /f &quot;$(CertificatePath)&quot; /p &quot;$(CertificatePassword)&quot; /tr http://timestamp.digicert.com /td SHA1 &quot;%(FilesToSignFiltered.Identity)&quot;"
-          WorkingDirectory="$(ProjectDir)" EchoOff="true" />
-    <Exec Condition="'@(FilesToSignFiltered->Count())' > 0" Command="&quot;$(SignToolPath)&quot; sign /v /as /d &quot;Authorization Summary&quot; /fd SHA256 /f &quot;$(CertificatePath)&quot; /p &quot;$(CertificatePassword)&quot; /tr http://timestamp.digicert.com /td SHA256 &quot;%(FilesToSignFiltered.Identity)&quot;"
-          WorkingDirectory="$(ProjectDir)" EchoOff="true" />
+    <Exec Condition="'@(FilesToSignFiltered-&gt;Count())' &gt; 0" Command="&quot;$(SignToolPath)&quot; sign /v /fd SHA1 /f &quot;$(CertificatePath)&quot; /p &quot;$(CertificatePassword)&quot; /tr http://timestamp.digicert.com /td SHA1 &quot;%(FilesToSignFiltered.Identity)&quot;" WorkingDirectory="$(ProjectDir)" EchoOff="true" />
+    <Exec Condition="'@(FilesToSignFiltered-&gt;Count())' &gt; 0" Command="&quot;$(SignToolPath)&quot; sign /v /as /d &quot;Authorization Summary&quot; /fd SHA256 /f &quot;$(CertificatePath)&quot; /p &quot;$(CertificatePassword)&quot; /tr http://timestamp.digicert.com /td SHA256 &quot;%(FilesToSignFiltered.Identity)&quot;" WorkingDirectory="$(ProjectDir)" EchoOff="true" />
   </Target>
 
 </Project>
