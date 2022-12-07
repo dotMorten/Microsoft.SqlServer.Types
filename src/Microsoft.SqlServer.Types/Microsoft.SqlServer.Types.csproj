@@ -52,7 +52,7 @@
     </ItemGroup>
     <ItemGroup Condition="'$(IsLegacyBuild)'=='true'">
         <PackageReference Include="System.Data.SqlClient">
-            <Version>4.8.3</Version>
+            <Version>4.8.5</Version>
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
