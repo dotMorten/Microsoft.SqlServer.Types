@@ -11,7 +11,7 @@
         <IsLegacyBuild Condition="$(Configuration.Contains(&quot;Legacy&quot;))">true</IsLegacyBuild>
         <MinorVersion>5.0</MinorVersion> <!-- Note: Update PackageValidationBaselineVersion when updating this  -->
         <Version Condition="'$(IsLegacyBuild)'!='true'">2.$(MinorVersion)</Version>
-        <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion)</Version>
+        <Version Condition="'$(IsLegacyBuild)'=='true'">1.$(MinorVersion).1</Version>
     </PropertyGroup>
 
     <PropertyGroup Label="Package properties">
@@ -33,7 +33,7 @@
     
     <PropertyGroup Label="Package Validation">
         <EnablePackageValidation>true</EnablePackageValidation>
-        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.4.0</PackageValidationBaselineVersion>
+        <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'=='true'">1.5.0</PackageValidationBaselineVersion>
         <PackageValidationBaselineVersion Condition="'$(IsLegacyBuild)'!='true'">2.4.0</PackageValidationBaselineVersion>
         <!-- When updating this, make sure to delete PackageValidationSuppression.txt files -->
         <GenerateCompatibilitySuppressionFile>false</GenerateCompatibilitySuppressionFile>
