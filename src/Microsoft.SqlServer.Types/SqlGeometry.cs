@@ -1,3 +1,5 @@
+using Microsoft.SqlServer.Server;
+
 namespace Microsoft.SqlServer.Types
 {
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Types.SqlHierarchy;
+﻿using Microsoft.SqlServer.Server;
+using Microsoft.SqlServer.Types.SqlHierarchy;
 using System.Linq;
 
 namespace Microsoft.SqlServer.Types
