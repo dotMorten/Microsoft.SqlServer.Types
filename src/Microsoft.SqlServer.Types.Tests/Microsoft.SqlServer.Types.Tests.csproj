@@ -13,13 +13,6 @@
     <DefineConstants>$(DefineConstants);LEGACY</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitPattern.cs" Link="HierarchyId\BitPattern.cs" />
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitReader.cs" Link="HierarchyId\BitReader.cs" />
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\BitWriter.cs" Link="HierarchyId\BitWriter.cs" />
-    <Compile Include="..\Microsoft.SqlServer.Types\SqlHierarchy\KnownPatterns.cs" Link="HierarchyId\KnownPatterns.cs" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x64\msvcr120.dll" Link="x64\msvcr120.dll" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="$(PkgMicrosoft_SqlServer_Types)\nativeBinaries\x64\SqlServerSpatial140.dll" Link="x64\SqlServerSpatial140.dll" CopyToOutputDirectory="PreserveNewest" />
